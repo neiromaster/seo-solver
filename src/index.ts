@@ -1,10 +1,5 @@
 #!/usr/bin/env node
 
-// schema-diff <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]
-// schema-diff <url> --validate|-V [--curl|-c]
-// Compares JSON-LD structured data (default) or OpenGraph tags (--og) between two pages
-// Validates Schema.org structured data when --validate flag is used with single URL
-
 import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -47,13 +42,13 @@ let validatedUrl2: string | undefined;
 if (useValidate) {
   if (!url1 || url2) {
     console.error('Validation mode requires exactly one URL');
-    console.error('Usage: schema-diff <url> --validate|-V [--curl|-c]');
+    console.error('Usage: seo-solver <url> --validate|-V [--curl|-c]');
     process.exit(1);
   }
   validatedUrl1 = url1;
 } else {
   if (!url1 || !url2) {
-    console.error('Usage: schema-diff <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]');
+    console.error('Usage: seo-solver <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]');
     process.exit(1);
   }
   validatedUrl1 = url1;

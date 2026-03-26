@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
+    "types": [
+      "node"
+    ],
     "lib": [
       "ESNext",
       "DOM"
@@ -27,5 +30,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "exclude": [
+    "dist"
+  ]
 }

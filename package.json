@@ -1,8 +1,12 @@
 {
-  "name": "schema-diff",
-  "module": "src/index.ts",
+  "name": "seo-solver",
+  "version": "0.0.1",
+  "description": "CLI tool for comparing and validating structured data (JSON-LD, OpenGraph) for SEO",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
   "type": "module",
-  "private": true,
+  "bin": "./dist/index.js",
+  "exports": "./dist/index.js",
   "scripts": {
     "start": "bun run src/index.ts",
     "build": "tsup",
@@ -13,15 +17,44 @@
   },
   "dependencies": {
     "@adobe/structured-data-validator": "^1.7.0",
-    "playwright": "latest"
+    "playwright": "^1.58.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
+    "@types/node": "22",
     "dprint": "^0.53.0",
     "lefthook": "^2.1.4",
-    "tsup": "latest"
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
   },
-  "peerDependencies": {
-    "typescript": "^5"
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "seo",
+    "schema",
+    "json-ld",
+    "opengraph",
+    "structured-data",
+    "validator",
+    "comparison",
+    "cli",
+    "solver"
+  ],
+  "author": "Maxim (neiromaster) Gavrilenko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
