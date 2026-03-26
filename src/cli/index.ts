@@ -1,5 +1,7 @@
 import { cli } from 'cleye';
+import { safeRun } from '#core/errors';
 import pkg from '../../package.json' with { type: 'json' };
+
 import { diffCommand, validateCommand } from './commands';
 
 cli(
@@ -12,7 +14,8 @@ cli(
     commands: [diffCommand, validateCommand],
   },
   (argv) => {
-    // Default behavior - show help if no command provided
-    argv.showHelp();
+    safeRun(async () => {
+      argv.showHelp();
+    });
   },
 );

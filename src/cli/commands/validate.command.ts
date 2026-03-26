@@ -1,4 +1,7 @@
 import { command } from 'cleye';
+
+import { safeRun } from '#core/errors';
+
 import { runValidate } from '#core/validate-runner';
 
 export const validateCommand = command(
@@ -21,10 +24,12 @@ export const validateCommand = command(
       description: 'Validate structured data on a single URL',
     },
   },
-  async (argv) => {
-    await runValidate(argv._.url, {
-      useCurl: argv.flags.curl ?? false,
-      useOg: argv.flags.og ?? false,
+  (argv) => {
+    safeRun(async () => {
+      await runValidate(argv._.url, {
+        useCurl: argv.flags.curl ?? false,
+        useOg: argv.flags.og ?? false,
+      });
     });
   },
 );

@@ -5,7 +5,6 @@ export * from './core/parsers';
 export * from './lib';
 export * from './types';
 
-// Bootstrap CLI when run directly
 if (import.meta.main) {
   await import('./cli');
 }

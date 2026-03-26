@@ -1,5 +1,6 @@
 import { command } from 'cleye';
 import { runDiff } from '#core/diff-runner';
+import { safeRun } from '#core/errors';
 
 export const diffCommand = command(
   {
@@ -26,11 +27,13 @@ export const diffCommand = command(
       description: 'Compare structured data between two URLs',
     },
   },
-  async (argv) => {
-    await runDiff(argv._.url1, argv._.url2, {
-      useCurl: argv.flags.curl ?? false,
-      useOg: argv.flags.og ?? false,
-      vscodeDiff: argv.flags.vscode ?? false,
+  (argv) => {
+    safeRun(async () => {
+      await runDiff(argv._.url1, argv._.url2, {
+        useCurl: argv.flags.curl ?? false,
+        useOg: argv.flags.og ?? false,
+        vscodeDiff: argv.flags.vscode ?? false,
+      });
     });
   },
 );
