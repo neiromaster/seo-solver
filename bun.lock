@@ -5,6 +5,7 @@
     "": {
       "name": "schema-diff",
       "dependencies": {
+        "@adobe/structured-data-validator": "^1.7.0",
         "playwright": "latest",
       },
       "devDependencies": {
@@ -19,6 +20,8 @@
     },
   },
   "packages": {
+    "@adobe/structured-data-validator": ["@adobe/structured-data-validator@1.7.0", "", {}, "sha512-7z4MDfbYUBeMW2XyDzcpEh5FtDYaXmuERBCdmeDOkcsrOuLe0NJb97tAKoqoe+qll17fX9C5V8zgU1z+7hIWMg=="],
+
     "@biomejs/biome": ["@biomejs/biome@2.4.9", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.4.9", "@biomejs/cli-darwin-x64": "2.4.9", "@biomejs/cli-linux-arm64": "2.4.9", "@biomejs/cli-linux-arm64-musl": "2.4.9", "@biomejs/cli-linux-x64": "2.4.9", "@biomejs/cli-linux-x64-musl": "2.4.9", "@biomejs/cli-win32-arm64": "2.4.9", "@biomejs/cli-win32-x64": "2.4.9" }, "bin": { "biome": "bin/biome" } }, "sha512-wvZW92FrwitTcacvCBT8xdAbfbxWfDLwjYMmU3djjqQTh7Ni4ZdiWIT/x5VcZ+RQuxiKzIOzi5D+dcyJDFZMsA=="],
 
     "@biomejs/cli-darwin-arm64": ["@biomejs/cli-darwin-arm64@2.4.9", "", { "os": "darwin", "cpu": "arm64" }, "sha512-d5G8Gf2RpH5pYwiHLPA+UpG3G9TLQu4WM+VK6sfL7K68AmhcEQ9r+nkj/DvR/GYhYox6twsHUtmWWWIKfcfQQA=="],

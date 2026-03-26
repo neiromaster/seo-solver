@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
-// compare-schema.mjs <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]
+// schema-diff <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]
+// schema-diff <url> --validate|-V [--curl|-c]
 // Compares JSON-LD structured data (default) or OpenGraph tags (--og) between two pages
+// Validates Schema.org structured data when --validate flag is used with single URL
 
 import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
@@ -11,27 +13,51 @@ import type { Browser } from 'playwright';
 import { chromium } from 'playwright';
 
 type Schema = Record<string, unknown>;
+
+type ValidationIssue = {
+  issueMessage: string;
+  severity: 'ERROR' | 'WARNING';
+  path: Array<{ type: string; index: number }> | undefined;
+  fieldNames: string[];
+  location?: string;
+};
 type OgData = Record<string, string>;
 type FlatData = Record<string, string>;
 
 const args = process.argv.slice(2);
 
-const KNOWN_FLAGS = new Set(['--vscode', '-v', '--curl', '-c', '--og', '-o']);
+const KNOWN_FLAGS = new Set(['--vscode', '-v', '--curl', '-c', '--og', '-o', '--validate', '-V']);
 const unknownFlags = args.filter((a) => a.startsWith('-') && !KNOWN_FLAGS.has(a));
 if (unknownFlags.length > 0) {
   console.error(`Unknown flag(s): ${unknownFlags.join(', ')}`);
-  console.error('Known flags: --vscode (-v), --curl (-c), --og (-o)');
+  console.error('Known flags: --vscode (-v), --curl (-c), --og (-o), --validate (-V)');
   process.exit(1);
 }
 
 const vscodeDiff = args.includes('--vscode') || args.includes('-v');
 const useCurl = args.includes('--curl') || args.includes('-c');
 const useOg = args.includes('--og') || args.includes('-o');
+const useValidate = args.includes('--validate') || args.includes('-V');
 const urls = args.filter((a) => !a.startsWith('-'));
 const [url1, url2] = urls;
-if (!url1 || !url2) {
-  console.error('Usage: compare-schema.mjs <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]');
-  process.exit(1);
+
+let validatedUrl1: string;
+let validatedUrl2: string | undefined;
+
+if (useValidate) {
+  if (!url1 || url2) {
+    console.error('Validation mode requires exactly one URL');
+    console.error('Usage: schema-diff <url> --validate|-V [--curl|-c]');
+    process.exit(1);
+  }
+  validatedUrl1 = url1;
+} else {
+  if (!url1 || !url2) {
+    console.error('Usage: schema-diff <url1> <url2> [--vscode|-v] [--curl|-c] [--og|-o]');
+    process.exit(1);
+  }
+  validatedUrl1 = url1;
+  validatedUrl2 = url2;
 }
 
 // ── JSON-LD extraction ────────────────────────────────────────────────────────
@@ -363,6 +389,107 @@ function compareJsonLd(s1: Schema[], s2: Schema[]): void {
   }
 }
 
+// ── Schema.org validation ────────────────────────────────────────────────────────
+
+async function validateSchemas(schemas: Schema[]): Promise<void> {
+  // Fetch Schema.org definition
+  const schemaOrgJson = await (await fetch('https://schema.org/version/latest/schemaorg-all-https.jsonld')).json();
+
+  // Convert schemas to validator format
+  // The validator expects format from @marbec/web-auto-extractor
+  // Data must be grouped by type under each format key
+  const schemasByType: Record<string, Schema[]> = {};
+  for (const schema of schemas) {
+    const type = String(schema['@type'] ?? 'undefined');
+    if (!schemasByType[type]) {
+      schemasByType[type] = [];
+    }
+    schemasByType[type].push(schema);
+  }
+
+  const extractedData = {
+    jsonld: schemasByType,
+    microdata: {},
+    rdfa: {},
+  };
+
+  // Dynamically import validator (only when needed)
+  const validatorModule = await import('@adobe/structured-data-validator');
+  const Validator = validatorModule.default;
+  const validator = new Validator(schemaOrgJson);
+  validator.debug = false;
+
+  const results = await validator.validate(extractedData);
+
+  if (results.length === 0) {
+    console.log(`${GREEN}✓ No validation errors found${RESET}\n`);
+    return;
+  }
+
+  const errors = results.filter((r: { severity: string }) => r.severity === 'ERROR');
+  const warnings = results.filter((r: { severity: string }) => r.severity === 'WARNING');
+
+  // Group issues by schema (type + index)
+  type GroupedIssue = ValidationIssue & { schemaKey: string; contextPath: string };
+
+  const groupIssues = (issues: typeof results): Map<string, GroupedIssue[]> => {
+    const grouped = new Map<string, GroupedIssue[]>();
+    for (const issue of issues) {
+      const path = issue.path; // Full path
+      // Get schema info from first path element
+      const root = path?.[0];
+      const schemaKey = root ? `${root.type}[${root.index + 1}]` : 'unknown';
+
+      // Build context path showing where the issue is
+      const contextPath: string[] = [];
+      if (path) {
+        for (let i = 1; i < path.length; i++) {
+          const p = path[i];
+          if (!p) continue;
+          const index = typeof p.index === 'number' ? `[${p.index + 1}]` : '';
+          const part = p.type ? `${p.type}${index}` : index;
+          contextPath.push(part);
+        }
+      }
+
+      const groupedIssue: GroupedIssue = {
+        ...issue,
+        schemaKey,
+        contextPath: contextPath.join(' → '),
+      };
+
+      if (!grouped.has(schemaKey)) grouped.set(schemaKey, []);
+      grouped.get(schemaKey)?.push(groupedIssue);
+    }
+    return grouped;
+  };
+
+  const printIssues = (issues: typeof results, color: string, icon: string, label: string) => {
+    const grouped = groupIssues(issues);
+    console.log(`${color}${BOLD}${label} (${issues.length}):${RESET}\n`);
+
+    for (const [schemaKey, schemaIssues] of grouped) {
+      console.log(`  ${DIM}${schemaKey}${RESET}`);
+      for (const issue of schemaIssues) {
+        const fieldPath = issue.fieldNames.join('.');
+        console.log(
+          `    ${color}${icon}${RESET} ${BOLD}${fieldPath}${RESET}${issue.contextPath ? ` ${DIM}(${issue.contextPath})${RESET}` : ''}`,
+        );
+        console.log(`      ${issue.issueMessage}`);
+        console.log();
+      }
+    }
+  };
+
+  if (errors.length > 0) {
+    printIssues(errors, RED, '✗', 'ERRORS');
+  }
+
+  if (warnings.length > 0) {
+    printIssues(warnings, YELLOW, '⚠', 'WARNINGS');
+  }
+}
+
 // ── OpenGraph comparison ──────────────────────────────────────────────────────
 
 function compareOg(og1: OgData, og2: OgData): void {
@@ -375,42 +502,81 @@ function compareOg(og1: OgData, og2: OgData): void {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-const mode = useOg ? 'OpenGraph' : 'JSON-LD';
-console.log(`\n${BOLD}Fetching ${mode} metadata${useCurl ? ' (curl/SSR)' : ' (browser)'}...${RESET}`);
+if (useValidate) {
+  // Validation mode - single URL
+  const mode = useOg ? 'OpenGraph' : 'JSON-LD';
+  console.log(`\n${BOLD}Validating ${mode}${useCurl ? ' (curl/SSR)' : ' (browser)'}...${RESET}\n`);
 
-let d1: OgData | Schema[], d2: OgData | Schema[];
+  let data: OgData | Schema[];
 
-if (useCurl) {
-  const [html1, html2] = await Promise.all([fetchHtmlCurl(url1), fetchHtmlCurl(url2)]);
-  d1 = useOg ? extractOgFromHtml(html1) : extractSchemasFromHtml(html1);
-  d2 = useOg ? extractOgFromHtml(html2) : extractSchemasFromHtml(html2);
-} else {
-  const browser = await chromium.launch();
-  try {
-    if (useOg) {
-      [d1, d2] = await Promise.all([extractOgBrowser(browser, url1), extractOgBrowser(browser, url2)]);
-    } else {
-      [d1, d2] = await Promise.all([extractSchemasBrowser(browser, url1), extractSchemasBrowser(browser, url2)]);
+  if (useCurl) {
+    const html = fetchHtmlCurl(validatedUrl1);
+    data = useOg ? extractOgFromHtml(html) : extractSchemasFromHtml(html);
+  } else {
+    const browser = await chromium.launch();
+    try {
+      if (useOg) {
+        data = await extractOgBrowser(browser, validatedUrl1);
+      } else {
+        data = await extractSchemasBrowser(browser, validatedUrl1);
+      }
+    } finally {
+      await browser.close();
     }
-  } finally {
-    await browser.close();
   }
-}
 
-const countLabel = useOg ? `${Object.keys(d1).length} tag(s)` : `${(d1 as Schema[]).length} schema(s)`;
-const countLabel2 = useOg ? `${Object.keys(d2).length} tag(s)` : `${(d2 as Schema[]).length} schema(s)`;
-console.log(`${CYAN}URL1:${RESET} ${url1} → ${countLabel}`);
-console.log(`${CYAN}URL2:${RESET} ${url2} → ${countLabel2}\n`);
+  const countLabel = useOg ? `${Object.keys(data).length} tag(s)` : `${(data as Schema[]).length} schema(s)`;
+  console.log(`${CYAN}URL:${RESET} ${validatedUrl1} → ${countLabel}\n`);
 
-if (useOg) {
-  compareOg(d1 as OgData, d2 as OgData);
+  if (!useOg) {
+    await validateSchemas(data as Schema[]);
+  } else {
+    console.log(`${YELLOW}OpenGraph validation not supported${RESET}\n`);
+  }
 } else {
-  compareJsonLd(d1 as Schema[], d2 as Schema[]);
-}
+  // Diff mode - two URLs
+  const mode = useOg ? 'OpenGraph' : 'JSON-LD';
+  console.log(`\n${BOLD}Fetching ${mode} metadata${useCurl ? ' (curl/SSR)' : ' (browser)'}...${RESET}`);
 
-if (vscodeDiff) {
-  const prefix = useOg ? 'og' : 'schema';
-  const content1 = useOg ? JSON.stringify(d1, null, 2) : formatSchemasForDiff(d1 as Schema[]);
-  const content2 = useOg ? JSON.stringify(d2, null, 2) : formatSchemasForDiff(d2 as Schema[]);
-  openVscodeDiff(content1, content2, prefix, url1, url2);
+  // biome-ignore lint/style/noNonNullAssertion: validatedUrl2 is guaranteed to be defined in diff mode
+  const url2: string = validatedUrl2!;
+  let d1: OgData | Schema[], d2: OgData | Schema[];
+
+  if (useCurl) {
+    const [html1, html2] = await Promise.all([fetchHtmlCurl(validatedUrl1), fetchHtmlCurl(url2)]);
+    d1 = useOg ? extractOgFromHtml(html1) : extractSchemasFromHtml(html1);
+    d2 = useOg ? extractOgFromHtml(html2) : extractSchemasFromHtml(html2);
+  } else {
+    const browser = await chromium.launch();
+    try {
+      if (useOg) {
+        [d1, d2] = await Promise.all([extractOgBrowser(browser, validatedUrl1), extractOgBrowser(browser, url2)]);
+      } else {
+        [d1, d2] = await Promise.all([
+          extractSchemasBrowser(browser, validatedUrl1),
+          extractSchemasBrowser(browser, url2),
+        ]);
+      }
+    } finally {
+      await browser.close();
+    }
+  }
+
+  const countLabel = useOg ? `${Object.keys(d1).length} tag(s)` : `${(d1 as Schema[]).length} schema(s)`;
+  const countLabel2 = useOg ? `${Object.keys(d2).length} tag(s)` : `${(d2 as Schema[]).length} schema(s)`;
+  console.log(`${CYAN}URL1:${RESET} ${validatedUrl1} → ${countLabel}`);
+  console.log(`${CYAN}URL2:${RESET} ${url2} → ${countLabel2}\n`);
+
+  if (useOg) {
+    compareOg(d1 as OgData, d2 as OgData);
+  } else {
+    compareJsonLd(d1 as Schema[], d2 as Schema[]);
+  }
+
+  if (vscodeDiff) {
+    const prefix = useOg ? 'og' : 'schema';
+    const content1 = useOg ? JSON.stringify(d1, null, 2) : formatSchemasForDiff(d1 as Schema[]);
+    const content2 = useOg ? JSON.stringify(d2, null, 2) : formatSchemasForDiff(d2 as Schema[]);
+    openVscodeDiff(content1, content2, prefix, validatedUrl1, url2);
+  }
 }

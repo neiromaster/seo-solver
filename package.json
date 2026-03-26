@@ -12,6 +12,7 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@adobe/structured-data-validator": "^1.7.0",
     "playwright": "latest"
   },
   "devDependencies": {
