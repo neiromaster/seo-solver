@@ -13,6 +13,33 @@
     "moduleDetection": "force",
     "allowJs": true,
 
+    "paths": {
+      "#cli": [
+        "./src/cli"
+      ],
+      "#cli/*": [
+        "./src/cli/*"
+      ],
+      "#core": [
+        "./src/core"
+      ],
+      "#core/*": [
+        "./src/core/*"
+      ],
+      "#lib": [
+        "./src/lib"
+      ],
+      "#lib/*": [
+        "./src/lib/*"
+      ],
+      "#types": [
+        "./src/types"
+      ],
+      "#types/*": [
+        "./src/types/*"
+      ]
+    },
+
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
