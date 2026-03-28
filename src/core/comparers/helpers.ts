@@ -3,7 +3,8 @@ import type { FlatData, Schema } from '#types';
 export function groupByType(schemas: Schema[]): Map<string, Schema[]> {
   const groups = new Map<string, Schema[]>();
   for (const schema of schemas) {
-    const type = String(schema['@type'] ?? 'undefined');
+    const rawType = schema['@type'];
+    const type = rawType == null ? '__NO_TYPE__' : Array.isArray(rawType) ? String(rawType[0]) : String(rawType);
     const list = groups.get(type);
     if (list) {
       list.push(schema);
@@ -14,7 +15,13 @@ export function groupByType(schemas: Schema[]): Map<string, Schema[]> {
   return groups;
 }
 
-export function compareFlat(a: FlatData, b: FlatData) {
+export type FlatDiffResult = {
+  diffs: Array<{ key: string; a: string; b: string }>;
+  added: string[];
+  removed: string[];
+};
+
+export function compareFlat(a: FlatData, b: FlatData): FlatDiffResult {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   const diffs: Array<{ key: string; a: string; b: string }> = [];
   const added: string[] = [];

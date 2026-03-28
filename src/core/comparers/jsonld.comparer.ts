@@ -13,7 +13,7 @@ export function compareJsonLd(s1: Schema[], s2: Schema[]): void {
     const schemas2 = g2.get(type) ?? [];
     const count1 = schemas1.length;
     const count2 = schemas2.length;
-    const typeLabel = type === 'undefined' ? dim`(no @type)` : type;
+    const typeLabel = type === '__NO_TYPE__' ? dim`(no @type)` : type;
 
     if (count2 === 0) {
       console.log(`${red`- ${typeLabel}`} (${count1} in URL1)`);

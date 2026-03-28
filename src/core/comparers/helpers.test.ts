@@ -89,10 +89,10 @@ describe('groupByType', () => {
     expect(result.get('Product')!.length).toBe(1);
   });
 
-  test("groups schemas without @type under 'undefined' key", () => {
+  test("groups schemas without @type under '__NO_TYPE__' key", () => {
     const schemas: Schema[] = [{ name: 'NoType1' }, { '@type': 'Article', name: 'A' }, { name: 'NoType2' }];
     const result = groupByType(schemas);
-    expect(result.get('undefined')!.length).toBe(2);
+    expect(result.get('__NO_TYPE__')!.length).toBe(2);
     expect(result.get('Article')!.length).toBe(1);
   });
 
@@ -119,11 +119,11 @@ describe('groupByType', () => {
     expect(result.get('42')!.length).toBe(1);
   });
 
-  test('handles @type as array (JSON-LD multi-type)', () => {
+  test('uses first element of array @type (JSON-LD multi-type)', () => {
     const schemas: Schema[] = [{ '@type': ['Article', 'BlogPosting'], name: 'N' }];
     const result = groupByType(schemas);
     const key = [...result.keys()][0];
-    expect(key).toBe('Article,BlogPosting');
+    expect(key).toBe('Article');
   });
 
   test('preserves schema objects in groups', () => {
