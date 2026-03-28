@@ -13,21 +13,23 @@ export type ValidateOptions = {
 
 export async function runValidate(url: string, options: ValidateOptions): Promise<void> {
   const { useCurl, useOg } = options;
+  const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+
   const mode = useOg ? 'OpenGraph' : 'JSON-LD';
   console.log(`\n${bold(`Validating ${mode}${useCurl ? ' (curl/SSR)' : ' (browser)'}...`)}\n`);
 
   let data: OgData | Schema[];
 
   if (useCurl) {
-    const html = fetchHtmlCurl(url);
+    const html = fetchHtmlCurl(normalizedUrl);
     data = useOg ? extractOgFromHtml(html) : extractSchemasFromHtml(html);
   } else {
     const browser = await chromium.launch();
     try {
       if (useOg) {
-        data = await extractOgBrowser(browser, url);
+        data = await extractOgBrowser(browser, normalizedUrl);
       } else {
-        data = await extractSchemasBrowser(browser, url);
+        data = await extractSchemasBrowser(browser, normalizedUrl);
       }
     } finally {
       await browser.close();
@@ -35,7 +37,7 @@ export async function runValidate(url: string, options: ValidateOptions): Promis
   }
 
   const countLabel = useOg ? `${Object.keys(data).length} tag(s)` : `${(data as Schema[]).length} schema(s)`;
-  console.log(`${cyan`URL:`} ${url} → ${countLabel}\n`);
+  console.log(`${cyan`URL:`} ${normalizedUrl} → ${countLabel}\n`);
 
   if (!useOg) {
     await validateSchemas(data as Schema[]);
