@@ -95,8 +95,8 @@ describe('handleError', () => {
     });
   });
 
-  describe('duck-typing path', () => {
-    test('accepts object with exitCode and format properties', () => {
+  describe('non-AppError with matching shape falls through', () => {
+    test('object with exitCode and format properties goes to unexpected path', () => {
       // Arrange
       const error = Object.assign(new Error('duck typed'), {
         exitCode: 3,
@@ -107,8 +107,9 @@ describe('handleError', () => {
       run(() => handleError(error));
 
       // Assert
-      expect(exitCode).toBe(3);
-      expect(output()).toContain('formatted duck');
+      expect(exitCode).toBe(ExitCode.UnexpectedError);
+      expect(output()).toContain('Unexpected error');
+      expect(output()).toContain('duck typed');
     });
   });
 
@@ -147,7 +148,7 @@ describe('handleError', () => {
 
       // Assert
       expect(output()).toContain('Please report this issue');
-      expect(output()).toContain('github.com');
+      expect(output()).toContain('github.com/neiromaster/seo-solver');
     });
   });
 

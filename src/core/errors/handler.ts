@@ -1,5 +1,8 @@
 import { cyan, dim, red, underline, yellow } from 'ansis';
-import type { AppError } from './AppError';
+import pkg from '../../../package.json';
+import { AppError } from './AppError';
+
+const bugsUrl: string = pkg.bugs.url;
 
 export enum ExitCode {
   Success = 0,
@@ -10,11 +13,10 @@ export enum ExitCode {
 export function handleError(error: unknown): never {
   console.error(`\n${red.bold`❌ Error`}\n`);
 
-  if (error instanceof Error && 'exitCode' in error && 'format' in error) {
-    const appError = error as AppError;
-    console.error(appError.format());
+  if (error instanceof AppError) {
+    console.error(error.format());
     console.error();
-    process.exit(appError.exitCode);
+    process.exit(error.exitCode);
   }
 
   console.error(red.bold`Unexpected error:`);
@@ -26,7 +28,7 @@ export function handleError(error: unknown): never {
   }
 
   console.error(yellow`Please report this issue:`);
-  console.error(`  ${underline(cyan('https://github.com/neiromaster/schema-diff/issues'))}\n`);
+  console.error(`  ${underline(cyan(bugsUrl))}\n`);
 
   process.exit(ExitCode.UnexpectedError);
 }
