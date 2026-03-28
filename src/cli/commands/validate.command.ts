@@ -1,35 +1,32 @@
-import { command } from 'cleye';
+import { boolean, command, flag, positional, string } from 'cmd-ts';
 
 import { safeRun } from '#core/errors';
-
 import { runValidate } from '#core/validate-runner';
 
-export const validateCommand = command(
-  {
-    name: 'validate',
-    parameters: ['<url>'],
-    flags: {
-      curl: {
-        type: Boolean,
-        alias: 'c',
-        description: 'Use curl for SSR HTML fetching',
-      },
-      og: {
-        type: Boolean,
-        alias: 'o',
-        description: 'Validate OpenGraph tags (experimental)',
-      },
-    },
-    help: {
-      description: 'Validate structured data on a single URL',
-    },
+export const validateCommand = command({
+  name: 'validate',
+  description: 'Validate structured data on a single URL',
+  args: {
+    url: positional({ type: string, displayName: 'url' }),
+    curl: flag({
+      type: boolean,
+      long: 'curl',
+      short: 'c',
+      description: 'Use curl for SSR HTML fetching',
+    }),
+    og: flag({
+      type: boolean,
+      long: 'og',
+      short: 'o',
+      description: 'Use OpenGraph instead of JSON-LD',
+    }),
   },
-  (argv) => {
+  handler: ({ url, curl, og }) => {
     safeRun(async () => {
-      await runValidate(argv._.url, {
-        useCurl: argv.flags.curl ?? false,
-        useOg: argv.flags.og ?? false,
+      await runValidate(url, {
+        useCurl: curl,
+        useOg: og,
       });
     });
   },
-);
+});

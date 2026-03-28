@@ -1,39 +1,39 @@
-import { command } from 'cleye';
+import { boolean, command, flag, positional, string } from 'cmd-ts';
 import { runDiff } from '#core/diff-runner';
 import { safeRun } from '#core/errors';
 
-export const diffCommand = command(
-  {
-    name: 'diff',
-    parameters: ['<url1>', '<url2>'],
-    flags: {
-      vscode: {
-        type: Boolean,
-        alias: 'v',
-        description: 'Open VSCode diff viewer',
-      },
-      curl: {
-        type: Boolean,
-        alias: 'c',
-        description: 'Use curl for SSR HTML fetching',
-      },
-      og: {
-        type: Boolean,
-        alias: 'o',
-        description: 'Compare OpenGraph tags instead of JSON-LD',
-      },
-    },
-    help: {
-      description: 'Compare structured data between two URLs',
-    },
+export const diffCommand = command({
+  name: 'diff',
+  description: 'Compare structured data between two URLs',
+  args: {
+    url1: positional({ type: string, displayName: 'url1' }),
+    url2: positional({ type: string, displayName: 'url2' }),
+    curl: flag({
+      type: boolean,
+      long: 'curl',
+      short: 'c',
+      description: 'Use curl for SSR HTML fetching',
+    }),
+    og: flag({
+      type: boolean,
+      long: 'og',
+      short: 'o',
+      description: 'Use OpenGraph instead of JSON-LD',
+    }),
+    vscode: flag({
+      type: boolean,
+      long: 'vscode',
+      short: 'v',
+      description: 'Open VSCode diff viewer',
+    }),
   },
-  (argv) => {
+  handler: ({ url1, url2, curl, og, vscode }) => {
     safeRun(async () => {
-      await runDiff(argv._.url1, argv._.url2, {
-        useCurl: argv.flags.curl ?? false,
-        useOg: argv.flags.og ?? false,
-        vscodeDiff: argv.flags.vscode ?? false,
+      await runDiff(url1, url2, {
+        useCurl: curl,
+        useOg: og,
+        vscodeDiff: vscode,
       });
     });
   },
-);
+});
