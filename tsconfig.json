@@ -2,6 +2,7 @@
   "compilerOptions": {
     // Environment setup & latest features
     "types": [
+      "bun",
       "node"
     ],
     "lib": [
