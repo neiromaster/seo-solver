@@ -1,4 +1,4 @@
-import { RED, RESET } from '#lib/colors';
+import { red } from 'ansis';
 import { AppError } from './AppError';
 
 export class ParseError extends AppError {
@@ -12,7 +12,7 @@ export class ParseError extends AppError {
     cause?: unknown,
   ) {
     super(message, cause);
-    this.userMessage = `${RED}Parse error${RESET} (${parseType}) for ${url}`;
+    this.userMessage = `${red`Parse error`} (${parseType}) for ${url}`;
   }
 }
 

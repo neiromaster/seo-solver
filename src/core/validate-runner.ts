@@ -1,5 +1,5 @@
+import { bold, cyan, yellow } from 'ansis';
 import { chromium } from 'playwright';
-import { BOLD, CYAN, RESET, YELLOW } from '#lib/colors';
 import type { OgData, Schema } from '#types';
 import { fetchHtmlCurl } from './fetchers/curl.fetcher';
 import { extractOgBrowser, extractSchemasBrowser } from './fetchers/playwright.fetcher';
@@ -14,7 +14,7 @@ export type ValidateOptions = {
 export async function runValidate(url: string, options: ValidateOptions): Promise<void> {
   const { useCurl, useOg } = options;
   const mode = useOg ? 'OpenGraph' : 'JSON-LD';
-  console.log(`\n${BOLD}Validating ${mode}${useCurl ? ' (curl/SSR)' : ' (browser)'}...${RESET}\n`);
+  console.log(`\n${bold(`Validating ${mode}${useCurl ? ' (curl/SSR)' : ' (browser)'}...`)}\n`);
 
   let data: OgData | Schema[];
 
@@ -35,11 +35,11 @@ export async function runValidate(url: string, options: ValidateOptions): Promis
   }
 
   const countLabel = useOg ? `${Object.keys(data).length} tag(s)` : `${(data as Schema[]).length} schema(s)`;
-  console.log(`${CYAN}URL:${RESET} ${url} → ${countLabel}\n`);
+  console.log(`${cyan`URL:`} ${url} → ${countLabel}\n`);
 
   if (!useOg) {
     await validateSchemas(data as Schema[]);
   } else {
-    console.log(`${YELLOW}OpenGraph validation not supported${RESET}\n`);
+    console.log(`${yellow`OpenGraph validation not supported`}\n`);
   }
 }

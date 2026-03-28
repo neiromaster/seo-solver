@@ -1,5 +1,5 @@
+import { bold, cyan } from 'ansis';
 import { chromium } from 'playwright';
-import { BOLD, CYAN, RESET } from '#lib/colors';
 import type { OgData, Schema } from '#types';
 import { compareJsonLd, compareOg } from './comparers';
 import { fetchHtmlCurl } from './fetchers/curl.fetcher';
@@ -16,7 +16,7 @@ export type DiffOptions = {
 export async function runDiff(url1: string, url2: string, options: DiffOptions): Promise<void> {
   const { useCurl, useOg, vscodeDiff } = options;
   const mode = useOg ? 'OpenGraph' : 'JSON-LD';
-  console.log(`\n${BOLD}Fetching ${mode} metadata${useCurl ? ' (curl/SSR)' : ' (browser)'}...${RESET}`);
+  console.log(`\n${bold(`Fetching ${mode} metadata${useCurl ? ' (curl/SSR)' : ' (browser)'}...`)}`);
 
   let d1: OgData | Schema[], d2: OgData | Schema[];
 
@@ -39,8 +39,8 @@ export async function runDiff(url1: string, url2: string, options: DiffOptions):
 
   const countLabel = useOg ? `${Object.keys(d1).length} tag(s)` : `${(d1 as Schema[]).length} schema(s)`;
   const countLabel2 = useOg ? `${Object.keys(d2).length} tag(s)` : `${(d2 as Schema[]).length} schema(s)`;
-  console.log(`${CYAN}URL1:${RESET} ${url1} → ${countLabel}`);
-  console.log(`${CYAN}URL2:${RESET} ${url2} → ${countLabel2}\n`);
+  console.log(`${cyan`URL1:`} ${url1} → ${countLabel}`);
+  console.log(`${cyan`URL2:`} ${url2} → ${countLabel2}\n`);
 
   if (useOg) {
     compareOg(d1 as OgData, d2 as OgData);

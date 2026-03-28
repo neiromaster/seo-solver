@@ -1,4 +1,5 @@
-import { BOLD, DIM, GREEN, RED, RESET, YELLOW } from '#lib/colors';
+import type { Ansis } from 'ansis';
+import { bold, dim, green, red, yellow } from 'ansis';
 import type { Schema, ValidationIssue } from '#types';
 
 export async function validateSchemas(schemas: Schema[]): Promise<void> {
@@ -27,7 +28,7 @@ export async function validateSchemas(schemas: Schema[]): Promise<void> {
   const results = await validator.validate(extractedData);
 
   if (results.length === 0) {
-    console.log(`${GREEN}✓ No validation errors found${RESET}\n`);
+    console.log(`${green`✓ No validation errors found`}\n`);
     return;
   }
 
@@ -66,16 +67,16 @@ export async function validateSchemas(schemas: Schema[]): Promise<void> {
     return grouped;
   };
 
-  const printIssues = (issues: typeof results, color: string, icon: string, label: string) => {
+  const printIssues = (issues: typeof results, color: Ansis, icon: string, label: string) => {
     const grouped = groupIssues(issues);
-    console.log(`${color}${BOLD}${label} (${issues.length}):${RESET}\n`);
+    console.log(`${color.bold`${label} (${issues.length}):`}\n`);
 
     for (const [schemaKey, schemaIssues] of grouped) {
-      console.log(`  ${DIM}${schemaKey}${RESET}`);
+      console.log(`  ${dim(schemaKey)}`);
       for (const issue of schemaIssues) {
         const fieldPath = issue.fieldNames.join('.');
         console.log(
-          `    ${color}${icon}${RESET} ${BOLD}${fieldPath}${RESET}${issue.contextPath ? ` ${DIM}(${issue.contextPath})${RESET}` : ''}`,
+          `    ${color(icon)} ${bold(fieldPath)}${issue.contextPath ? ` ${dim(`(${issue.contextPath})`)}` : ''}`,
         );
         console.log(`      ${issue.issueMessage}`);
         console.log();
@@ -84,10 +85,10 @@ export async function validateSchemas(schemas: Schema[]): Promise<void> {
   };
 
   if (errors.length > 0) {
-    printIssues(errors, RED, '✗', 'ERRORS');
+    printIssues(errors, red, '✗', 'ERRORS');
   }
 
   if (warnings.length > 0) {
-    printIssues(warnings, YELLOW, '⚠', 'WARNINGS');
+    printIssues(warnings, yellow, '⚠', 'WARNINGS');
   }
 }

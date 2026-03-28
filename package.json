@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@adobe/structured-data-validator": "^1.7.0",
+    "ansis": "^4.2.0",
     "cmd-ts": "^0.15.0",
     "playwright": "^1.58.2"
   },
