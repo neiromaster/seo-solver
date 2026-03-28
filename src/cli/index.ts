@@ -1,7 +1,14 @@
-import { run, subcommands } from 'cmd-ts';
+import { run, setDefaultHelpFormatter, subcommands } from 'cmd-ts';
+import { createVercelFormatter } from 'cmd-ts/batteries/vercel-formatter';
 import pkg from '../../package.json' with { type: 'json' };
-
 import { diffCommand, validateCommand } from './commands';
+
+setDefaultHelpFormatter(
+  createVercelFormatter({
+    cliName: 'SEO Solver',
+    logo: '🔍',
+  }),
+);
 
 const app = subcommands({
   name: 'seo-solver',
