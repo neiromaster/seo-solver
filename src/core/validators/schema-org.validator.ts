@@ -2,8 +2,29 @@ import type { Ansis } from 'ansis';
 import { bold, dim, green, red, yellow } from 'ansis';
 import type { Schema, ValidationIssue } from '#types';
 
-export async function validateSchemas(schemas: Schema[]): Promise<void> {
-  const schemaOrgJson = await (await fetch('https://schema.org/version/latest/schemaorg-all-https.jsonld')).json();
+type ValidatorModule = typeof import('@adobe/structured-data-validator');
+
+export type ValidateSchemasDeps = {
+  fetchImpl: typeof fetch;
+  loadValidatorModule: () => Promise<ValidatorModule>;
+};
+
+export function loadDefaultValidatorModule(): Promise<ValidatorModule> {
+  return import('@adobe/structured-data-validator');
+}
+
+const defaultValidateSchemasDeps: ValidateSchemasDeps = {
+  fetchImpl: fetch,
+  loadValidatorModule: loadDefaultValidatorModule,
+};
+
+export async function validateSchemas(
+  schemas: Schema[],
+  deps: ValidateSchemasDeps = defaultValidateSchemasDeps,
+): Promise<void> {
+  const schemaOrgJson = await (
+    await deps.fetchImpl('https://schema.org/version/latest/schemaorg-all-https.jsonld')
+  ).json();
 
   const schemasByType: Record<string, Schema[]> = {};
   for (const schema of schemas) {
@@ -20,7 +41,7 @@ export async function validateSchemas(schemas: Schema[]): Promise<void> {
     rdfa: {},
   };
 
-  const validatorModule = await import('@adobe/structured-data-validator');
+  const validatorModule = await deps.loadValidatorModule();
   const Validator = validatorModule.default;
   const validator = new Validator(schemaOrgJson);
   validator.debug = false;
