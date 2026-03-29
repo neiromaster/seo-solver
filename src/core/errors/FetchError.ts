@@ -12,17 +12,22 @@ export class FetchError extends AppError {
     cause?: unknown,
   ) {
     super(message, cause);
-    this.userMessage = `${red`Error fetching`} ${url} (${fetchMethod})`;
+    this.userMessage = `Error fetching ${url} (${fetchMethod})`;
   }
 
-  getSuggestion(): string {
+  private getSuggestion(): string {
     return this.fetchMethod === 'playwright'
-      ? `\n  Try ${yellow`--curl`} flag to use SSR HTML fetching`
+      ? `\n  Try ${yellow`--curl`} flag to use raw HTML fetching`
       : `\n  Try without ${yellow`--curl`} flag to use browser`;
   }
 
   override format(): string {
-    return `${super.format()}${this.getSuggestion()}`;
+    let output = `${red('Error fetching')} ${this.url} (${this.fetchMethod})`;
+    if (this.cause instanceof Error && this.cause.message !== this.message) {
+      output += `\n\n  ${this.cause.message}`;
+    }
+    output += this.getSuggestion();
+    return output;
   }
 }
 

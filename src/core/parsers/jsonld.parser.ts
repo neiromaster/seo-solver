@@ -1,18 +1,31 @@
+import { JsonParseError, NoDataFoundError } from '#core/errors';
 import type { Schema } from '#types';
 
-export function extractSchemasFromHtml(html: string): Schema[] {
+export function extractSchemasFromHtml(html: string, url: string): Schema[] {
   const texts = [
     ...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi),
   ].flatMap((m) => (m[1] !== undefined ? [m[1]] : []));
+
+  if (texts.length === 0) {
+    throw new NoDataFoundError(url, 'schemas');
+  }
+
+  let lastError: unknown;
   const schemas = texts
     .map((t) => {
       try {
         return JSON.parse(t) as unknown;
-      } catch {
+      } catch (e) {
+        lastError = e;
         return null;
       }
     })
     .filter(Boolean);
+
+  if (schemas.length === 0) {
+    throw new JsonParseError(url, lastError);
+  }
+
   return normalizeSchemas(schemas);
 }
 

@@ -22,7 +22,7 @@ export async function runValidate(url: string, options: ValidateOptions): Promis
 
   if (useCurl) {
     const html = fetchHtmlCurl(normalizedUrl);
-    data = useOg ? extractOgFromHtml(html) : extractSchemasFromHtml(html);
+    data = useOg ? extractOgFromHtml(html, normalizedUrl) : extractSchemasFromHtml(html, normalizedUrl);
   } else {
     const browser = await chromium.launch();
     try {

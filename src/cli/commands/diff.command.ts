@@ -27,13 +27,12 @@ export const diffCommand = command({
       description: 'Open VSCode diff viewer',
     }),
   },
-  handler: ({ url1, url2, curl, og, vscode }) => {
+  handler: ({ url1, url2, curl, og, vscode }) =>
     safeRun(async () => {
       await runDiff(url1, url2, {
         useCurl: curl,
         useOg: og,
         vscodeDiff: vscode,
       });
-    });
-  },
+    }),
 });

@@ -21,12 +21,11 @@ export const validateCommand = command({
       description: 'Use OpenGraph instead of JSON-LD',
     }),
   },
-  handler: ({ url, curl, og }) => {
+  handler: ({ url, curl, og }) =>
     safeRun(async () => {
       await runValidate(url, {
         useCurl: curl,
         useOg: og,
       });
-    });
-  },
+    }),
 });

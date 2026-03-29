@@ -5,15 +5,14 @@ import { AppError } from './AppError';
 const bugsUrl: string = pkg.bugs.url;
 
 export enum ExitCode {
-  Success = 0,
-  ExpectedError = 1,
   UnexpectedError = 2,
 }
 
 export function handleError(error: unknown): never {
-  console.error(`\n${red.bold`❌ Error`}\n`);
-
   if (error instanceof AppError) {
+    if (error.exitCode > 0) {
+      console.error(`\n${red.bold`❌ Error`}\n`);
+    }
     console.error(error.format());
     console.error();
     process.exit(error.exitCode);

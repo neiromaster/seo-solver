@@ -12,7 +12,15 @@ export class ParseError extends AppError {
     cause?: unknown,
   ) {
     super(message, cause);
-    this.userMessage = `${red`Parse error`} (${parseType}) for ${url}`;
+    this.userMessage = `Parse error (${parseType}) for ${url}`;
+  }
+
+  override format(): string {
+    let output = `${red('Parse error')} (${this.parseType}) for ${this.url}`;
+    if (this.cause instanceof Error && this.cause.message !== this.message) {
+      output += `\n\n  ${this.cause.message}`;
+    }
+    return output;
   }
 }
 

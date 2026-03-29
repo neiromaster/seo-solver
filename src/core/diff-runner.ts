@@ -22,8 +22,8 @@ export async function runDiff(url1: string, url2: string, options: DiffOptions):
 
   if (useCurl) {
     const [html1, html2] = await Promise.all([fetchHtmlCurl(url1), fetchHtmlCurl(url2)]);
-    d1 = useOg ? extractOgFromHtml(html1) : extractSchemasFromHtml(html1);
-    d2 = useOg ? extractOgFromHtml(html2) : extractSchemasFromHtml(html2);
+    d1 = useOg ? extractOgFromHtml(html1, url1) : extractSchemasFromHtml(html1, url1);
+    d2 = useOg ? extractOgFromHtml(html2, url2) : extractSchemasFromHtml(html2, url2);
   } else {
     const browser = await chromium.launch();
     try {

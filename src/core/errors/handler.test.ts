@@ -9,14 +9,6 @@ function strip(str: string): string {
 }
 
 describe('ExitCode', () => {
-  test('Success is 0', () => {
-    expect(ExitCode.Success).toBe(0);
-  });
-
-  test('ExpectedError is 1', () => {
-    expect(ExitCode.ExpectedError).toBe(1);
-  });
-
   test('UnexpectedError is 2', () => {
     expect(ExitCode.UnexpectedError).toBe(2);
   });
@@ -71,7 +63,7 @@ describe('handleError', () => {
       expect(output()).toContain('https://example.com');
     });
 
-    test('exits with exitCode 0 for NoDataFoundError', () => {
+    test('exits with exitCode 0 for NoDataFoundError and shows no error banner', () => {
       // Arrange
       const error = new NoDataFoundError('https://example.com', 'schemas');
 
@@ -81,6 +73,7 @@ describe('handleError', () => {
       // Assert
       expect(exitCode).toBe(0);
       expect(output()).toContain('No schemas found on https://example.com');
+      expect(output()).not.toContain('❌');
     });
 
     test('prints error header banner', () => {

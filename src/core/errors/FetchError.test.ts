@@ -52,32 +52,6 @@ describe('FetchError', () => {
     });
   });
 
-  describe('getSuggestion()', () => {
-    test('suggests --curl for playwright method', () => {
-      // Arrange
-      const error = new FetchError('test', 'https://example.com', 'playwright');
-
-      // Act
-      const suggestion = error.getSuggestion();
-
-      // Assert
-      expect(strip(suggestion)).toContain('--curl');
-      expect(strip(suggestion)).toContain('SSR HTML fetching');
-    });
-
-    test('suggests without --curl for curl method', () => {
-      // Arrange
-      const error = new FetchError('test', 'https://example.com', 'curl');
-
-      // Act
-      const suggestion = error.getSuggestion();
-
-      // Assert
-      expect(strip(suggestion)).toContain('without --curl');
-      expect(strip(suggestion)).toContain('browser');
-    });
-  });
-
   describe('format()', () => {
     test('composes userMessage with suggestion for curl', () => {
       // Arrange
