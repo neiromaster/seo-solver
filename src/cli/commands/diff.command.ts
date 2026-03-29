@@ -1,13 +1,13 @@
 import { boolean, command, flag, positional, string } from 'cmd-ts';
-import { runDiff as runDiffDefault } from '#core/diff-runner';
-import { safeRun as safeRunDefault } from '#core/errors';
+import type { RunDiff } from '#core/diff-runner';
+import type { safeRun as safeRunDefault } from '#core/errors';
 
-type DiffCommandDeps = {
-  runDiff: typeof runDiffDefault;
+export type DiffCommandDeps = {
+  runDiff: RunDiff;
   safeRun: typeof safeRunDefault;
 };
 
-export function createDiffCommand(deps: DiffCommandDeps = { runDiff: runDiffDefault, safeRun: safeRunDefault }) {
+export function createDiffCommand(deps: DiffCommandDeps) {
   return command({
     name: 'diff',
     description: 'Compare structured data between two URLs',
@@ -43,5 +43,3 @@ export function createDiffCommand(deps: DiffCommandDeps = { runDiff: runDiffDefa
       }),
   });
 }
-
-export const diffCommand = createDiffCommand();

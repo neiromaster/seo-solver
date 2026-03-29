@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import ansis from 'ansis';
 import type { Schema } from '#types';
-import { compareJsonLd } from './jsonld.comparer';
+import { buildJsonLdComparisonLines, compareJsonLd } from './jsonld.comparer';
 
 function stripAnsi(str: string): string {
   return ansis.strip(str);
@@ -217,5 +217,29 @@ describe('compareJsonLd — null values', () => {
     expect(out).toContain('description');
     expect(out).toContain('null');
     expect(out).toContain('Has desc');
+  });
+});
+
+describe('buildJsonLdComparisonLines', () => {
+  test('returns no lines for two empty arrays', () => {
+    expect(buildJsonLdComparisonLines([], []).map(stripAnsi)).toEqual([]);
+  });
+
+  test('returns identical report lines as pure data', () => {
+    const lines = buildJsonLdComparisonLines([article1], [{ ...article1 }]).map(stripAnsi);
+
+    expect(lines).toContain('✓ Article — identical (1)\n');
+  });
+
+  test('returns changed field lines without logging', () => {
+    const lines = buildJsonLdComparisonLines(
+      [{ '@type': 'Article', name: 'Old' }],
+      [{ '@type': 'Article', name: 'New' }],
+    ).map(stripAnsi);
+
+    expect(lines).toContain('~ Article (1 vs 1)');
+    expect(lines).toContain('  name');
+    expect(lines).toContain('    - Old');
+    expect(lines).toContain('    + New');
   });
 });

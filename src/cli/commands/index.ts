@@ -1,2 +1,2 @@
-export { diffCommand } from './diff.command';
-export { validateCommand } from './validate.command';
+export { createDiffCommand, type DiffCommandDeps } from './diff.command';
+export { createValidateCommand, type ValidateCommandDeps } from './validate.command';

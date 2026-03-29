@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 import ansis from 'ansis';
-import { printFlatDiff } from './console.formatter';
+import { buildFlatDiffLines, printFlatDiff } from './console.formatter';
 
 type LogSpy = ReturnType<typeof spyOn<typeof console, 'log'>>;
 
@@ -179,5 +179,26 @@ describe('printFlatDiff', () => {
       expect(logs.some((l) => l.includes('- removed: gone'))).toBe(true);
       expect(logs.some((l) => l.includes('+ added: here'))).toBe(true);
     });
+  });
+});
+
+describe('buildFlatDiffLines', () => {
+  test('returns a single identical line for identical data', () => {
+    const lines = buildFlatDiffLines({ title: 'Hello' }, { title: 'Hello' }).map(ansis.strip);
+
+    expect(lines).toEqual(['✓ identical\n']);
+  });
+
+  test('returns changed, removed, added and trailing blank entries as pure data', () => {
+    const lines = buildFlatDiffLines({ title: 'Old', removed: 'gone' }, { title: 'New', added: 'here' }).map(
+      ansis.strip,
+    );
+
+    expect(lines).toContain('  title');
+    expect(lines).toContain('    - Old');
+    expect(lines).toContain('    + New');
+    expect(lines).toContain('  - removed: gone');
+    expect(lines).toContain('  + added: here');
+    expect(lines.at(-1)).toBe('');
   });
 });

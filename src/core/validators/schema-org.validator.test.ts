@@ -3,12 +3,23 @@ import ansis from 'ansis';
 import type { ValidationIssue } from '#types';
 import {
   validateSchemas as actualValidateSchemas,
+  buildValidationReport,
+  groupSchemasByType,
+  groupValidationIssues,
   loadDefaultValidatorModule,
+  renderValidationReportLines,
   type ValidateSchemasDeps,
 } from './schema-org.validator';
 
 const mockValidate = mock(async () => [] as ValidationIssue[]);
 let validateSchemas: typeof actualValidateSchemas;
+let mockFetchImpl: FetchImpl;
+const mockLoadValidatorModule = mock(async () => ({
+  default: class MockValidator {
+    debug = false;
+    validate = mockValidate;
+  },
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,17 +65,18 @@ describe('validateSchemas', () => {
   beforeEach(() => {
     logSpy = spyOn(console, 'log').mockImplementation(() => {});
     mockValidate.mockReset();
-    const fetchImpl = createMockFetch();
+    mockLoadValidatorModule.mockReset();
+    mockLoadValidatorModule.mockResolvedValue({
+      default: class MockValidator {
+        debug = false;
+        validate = mockValidate;
+      },
+    });
+    mockFetchImpl = createMockFetch();
 
     const deps: ValidateSchemasDeps = {
-      fetchImpl,
-      loadValidatorModule: async () => ({
-        default: class MockValidator {
-          debug = false;
-          constructor(_schemaOrgJson: unknown) {}
-          validate = mockValidate;
-        },
-      }),
+      fetchImpl: mockFetchImpl,
+      loadValidatorModule: mockLoadValidatorModule,
     };
 
     validateSchemas = (schemas) => actualValidateSchemas(schemas, deps);
@@ -87,6 +99,19 @@ describe('validateSchemas', () => {
       // Assert
       expect(logSpy.mock.calls).toHaveLength(1);
       expect(strippedOutput(logSpy)).toContain('No validation errors found');
+    });
+
+    test('fetches schema.org data and loads the validator module once', async () => {
+      // Arrange
+      mockValidate.mockResolvedValue([]);
+
+      // Act
+      await validateSchemas([{ '@type': 'Article' }]);
+
+      // Assert
+      expect(mockFetchImpl).toHaveBeenCalledTimes(1);
+      expect(mockFetchImpl).toHaveBeenCalledWith('https://schema.org/version/latest/schemaorg-all-https.jsonld');
+      expect(mockLoadValidatorModule).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -321,5 +346,51 @@ describe('loadDefaultValidatorModule', () => {
 
     // Assert
     expect(validatorModule.default).toBeDefined();
+  });
+});
+
+describe('groupSchemasByType', () => {
+  test('groups schemas by @type and falls back to undefined', () => {
+    const grouped = groupSchemasByType([{ '@type': 'Article' }, { '@type': 'Article' }, { name: 'No type' }]);
+
+    expect(grouped.Article).toHaveLength(2);
+    expect(grouped.undefined).toHaveLength(1);
+  });
+});
+
+describe('groupValidationIssues', () => {
+  test('builds schemaKey and contextPath without side effects', () => {
+    const grouped = groupValidationIssues([
+      makeIssue('ERROR', [
+        { type: 'Article', index: 0 },
+        { type: 'author', index: 1 },
+      ]),
+    ]);
+
+    expect(grouped.get('Article[1]')?.[0]?.contextPath).toBe('author[2]');
+  });
+});
+
+describe('buildValidationReport / renderValidationReportLines', () => {
+  test('returns success report with one success line when there are no issues', () => {
+    const report = buildValidationReport([]);
+
+    expect(report.success).toBe(true);
+    expect(renderValidationReportLines(report).map(ansis.strip)).toEqual(['✓ No validation errors found\n']);
+  });
+
+  test('returns grouped error and warning sections as pure renderable lines', () => {
+    const report = buildValidationReport([
+      makeIssue('ERROR', [{ type: 'Article', index: 0 }], ['name'], 'Bad name'),
+      makeIssue('WARNING', [{ type: 'Article', index: 0 }], ['description'], 'Weak description'),
+    ]);
+    const lines = renderValidationReportLines(report).map(ansis.strip);
+
+    expect(report.success).toBe(false);
+    expect(lines).toContain('ERRORS (1):\n');
+    expect(lines).toContain('WARNINGS (1):\n');
+    expect(lines).toContain('  Article[1]');
+    expect(lines).toContain('      Bad name');
+    expect(lines).toContain('      Weak description');
   });
 });

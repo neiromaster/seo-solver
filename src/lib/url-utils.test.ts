@@ -106,7 +106,7 @@ describe('urlSlug', () => {
 
     test('truncates result to 100 characters', () => {
       // Arrange
-      const url = 'a'.repeat(50) + '/' + 'b'.repeat(60); // 111 chars after replace → 111 chars, truncated to 100
+      const url = `${'a'.repeat(50)}/${'b'.repeat(60)}`; // 111 chars after replace → 111 chars, truncated to 100
 
       // Act
       const result = urlSlug(url);

@@ -1,26 +1,11 @@
 import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
-import { type Browser, chromium } from 'playwright';
 import type { OgData, Schema } from '#types';
-import {
-  runValidate as actualRunValidate,
-  launchDefaultValidateBrowser,
-  type ValidateOptions,
-  type ValidateRunnerDeps,
-} from './validate-runner';
+import { type CreateRunValidateDeps, createRunValidate, type ValidateOptions } from './validate-runner';
 
-const mockFetchHtmlCurl = mock(() => '<html/>');
+const mockReadOg = mock(async () => ({}) as OgData);
+const mockReadSchemas = mock(async () => [] as Schema[]);
 
-const mockExtractOgBrowser = mock(async () => ({}) as OgData);
-const mockExtractSchemasBrowser = mock(async () => [] as Schema[]);
-
-const mockExtractOgFromHtml = mock((): OgData => ({}));
-const mockExtractSchemasFromHtml = mock((): Schema[] => []);
-
-const mockValidateSchemas = mock(async () => undefined);
-
-const mockBrowserClose = mock(async () => undefined);
-const mockBrowser = { close: mockBrowserClose } as unknown as Browser;
-const mockChromiumLaunch = mock(async () => mockBrowser);
+const mockSchemaValidatorValidate = mock(async () => undefined);
 let runValidate: (url: string, options: ValidateOptions) => Promise<void>;
 
 // ── fixtures ──────────────────────────────────────────────────────────────────
@@ -28,6 +13,15 @@ let runValidate: (url: string, options: ValidateOptions) => Promise<void>;
 const URL = 'https://example.com';
 const OG_DATA: OgData = { 'og:title': 'Page' };
 const SCHEMAS: Schema[] = [{ '@type': 'Article', name: 'Test' }];
+
+function stripAnsi(value: string): string {
+  return value
+    .replaceAll('\u001B[36m', '')
+    .replaceAll('\u001B[39m', '')
+    .replaceAll('\u001B[1m', '')
+    .replaceAll('\u001B[22m', '')
+    .replaceAll('\u001B[33m', '');
+}
 
 // ── suite ─────────────────────────────────────────────────────────────────────
 
@@ -37,35 +31,26 @@ describe('runValidate', () => {
   beforeEach(() => {
     logSpy = spyOn(console, 'log').mockImplementation(() => {});
 
-    mockFetchHtmlCurl.mockReset();
-    mockExtractOgBrowser.mockReset();
-    mockExtractSchemasBrowser.mockReset();
-    mockExtractOgFromHtml.mockReset();
-    mockExtractSchemasFromHtml.mockReset();
-    mockValidateSchemas.mockReset();
-    mockBrowserClose.mockReset();
-    mockChromiumLaunch.mockReset();
+    mockReadOg.mockReset();
+    mockReadSchemas.mockReset();
+    mockSchemaValidatorValidate.mockReset();
 
-    mockFetchHtmlCurl.mockReturnValue('<html/>');
-    mockExtractOgFromHtml.mockReturnValue(OG_DATA);
-    mockExtractSchemasFromHtml.mockReturnValue(SCHEMAS);
-    mockExtractOgBrowser.mockResolvedValue(OG_DATA);
-    mockExtractSchemasBrowser.mockResolvedValue(SCHEMAS);
-    mockValidateSchemas.mockResolvedValue(undefined);
-    mockBrowserClose.mockResolvedValue(undefined);
-    mockChromiumLaunch.mockResolvedValue(mockBrowser);
+    mockReadOg.mockResolvedValue(OG_DATA);
+    mockReadSchemas.mockResolvedValue(SCHEMAS);
+    mockSchemaValidatorValidate.mockResolvedValue(undefined);
 
-    const deps: ValidateRunnerDeps = {
-      fetchHtmlCurl: mockFetchHtmlCurl,
-      extractOgBrowser: mockExtractOgBrowser,
-      extractSchemasBrowser: mockExtractSchemasBrowser,
-      extractOgFromHtml: mockExtractOgFromHtml,
-      extractSchemasFromHtml: mockExtractSchemasFromHtml,
-      validateSchemas: mockValidateSchemas,
-      launchBrowser: mockChromiumLaunch,
+    const deps: CreateRunValidateDeps = {
+      metadataReader: {
+        readOg: mockReadOg,
+        readSchemas: mockReadSchemas,
+      },
+      schemaValidator: {
+        validate: mockSchemaValidatorValidate,
+      },
+      log: console,
     };
 
-    runValidate = (url, options) => actualRunValidate(url, options, deps);
+    runValidate = createRunValidate(deps);
   });
 
   afterEach(() => {
@@ -83,7 +68,7 @@ describe('runValidate', () => {
       await runValidate(url, { useCurl: true, useOg: true });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledWith('https://example.com');
+      expect(mockReadOg).toHaveBeenCalledWith('https://example.com', 'curl');
     });
 
     test('passes URL unchanged when it already has http:// scheme', async () => {
@@ -94,7 +79,7 @@ describe('runValidate', () => {
       await runValidate(url, { useCurl: true, useOg: true });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledWith('http://example.com');
+      expect(mockReadOg).toHaveBeenCalledWith('http://example.com', 'curl');
     });
 
     test('prepends https:// when URL has no scheme', async () => {
@@ -105,7 +90,7 @@ describe('runValidate', () => {
       await runValidate(url, { useCurl: true, useOg: true });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledWith('https://example.com');
+      expect(mockReadOg).toHaveBeenCalledWith('https://example.com', 'curl');
     });
 
     test('scheme check is case-insensitive', async () => {
@@ -116,7 +101,7 @@ describe('runValidate', () => {
       await runValidate(url, { useCurl: true, useOg: true });
 
       // Assert — passed through unchanged because regex /^https?:\/\//i matched
-      expect(mockFetchHtmlCurl).toHaveBeenCalledWith('HTTPS://example.com');
+      expect(mockReadOg).toHaveBeenCalledWith('HTTPS://example.com', 'curl');
     });
   });
 
@@ -130,9 +115,8 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: true, useOg: true });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledTimes(1);
-      expect(mockExtractOgFromHtml).toHaveBeenCalledTimes(1);
-      expect(mockExtractSchemasFromHtml).not.toHaveBeenCalled();
+      expect(mockReadOg).toHaveBeenCalledTimes(1);
+      expect(mockReadSchemas).not.toHaveBeenCalled();
     });
 
     test('logs "OpenGraph validation not supported" instead of running validator', async () => {
@@ -142,9 +126,22 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: true, useOg: true });
 
       // Assert
-      expect(mockValidateSchemas).not.toHaveBeenCalled();
+      expect(mockSchemaValidatorValidate).not.toHaveBeenCalled();
       const allOutput = logSpy.mock.calls.map((c) => String(c[0])).join('\n');
       expect(allOutput).toContain('not supported');
+    });
+
+    test('logs mode banner and normalized URL summary', async () => {
+      // Arrange
+      const url = 'example.com';
+
+      // Act
+      await runValidate(url, { useCurl: true, useOg: true });
+
+      // Assert
+      const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
+      expect(output).toContain('Validating OpenGraph (curl/SSR)');
+      expect(output).toContain('URL: https://example.com → 1 tag(s)');
     });
   });
 
@@ -158,9 +155,8 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: true, useOg: false });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledTimes(1);
-      expect(mockExtractSchemasFromHtml).toHaveBeenCalledTimes(1);
-      expect(mockExtractOgFromHtml).not.toHaveBeenCalled();
+      expect(mockReadSchemas).toHaveBeenCalledTimes(1);
+      expect(mockReadOg).not.toHaveBeenCalled();
     });
 
     test('calls validateSchemas with extracted schemas', async () => {
@@ -170,8 +166,8 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: true, useOg: false });
 
       // Assert
-      expect(mockValidateSchemas).toHaveBeenCalledTimes(1);
-      expect(mockValidateSchemas).toHaveBeenCalledWith(SCHEMAS);
+      expect(mockSchemaValidatorValidate).toHaveBeenCalledTimes(1);
+      expect(mockSchemaValidatorValidate).toHaveBeenCalledWith(SCHEMAS);
     });
   });
 
@@ -185,9 +181,9 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: false, useOg: true });
 
       // Assert
-      expect(mockChromiumLaunch).toHaveBeenCalledTimes(1);
-      expect(mockExtractOgBrowser).toHaveBeenCalledTimes(1);
-      expect(mockExtractSchemasBrowser).not.toHaveBeenCalled();
+      expect(mockReadOg).toHaveBeenCalledTimes(1);
+      expect(mockReadOg).toHaveBeenCalledWith(URL, 'browser');
+      expect(mockReadSchemas).not.toHaveBeenCalled();
     });
 
     test('does not validate schemas for OG mode', async () => {
@@ -197,28 +193,24 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: false, useOg: true });
 
       // Assert
-      expect(mockValidateSchemas).not.toHaveBeenCalled();
+      expect(mockSchemaValidatorValidate).not.toHaveBeenCalled();
     });
 
-    test('closes browser after successful extraction', async () => {
+    test('propagates metadataReader OG failures', async () => {
+      // Arrange
+      mockReadOg.mockRejectedValue(new Error('page load failed'));
+
+      await expect(runValidate(URL, { useCurl: false, useOg: true })).rejects.toThrow('page load failed');
+    });
+
+    test('does not fetch SSR HTML in browser mode', async () => {
       // Arrange — defaults in beforeEach
 
       // Act
       await runValidate(URL, { useCurl: false, useOg: true });
 
       // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
-    });
-
-    test('closes browser even when extraction throws', async () => {
-      // Arrange
-      mockExtractOgBrowser.mockRejectedValue(new Error('page load failed'));
-
-      // Act
-      await runValidate(URL, { useCurl: false, useOg: true }).catch(() => {});
-
-      // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
+      expect(mockReadSchemas).not.toHaveBeenCalled();
     });
   });
 
@@ -232,8 +224,8 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: false, useOg: false });
 
       // Assert
-      expect(mockExtractSchemasBrowser).toHaveBeenCalledTimes(1);
-      expect(mockExtractOgBrowser).not.toHaveBeenCalled();
+      expect(mockReadSchemas).toHaveBeenCalledTimes(1);
+      expect(mockReadOg).not.toHaveBeenCalled();
     });
 
     test('calls validateSchemas with browser-extracted schemas', async () => {
@@ -243,47 +235,14 @@ describe('runValidate', () => {
       await runValidate(URL, { useCurl: false, useOg: false });
 
       // Assert
-      expect(mockValidateSchemas).toHaveBeenCalledTimes(1);
+      expect(mockSchemaValidatorValidate).toHaveBeenCalledTimes(1);
     });
 
-    test('closes browser after successful extraction', async () => {
-      // Arrange — defaults in beforeEach
-
-      // Act
-      await runValidate(URL, { useCurl: false, useOg: false });
-
-      // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
-    });
-
-    test('closes browser even when extraction throws', async () => {
+    test('propagates metadataReader schema failures', async () => {
       // Arrange
-      mockExtractSchemasBrowser.mockRejectedValue(new Error('navigation failed'));
+      mockReadSchemas.mockRejectedValue(new Error('navigation failed'));
 
-      // Act
-      await runValidate(URL, { useCurl: false, useOg: false }).catch(() => {});
-
-      // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
+      await expect(runValidate(URL, { useCurl: false, useOg: false })).rejects.toThrow('navigation failed');
     });
-  });
-});
-
-describe('launchDefaultValidateBrowser', () => {
-  test('delegates to chromium.launch', async () => {
-    // Arrange
-    const browser = {} as Browser;
-    const launchSpy = spyOn(chromium, 'launch').mockResolvedValue(browser);
-
-    try {
-      // Act
-      const result = await launchDefaultValidateBrowser();
-
-      // Assert
-      expect(result).toBe(browser);
-      expect(launchSpy).toHaveBeenCalledTimes(1);
-    } finally {
-      launchSpy.mockRestore();
-    }
   });
 });

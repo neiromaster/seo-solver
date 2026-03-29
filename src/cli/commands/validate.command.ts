@@ -1,16 +1,14 @@
 import { boolean, command, flag, positional, string } from 'cmd-ts';
 
-import { safeRun as safeRunDefault } from '#core/errors';
-import { runValidate as runValidateDefault } from '#core/validate-runner';
+import type { safeRun as safeRunDefault } from '#core/errors';
+import type { RunValidate } from '#core/validate-runner';
 
-type ValidateCommandDeps = {
-  runValidate: typeof runValidateDefault;
+export type ValidateCommandDeps = {
+  runValidate: RunValidate;
   safeRun: typeof safeRunDefault;
 };
 
-export function createValidateCommand(
-  deps: ValidateCommandDeps = { runValidate: runValidateDefault, safeRun: safeRunDefault },
-) {
+export function createValidateCommand(deps: ValidateCommandDeps) {
   return command({
     name: 'validate',
     description: 'Validate structured data on a single URL',
@@ -38,5 +36,3 @@ export function createValidateCommand(
       }),
   });
 }
-
-export const validateCommand = createValidateCommand();

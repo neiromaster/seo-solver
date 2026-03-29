@@ -5,10 +5,6 @@ import { AppError } from './AppError';
 class TestError extends AppError {
   readonly exitCode = 1;
   readonly userMessage = 'test error message';
-
-  constructor(message: string, cause?: unknown) {
-    super(message, cause);
-  }
 }
 
 function strip(str: string): string {

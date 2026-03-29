@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import ansis from 'ansis';
-import { compareOg } from './opengraph.comparer';
+import { buildOgComparisonLines, compareOg } from './opengraph.comparer';
 
 function stripAnsi(str: string): string {
   return ansis.strip(str);
@@ -91,5 +91,20 @@ describe('compareOg', () => {
   test('does not show no-tags message when one side has data', () => {
     compareOg({}, { 'og:title': 'T' });
     expect(output()).not.toContain('No OpenGraph tags found');
+  });
+});
+
+describe('buildOgComparisonLines', () => {
+  test('returns the no-tags message as pure output when both sides are empty', () => {
+    expect(buildOgComparisonLines({}, {}).map(stripAnsi)).toEqual(['No OpenGraph tags found\n']);
+  });
+
+  test('returns diff lines without logging', () => {
+    const lines = buildOgComparisonLines({ 'og:title': 'Old' }, { 'og:title': 'New' }).map(stripAnsi);
+
+    expect(lines).toContain('  og:title');
+    expect(lines).toContain('    - Old');
+    expect(lines).toContain('    + New');
+    expect(lines.at(-1)).toBe('');
   });
 });

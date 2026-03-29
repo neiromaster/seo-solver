@@ -1,30 +1,15 @@
 import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
-import { type Browser, chromium } from 'playwright';
 import type { OgData, Schema } from '#types';
-import {
-  runDiff as actualRunDiff,
-  type DiffOptions,
-  type DiffRunnerDeps,
-  launchDefaultDiffBrowser,
-} from './diff-runner';
+import { type CreateRunDiffDeps, createRunDiff, type DiffOptions } from './diff-runner';
 
-const mockFetchHtmlCurl = mock(() => '<html/>');
-
-const mockExtractOgBrowser = mock(async () => ({}) as OgData);
-const mockExtractSchemasBrowser = mock(async () => [] as Schema[]);
-
-const mockExtractOgFromHtml = mock((): OgData => ({}));
-const mockExtractSchemasFromHtml = mock((): Schema[] => []);
+const mockReadOg = mock(async () => ({}) as OgData);
+const mockReadSchemas = mock(async () => [] as Schema[]);
 
 const mockCompareOg = mock(() => {});
 const mockCompareJsonLd = mock(() => {});
 
-const mockFormatSchemasForDiff = mock((): string => '[]');
-const mockOpenVscodeDiff = mock(() => {});
-
-const mockBrowserClose = mock(async () => undefined);
-const mockBrowser = { close: mockBrowserClose } as unknown as Browser;
-const mockChromiumLaunch = mock(async () => mockBrowser);
+const mockOpenOgDiff = mock(() => undefined);
+const mockOpenSchemasDiff = mock(() => undefined);
 let runDiff: (url1: string, url2: string, options: DiffOptions) => Promise<void>;
 
 // ── fixtures ──────────────────────────────────────────────────────────────────
@@ -33,6 +18,14 @@ const URL1 = 'https://example.com';
 const URL2 = 'https://other.com';
 const OG_DATA: OgData = { 'og:title': 'Page One' };
 const SCHEMAS: Schema[] = [{ '@type': 'Article', name: 'Test' }];
+
+function stripAnsi(value: string): string {
+  return value
+    .replaceAll('\u001B[36m', '')
+    .replaceAll('\u001B[39m', '')
+    .replaceAll('\u001B[1m', '')
+    .replaceAll('\u001B[22m', '');
+}
 
 // ── suite ─────────────────────────────────────────────────────────────────────
 
@@ -43,41 +36,31 @@ describe('runDiff', () => {
     logSpy = spyOn(console, 'log').mockImplementation(() => {});
 
     // Reset all mocks and restore sensible defaults
-    mockFetchHtmlCurl.mockReset();
-    mockExtractOgBrowser.mockReset();
-    mockExtractSchemasBrowser.mockReset();
-    mockExtractOgFromHtml.mockReset();
-    mockExtractSchemasFromHtml.mockReset();
+    mockReadOg.mockReset();
+    mockReadSchemas.mockReset();
     mockCompareOg.mockReset();
     mockCompareJsonLd.mockReset();
-    mockFormatSchemasForDiff.mockReset();
-    mockOpenVscodeDiff.mockReset();
-    mockBrowserClose.mockReset();
-    mockChromiumLaunch.mockReset();
+    mockOpenOgDiff.mockReset();
+    mockOpenSchemasDiff.mockReset();
 
-    mockFetchHtmlCurl.mockReturnValue('<html/>');
-    mockExtractOgFromHtml.mockReturnValue(OG_DATA);
-    mockExtractSchemasFromHtml.mockReturnValue(SCHEMAS);
-    mockExtractOgBrowser.mockResolvedValue(OG_DATA);
-    mockExtractSchemasBrowser.mockResolvedValue(SCHEMAS);
-    mockFormatSchemasForDiff.mockReturnValue('[{"@type":"Article"}]');
-    mockBrowserClose.mockResolvedValue(undefined);
-    mockChromiumLaunch.mockResolvedValue(mockBrowser);
+    mockReadOg.mockResolvedValue(OG_DATA);
+    mockReadSchemas.mockResolvedValue(SCHEMAS);
 
-    const deps: DiffRunnerDeps = {
-      fetchHtmlCurl: mockFetchHtmlCurl,
-      extractOgBrowser: mockExtractOgBrowser,
-      extractSchemasBrowser: mockExtractSchemasBrowser,
-      extractOgFromHtml: mockExtractOgFromHtml,
-      extractSchemasFromHtml: mockExtractSchemasFromHtml,
+    const deps: CreateRunDiffDeps = {
+      metadataReader: {
+        readOg: mockReadOg,
+        readSchemas: mockReadSchemas,
+      },
+      diffViewer: {
+        openOgDiff: mockOpenOgDiff,
+        openSchemasDiff: mockOpenSchemasDiff,
+      },
+      log: console,
       compareOg: mockCompareOg,
       compareJsonLd: mockCompareJsonLd,
-      formatSchemasForDiff: mockFormatSchemasForDiff,
-      openVscodeDiff: mockOpenVscodeDiff,
-      launchBrowser: mockChromiumLaunch,
     };
 
-    runDiff = (url1, url2, options) => actualRunDiff(url1, url2, options, deps);
+    runDiff = createRunDiff(deps);
   });
 
   afterEach(() => {
@@ -94,9 +77,9 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: false });
 
       // Assert
-      expect(mockFetchHtmlCurl).toHaveBeenCalledTimes(2);
-      expect(mockFetchHtmlCurl).toHaveBeenNthCalledWith(1, URL1);
-      expect(mockFetchHtmlCurl).toHaveBeenNthCalledWith(2, URL2);
+      expect(mockReadOg).toHaveBeenCalledTimes(2);
+      expect(mockReadOg).toHaveBeenNthCalledWith(1, URL1, 'curl');
+      expect(mockReadOg).toHaveBeenNthCalledWith(2, URL2, 'curl');
     });
 
     test('extracts OG data from both HTML responses', async () => {
@@ -106,8 +89,8 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: false });
 
       // Assert
-      expect(mockExtractOgFromHtml).toHaveBeenCalledTimes(2);
-      expect(mockExtractSchemasFromHtml).not.toHaveBeenCalled();
+      expect(mockReadOg).toHaveBeenCalledTimes(2);
+      expect(mockReadSchemas).not.toHaveBeenCalled();
     });
 
     test('calls compareOg with the extracted data', async () => {
@@ -128,7 +111,20 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: false });
 
       // Assert
-      expect(mockOpenVscodeDiff).not.toHaveBeenCalled();
+      expect(mockOpenOgDiff).not.toHaveBeenCalled();
+    });
+
+    test('logs mode banner and per-url tag counts', async () => {
+      // Arrange — defaults in beforeEach
+
+      // Act
+      await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: false });
+
+      // Assert
+      const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
+      expect(output).toContain('Fetching OpenGraph metadata (curl/SSR)');
+      expect(output).toContain(`URL1: ${URL1} → 1 tag(s)`);
+      expect(output).toContain(`URL2: ${URL2} → 1 tag(s)`);
     });
   });
 
@@ -142,8 +138,8 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: false, vscodeDiff: false });
 
       // Assert
-      expect(mockExtractSchemasFromHtml).toHaveBeenCalledTimes(2);
-      expect(mockExtractOgFromHtml).not.toHaveBeenCalled();
+      expect(mockReadSchemas).toHaveBeenCalledTimes(2);
+      expect(mockReadOg).not.toHaveBeenCalled();
     });
 
     test('calls compareJsonLd with extracted schemas', async () => {
@@ -168,8 +164,9 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: false, useOg: true, vscodeDiff: false });
 
       // Assert
-      expect(mockChromiumLaunch).toHaveBeenCalledTimes(1);
-      expect(mockExtractOgBrowser).toHaveBeenCalledTimes(2);
+      expect(mockReadOg).toHaveBeenCalledTimes(2);
+      expect(mockReadOg).toHaveBeenNthCalledWith(1, URL1, 'browser');
+      expect(mockReadOg).toHaveBeenNthCalledWith(2, URL2, 'browser');
     });
 
     test('calls compareOg with browser-extracted data', async () => {
@@ -182,25 +179,23 @@ describe('runDiff', () => {
       expect(mockCompareOg).toHaveBeenCalledTimes(1);
     });
 
-    test('closes browser after successful extraction', async () => {
+    test('propagates readOg failures from metadataReader', async () => {
+      // Arrange
+      mockReadOg.mockRejectedValue(new Error('navigation failed'));
+
+      await expect(runDiff(URL1, URL2, { useCurl: false, useOg: true, vscodeDiff: false })).rejects.toThrow(
+        'navigation failed',
+      );
+    });
+
+    test('does not fetch SSR HTML in browser mode', async () => {
       // Arrange — defaults in beforeEach
 
       // Act
       await runDiff(URL1, URL2, { useCurl: false, useOg: true, vscodeDiff: false });
 
       // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
-    });
-
-    test('closes browser even when extraction throws', async () => {
-      // Arrange
-      mockExtractOgBrowser.mockRejectedValue(new Error('navigation failed'));
-
-      // Act
-      await runDiff(URL1, URL2, { useCurl: false, useOg: true, vscodeDiff: false }).catch(() => {});
-
-      // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
+      expect(mockReadSchemas).not.toHaveBeenCalled();
     });
   });
 
@@ -214,18 +209,16 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: false, useOg: false, vscodeDiff: false });
 
       // Assert
-      expect(mockExtractSchemasBrowser).toHaveBeenCalledTimes(2);
+      expect(mockReadSchemas).toHaveBeenCalledTimes(2);
       expect(mockCompareJsonLd).toHaveBeenCalledTimes(1);
     });
 
-    test('closes browser after successful extraction', async () => {
-      // Arrange — defaults in beforeEach
+    test('propagates readSchemas failures from metadataReader', async () => {
+      mockReadSchemas.mockRejectedValue(new Error('schema read failed'));
 
-      // Act
-      await runDiff(URL1, URL2, { useCurl: false, useOg: false, vscodeDiff: false });
-
-      // Assert
-      expect(mockBrowserClose).toHaveBeenCalledTimes(1);
+      await expect(runDiff(URL1, URL2, { useCurl: false, useOg: false, vscodeDiff: false })).rejects.toThrow(
+        'schema read failed',
+      );
     });
   });
 
@@ -239,18 +232,8 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: true });
 
       // Assert
-      expect(mockOpenVscodeDiff).toHaveBeenCalledTimes(1);
-      expect(mockOpenVscodeDiff).toHaveBeenCalledWith(expect.any(String), expect.any(String), 'og', URL1, URL2);
-    });
-
-    test('does not call formatSchemasForDiff for OG diff', async () => {
-      // Arrange — defaults in beforeEach
-
-      // Act
-      await runDiff(URL1, URL2, { useCurl: true, useOg: true, vscodeDiff: true });
-
-      // Assert
-      expect(mockFormatSchemasForDiff).not.toHaveBeenCalled();
+      expect(mockOpenOgDiff).toHaveBeenCalledTimes(1);
+      expect(mockOpenOgDiff).toHaveBeenCalledWith(OG_DATA, OG_DATA, { url1: URL1, url2: URL2 });
     });
   });
 
@@ -262,37 +245,8 @@ describe('runDiff', () => {
       await runDiff(URL1, URL2, { useCurl: true, useOg: false, vscodeDiff: true });
 
       // Assert
-      expect(mockFormatSchemasForDiff).toHaveBeenCalledTimes(2);
+      expect(mockOpenSchemasDiff).toHaveBeenCalledTimes(1);
+      expect(mockOpenSchemasDiff).toHaveBeenCalledWith(SCHEMAS, SCHEMAS, { url1: URL1, url2: URL2 });
     });
-
-    test('calls openVscodeDiff with "schema" prefix', async () => {
-      // Arrange — defaults in beforeEach
-
-      // Act
-      await runDiff(URL1, URL2, { useCurl: true, useOg: false, vscodeDiff: true });
-
-      // Assert
-      expect(mockOpenVscodeDiff).toHaveBeenCalledTimes(1);
-      expect(mockOpenVscodeDiff).toHaveBeenCalledWith(expect.any(String), expect.any(String), 'schema', URL1, URL2);
-    });
-  });
-});
-
-describe('launchDefaultDiffBrowser', () => {
-  test('delegates to chromium.launch', async () => {
-    // Arrange
-    const browser = {} as Browser;
-    const launchSpy = spyOn(chromium, 'launch').mockResolvedValue(browser);
-
-    try {
-      // Act
-      const result = await launchDefaultDiffBrowser();
-
-      // Assert
-      expect(result).toBe(browser);
-      expect(launchSpy).toHaveBeenCalledTimes(1);
-    } finally {
-      launchSpy.mockRestore();
-    }
   });
 });
