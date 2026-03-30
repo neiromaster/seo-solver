@@ -7,10 +7,10 @@ function strip(str: string): string {
 }
 
 describe('PlaywrightRuntimeUnavailableError', () => {
-  test('suggests --curl fallback', () => {
+  test('suggests --fetcher curl fallback', () => {
     const error = new PlaywrightRuntimeUnavailableError();
 
-    expect(strip(error.format())).toContain('--curl');
+    expect(strip(error.format())).toContain('--fetcher curl');
   });
 
   test('does not include raw missing-runtime Playwright launch message', () => {

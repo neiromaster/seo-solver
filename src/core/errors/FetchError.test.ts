@@ -63,7 +63,7 @@ describe('FetchError', () => {
       // Assert
       const stripped = strip(result);
       expect(stripped).toContain('Error fetching https://example.com (curl)');
-      expect(stripped).toContain('without --curl');
+      expect(stripped).toContain('--fetcher chrome');
     });
 
     test('composes userMessage with suggestion for playwright', () => {
@@ -76,7 +76,18 @@ describe('FetchError', () => {
       // Assert
       const stripped = strip(result);
       expect(stripped).toContain('Error fetching https://example.com (playwright)');
-      expect(stripped).toContain('--curl');
+      expect(stripped).toContain('--fetcher curl');
+    });
+
+    test('composes userMessage with suggestion for basic', () => {
+      const error = new FetchError('test', 'https://example.com', 'basic');
+
+      const result = error.format();
+
+      const stripped = strip(result);
+      expect(stripped).toContain('Error fetching https://example.com (basic)');
+      expect(stripped).toContain('--fetcher chrome');
+      expect(stripped).toContain('--fetcher curl');
     });
 
     test('includes cause message when cause has different message', () => {

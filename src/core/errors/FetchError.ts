@@ -8,7 +8,7 @@ export class FetchError extends AppError {
   constructor(
     message: string,
     public readonly url: string,
-    public readonly fetchMethod: 'curl' | 'playwright',
+    public readonly fetchMethod: 'basic' | 'curl' | 'playwright',
     cause?: unknown,
   ) {
     super(message, cause);
@@ -16,9 +16,15 @@ export class FetchError extends AppError {
   }
 
   private getSuggestion(): string {
-    return this.fetchMethod === 'playwright'
-      ? `\n  Try ${yellow`--curl`} flag to use raw HTML fetching`
-      : `\n  Try without ${yellow`--curl`} flag to use browser`;
+    if (this.fetchMethod === 'playwright') {
+      return `\n  Try ${yellow`--fetcher curl`} to use raw HTML fetching`;
+    }
+
+    if (this.fetchMethod === 'curl') {
+      return `\n  Try ${yellow`--fetcher chrome`} to use browser fetching`;
+    }
+
+    return `\n  Try ${yellow`--fetcher chrome`} or ${yellow`--fetcher curl`} to use an alternate fetcher`;
   }
 
   override format(): string {

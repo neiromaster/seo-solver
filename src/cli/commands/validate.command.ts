@@ -1,11 +1,14 @@
 import { boolean, command, flag, option, optional, positional, string } from 'cmd-ts';
 
+import { fetcherArgs } from '#cli/fetcher-args';
+import { resolveFetcherOption } from '#cli/fetcher-option';
 import type { safeRun as safeRunDefault } from '#core/errors';
 import type { RunValidate } from '#core/validate-runner';
 
 export type ValidateCommandDeps = {
   runValidate: RunValidate;
   safeRun: typeof safeRunDefault;
+  warn: (message: string) => void;
 };
 
 export function createValidateCommand(deps: ValidateCommandDeps) {
@@ -14,12 +17,7 @@ export function createValidateCommand(deps: ValidateCommandDeps) {
     description: 'Validate structured data on a single URL',
     args: {
       url: positional({ type: string, displayName: 'url' }),
-      curl: flag({
-        type: boolean,
-        long: 'curl',
-        short: 'c',
-        description: 'Use curl for SSR HTML fetching',
-      }),
+      ...fetcherArgs,
       og: flag({
         type: boolean,
         long: 'og',
@@ -33,10 +31,16 @@ export function createValidateCommand(deps: ValidateCommandDeps) {
         description: 'Open extracted metadata in editor',
       }),
     },
-    handler: ({ url, curl, og, editor }) =>
+    handler: ({ url, curl, fetcher, og, editor }) =>
       deps.safeRun(async () => {
+        const resolvedFetcher = resolveFetcherOption({ curl, fetcher });
+
+        if (resolvedFetcher.warning) {
+          deps.warn(resolvedFetcher.warning);
+        }
+
         await deps.runValidate(url, {
-          useCurl: curl,
+          fetcher: resolvedFetcher.fetcher,
           useOg: og,
           editor,
         });

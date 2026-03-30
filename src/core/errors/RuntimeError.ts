@@ -21,7 +21,7 @@ export class PlaywrightRuntimeUnavailableError extends AppError {
       output += `\n\n  ${this.cause.message}`;
     }
 
-    output += `\n\n  Try ${yellow`--curl`} flag to use raw HTML fetching`;
+    output += `\n\n  Try ${yellow`--fetcher curl`} to use raw HTML fetching`;
     return output;
   }
 }

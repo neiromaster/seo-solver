@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
+import type { FetcherConfig } from '#core/services/fetcher-config';
 import type { OgData, Schema } from '#types';
 import { type CreateRunValidateDeps, createRunValidate, type ValidateOptions } from './validate-runner';
 
@@ -13,6 +14,9 @@ let runValidate: (url: string, options: ValidateOptions) => Promise<void>;
 const URL = 'https://example.com';
 const OG_DATA: OgData = { 'og:title': 'Page' };
 const SCHEMAS: Schema[] = [{ '@type': 'Article', name: 'Test' }];
+const CURL_FETCHER: FetcherConfig = { type: 'curl' };
+const BASIC_FETCHER: FetcherConfig = { type: 'basic' };
+const CONNECTED_CHROME_FETCHER: FetcherConfig = { type: 'chrome', mode: 'connect', target: 'localhost:9222' };
 
 function stripAnsi(value: string): string {
   return value
@@ -65,27 +69,27 @@ describe('runValidate', () => {
   });
 
   test('normalizes URL without scheme', async () => {
-    await runValidate('example.com', { useCurl: true, useOg: true });
+    await runValidate('example.com', { fetcher: CURL_FETCHER, useOg: true });
 
-    expect(mockReadOg).toHaveBeenCalledWith('https://example.com', 'curl');
+    expect(mockReadOg).toHaveBeenCalledWith('https://example.com', CURL_FETCHER);
   });
 
   test('validates JSON-LD schemas', async () => {
-    await runValidate(URL, { useCurl: true, useOg: false });
+    await runValidate(URL, { fetcher: CURL_FETCHER, useOg: false });
 
-    expect(mockReadSchemas).toHaveBeenCalledWith(URL, 'curl');
+    expect(mockReadSchemas).toHaveBeenCalledWith(URL, CURL_FETCHER);
     expect(mockSchemaValidatorValidate).toHaveBeenCalledWith(SCHEMAS);
   });
 
   test('reports unsupported OG validation', async () => {
-    await runValidate(URL, { useCurl: true, useOg: true });
+    await runValidate(URL, { fetcher: CURL_FETCHER, useOg: true });
 
     const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
     expect(output).toContain('OpenGraph validation not supported');
   });
 
   test('checks editor availability before fetching when editor is provided', async () => {
-    await runValidate(URL, { useCurl: false, useOg: false, editor: 'cursor' });
+    await runValidate(URL, { fetcher: BASIC_FETCHER, useOg: false, editor: 'cursor' });
 
     expect(mockEnsureEditorAvailable).toHaveBeenCalledWith('cursor');
     expect(mockReadSchemas).toHaveBeenCalled();
@@ -96,29 +100,36 @@ describe('runValidate', () => {
       throw new Error('missing editor');
     });
 
-    await expect(runValidate(URL, { useCurl: true, useOg: false, editor: 'missing' })).rejects.toThrow(
+    await expect(runValidate(URL, { fetcher: CURL_FETCHER, useOg: false, editor: 'missing' })).rejects.toThrow(
       'missing editor',
     );
     expect(mockReadSchemas).not.toHaveBeenCalled();
   });
 
   test('opens extracted schemas in selected editor', async () => {
-    await runValidate(URL, { useCurl: true, useOg: false, editor: 'code' });
+    await runValidate(URL, { fetcher: CURL_FETCHER, useOg: false, editor: 'code' });
 
     expect(mockOpenSchemas).toHaveBeenCalledWith(SCHEMAS, URL, 'code');
   });
 
   test('opens extracted OpenGraph in selected editor', async () => {
-    await runValidate(URL, { useCurl: false, useOg: true, editor: 'surf' });
+    await runValidate(URL, { fetcher: BASIC_FETCHER, useOg: true, editor: 'surf' });
 
     expect(mockOpenOg).toHaveBeenCalledWith(OG_DATA, URL, 'surf');
     expect(mockSchemaValidatorValidate).not.toHaveBeenCalled();
   });
 
   test('does not open editor when editor option is absent', async () => {
-    await runValidate(URL, { useCurl: true, useOg: false });
+    await runValidate(URL, { fetcher: CURL_FETCHER, useOg: false });
 
     expect(mockOpenSchemas).not.toHaveBeenCalled();
     expect(mockEnsureEditorAvailable).not.toHaveBeenCalled();
+  });
+
+  test('logs remote browser connect banner', async () => {
+    await runValidate(URL, { fetcher: CONNECTED_CHROME_FETCHER, useOg: false });
+
+    const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
+    expect(output).toContain('Validating JSON-LD (browser connect: localhost:9222)');
   });
 });

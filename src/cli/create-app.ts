@@ -42,8 +42,8 @@ export function createApp() {
     log: console,
   });
 
-  const diffCommand = createDiffCommand({ runDiff, safeRun });
-  const validateCommand = createValidateCommand({ runValidate, safeRun });
+  const diffCommand = createDiffCommand({ runDiff, safeRun, warn: console.warn });
+  const validateCommand = createValidateCommand({ runValidate, safeRun, warn: console.warn });
 
   setDefaultHelpFormatter(
     createVercelFormatter({

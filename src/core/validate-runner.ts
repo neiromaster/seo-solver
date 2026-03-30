@@ -1,10 +1,11 @@
 import { bold, cyan, yellow } from 'ansis';
+import type { FetcherConfig } from '#core/services/fetcher-config';
 import type { DiffViewer } from './services/diff-viewer';
-import type { MetadataReader, ReadMode } from './services/metadata-reader';
+import type { MetadataReader } from './services/metadata-reader';
 import type { SchemaValidator } from './services/schema-validator';
 
 export type ValidateOptions = {
-  useCurl: boolean;
+  fetcher: FetcherConfig;
   useOg: boolean;
   editor?: string;
 };
@@ -20,19 +21,18 @@ export type CreateRunValidateDeps = {
 
 export function createRunValidate(deps: CreateRunValidateDeps): RunValidate {
   return async (url, options) => {
-    const { useCurl, useOg, editor } = options;
+    const { fetcher, useOg, editor } = options;
     const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
-    const readMode: ReadMode = useCurl ? 'curl' : 'browser';
 
     if (editor) {
       deps.diffViewer.ensureEditorAvailable(editor);
     }
 
     const mode = useOg ? 'OpenGraph' : 'JSON-LD';
-    deps.log.log(`\n${bold(`Validating ${mode}${useCurl ? ' (curl/SSR)' : ' (browser)'}...`)}\n`);
+    deps.log.log(`\n${bold(`Validating ${mode} (${formatFetcherLabel(fetcher)})...`)}\n`);
 
     if (useOg) {
-      const data = await deps.metadataReader.readOg(normalizedUrl, readMode);
+      const data = await deps.metadataReader.readOg(normalizedUrl, fetcher);
       if (editor) {
         deps.diffViewer.openOg(data, normalizedUrl, editor);
       }
@@ -41,11 +41,27 @@ export function createRunValidate(deps: CreateRunValidateDeps): RunValidate {
       return;
     }
 
-    const data = await deps.metadataReader.readSchemas(normalizedUrl, readMode);
+    const data = await deps.metadataReader.readSchemas(normalizedUrl, fetcher);
     if (editor) {
       deps.diffViewer.openSchemas(data, normalizedUrl, editor);
     }
     deps.log.log(`${cyan`URL:`} ${normalizedUrl} → ${data.length} schema(s)\n`);
     await deps.schemaValidator.validate(data);
   };
+}
+
+function formatFetcherLabel(fetcher: FetcherConfig): string {
+  if (fetcher.type === 'basic') {
+    return 'basic';
+  }
+
+  if (fetcher.type === 'curl') {
+    return 'curl/SSR';
+  }
+
+  if (fetcher.mode === 'launch') {
+    return 'browser';
+  }
+
+  return `browser connect: ${fetcher.target}`;
 }

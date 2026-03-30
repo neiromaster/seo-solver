@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
+import type { FetcherConfig } from '#core/services/fetcher-config';
 import type { OgData, Schema } from '#types';
 import { type CreateRunDiffDeps, createRunDiff, type DiffOptions } from './diff-runner';
 
@@ -15,6 +16,9 @@ const URL1 = 'https://example.com';
 const URL2 = 'https://other.com';
 const OG_DATA: OgData = { 'og:title': 'Page One' };
 const SCHEMAS: Schema[] = [{ '@type': 'Article', name: 'Test' }];
+const CURL_FETCHER: FetcherConfig = { type: 'curl' };
+const BASIC_FETCHER: FetcherConfig = { type: 'basic' };
+const CONNECTED_CHROME_FETCHER: FetcherConfig = { type: 'chrome', mode: 'connect', target: 'localhost:9222' };
 
 function stripAnsi(value: string): string {
   return value
@@ -65,22 +69,22 @@ describe('runDiff', () => {
   });
 
   test('fetches OG data for both URLs', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: true });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: true });
 
     expect(mockReadOg).toHaveBeenCalledTimes(2);
-    expect(mockReadOg).toHaveBeenNthCalledWith(1, URL1, 'curl');
-    expect(mockReadOg).toHaveBeenNthCalledWith(2, URL2, 'curl');
+    expect(mockReadOg).toHaveBeenNthCalledWith(1, URL1, CURL_FETCHER);
+    expect(mockReadOg).toHaveBeenNthCalledWith(2, URL2, CURL_FETCHER);
   });
 
   test('fetches schema data for both URLs', async () => {
-    await runDiff(URL1, URL2, { useCurl: false, useOg: false });
+    await runDiff(URL1, URL2, { fetcher: BASIC_FETCHER, useOg: false });
 
     expect(mockReadSchemas).toHaveBeenCalledTimes(2);
     expect(mockCompareJsonLd).toHaveBeenCalledTimes(1);
   });
 
   test('checks editor availability before fetching when editor is provided', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: true, editor: 'cursor' });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: true, editor: 'cursor' });
 
     expect(mockEnsureEditorAvailable).toHaveBeenCalledWith('cursor');
     expect(mockReadOg).toHaveBeenCalled();
@@ -91,35 +95,42 @@ describe('runDiff', () => {
       throw new Error('missing editor');
     });
 
-    await expect(runDiff(URL1, URL2, { useCurl: true, useOg: true, editor: 'missing' })).rejects.toThrow(
+    await expect(runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: true, editor: 'missing' })).rejects.toThrow(
       'missing editor',
     );
     expect(mockReadOg).not.toHaveBeenCalled();
   });
 
   test('opens OG diff in selected editor', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: true, editor: 'code' });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: true, editor: 'code' });
 
     expect(mockOpenOgDiff).toHaveBeenCalledWith(OG_DATA, OG_DATA, { url1: URL1, url2: URL2 }, 'code');
   });
 
   test('opens schema diff in selected editor', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: false, editor: 'surf' });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: false, editor: 'surf' });
 
     expect(mockOpenSchemasDiff).toHaveBeenCalledWith(SCHEMAS, SCHEMAS, { url1: URL1, url2: URL2 }, 'surf');
   });
 
   test('does not open editor when editor option is absent', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: false });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: false });
 
     expect(mockOpenSchemasDiff).not.toHaveBeenCalled();
     expect(mockEnsureEditorAvailable).not.toHaveBeenCalled();
   });
 
   test('logs mode banner', async () => {
-    await runDiff(URL1, URL2, { useCurl: true, useOg: true });
+    await runDiff(URL1, URL2, { fetcher: CURL_FETCHER, useOg: true });
 
     const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
     expect(output).toContain('Fetching OpenGraph metadata (curl/SSR)');
+  });
+
+  test('logs remote browser connect banner', async () => {
+    await runDiff(URL1, URL2, { fetcher: CONNECTED_CHROME_FETCHER, useOg: false });
+
+    const output = stripAnsi(logSpy.mock.calls.map((args) => String(args[0] ?? '')).join('\n'));
+    expect(output).toContain('Fetching JSON-LD metadata (browser connect: localhost:9222)');
   });
 });
