@@ -1,4 +1,4 @@
-import type { Browser } from 'playwright';
+import type { Browser, Page } from 'playwright';
 
 import { AppError, JsonParseError, NoDataFoundError, PlaywrightError } from '#core/errors';
 import { normalizeSchemas } from '#core/parsers';
@@ -11,42 +11,60 @@ const BROWSER_CONTEXT_OPTIONS = {
   locale: 'ru-RU',
 };
 
-async function withBrowserContext<T>(
-  browser: Browser,
-  fn: (page: import('playwright').Page) => Promise<T>,
-): Promise<T> {
+function addOgValue(og: OgData, prop: string, content: string): void {
+  const current = og[prop];
+  if (current === undefined) {
+    og[prop] = content;
+    return;
+  }
+
+  if (Array.isArray(current)) {
+    current.push(content);
+    return;
+  }
+
+  og[prop] = [current, content];
+}
+
+async function withBrowserContext<T>(browser: Browser, fn: (page: Page) => Promise<T>): Promise<T> {
   const ctx = await browser.newContext(BROWSER_CONTEXT_OPTIONS);
-  const page = await ctx.newPage();
   try {
+    const page = await ctx.newPage();
     return await fn(page);
   } finally {
-    await ctx.close();
+    try {
+      await ctx.close();
+    } catch {}
   }
 }
 
 export async function extractOgBrowser(browser: Browser, url: string): Promise<OgData> {
   try {
-    const result = await withBrowserContext(browser, async (page) => {
+    const entries = await withBrowserContext(browser, async (page) => {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
       return page
         .locator('meta')
         .evaluateAll((metas) =>
-          Object.fromEntries(
-            (metas as Element[])
-              .map(
-                (el) =>
-                  [el.getAttribute('property') || el.getAttribute('name'), el.getAttribute('content')] as [
-                    string | null,
-                    string | null,
-                  ],
-              )
-              .filter(
-                ([prop, content]) =>
-                  prop && content !== null && (prop.startsWith('og:') || prop.startsWith('twitter:')),
-              ),
-          ),
+          metas
+            .map(
+              (el) =>
+                [el.getAttribute('property') || el.getAttribute('name'), el.getAttribute('content')] as [
+                  string | null,
+                  string | null,
+                ],
+            )
+            .filter(
+              (entry): entry is [string, string] =>
+                entry[0] !== null &&
+                entry[1] !== null &&
+                (entry[0].startsWith('og:') || entry[0].startsWith('twitter:')),
+            ),
         );
     });
+    const result: OgData = {};
+    for (const [prop, content] of entries) {
+      addOgValue(result, prop, content);
+    }
     if (Object.keys(result).length === 0) {
       throw new NoDataFoundError(url, 'opengraph');
     }
@@ -63,7 +81,7 @@ export async function extractSchemasBrowser(browser: Browser, url: string): Prom
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
       const texts = await page
         .locator('script[type="application/ld+json"]')
-        .evaluateAll((els) => (els as Element[]).map((el) => el.textContent));
+        .evaluateAll((els) => els.map((el) => el.textContent));
 
       const nonNull = texts.filter((t): t is string => t !== null);
       if (nonNull.length === 0) {
@@ -80,7 +98,7 @@ export async function extractSchemasBrowser(browser: Browser, url: string): Prom
             return null;
           }
         })
-        .filter(Boolean);
+        .filter((value) => value !== null);
 
       if (parsed.length === 0) {
         throw new JsonParseError(url, lastError);

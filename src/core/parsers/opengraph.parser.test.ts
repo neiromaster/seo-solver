@@ -85,6 +85,17 @@ describe('extractOgFromHtml', () => {
     expect(result['og:image']).toBe('https://img.example.com/x.png');
   });
 
+  test('preserves duplicate og:image tags as arrays', () => {
+    const html = [
+      '<meta property="og:image" content="https://img.example.com/a.png">',
+      '<meta property="og:image" content="https://img.example.com/b.png">',
+    ].join('');
+
+    const result = extractOgFromHtml(html, URL);
+
+    expect(result['og:image']).toEqual(['https://img.example.com/a.png', 'https://img.example.com/b.png']);
+  });
+
   test('collects both og: and twitter: tags together', () => {
     // Arrange
     const html = ['<meta property="og:title" content="Title">', '<meta name="twitter:card" content="summary">'].join(
