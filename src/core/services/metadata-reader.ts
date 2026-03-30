@@ -10,6 +10,7 @@ import {
   extractSchemasFromHtml as extractSchemasFromHtmlDefault,
 } from '#core/parsers';
 import type { OgData, Schema } from '#types';
+import { launchDefaultBrowserWithRuntimePrompt } from './playwright-runtime';
 
 export type ReadMode = 'curl' | 'browser';
 
@@ -28,7 +29,7 @@ export type MetadataReaderDeps = {
 };
 
 export function launchDefaultMetadataBrowser(): Promise<Browser> {
-  return chromium.launch();
+  return launchDefaultBrowserWithRuntimePrompt(() => chromium.launch());
 }
 
 const defaultMetadataReaderDeps: MetadataReaderDeps = {
