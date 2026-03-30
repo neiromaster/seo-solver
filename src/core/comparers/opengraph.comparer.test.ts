@@ -104,7 +104,7 @@ describe('compareOg', () => {
 
 describe('buildOgComparisonLines', () => {
   test('returns the no-tags message as pure output when both sides are empty', () => {
-    expect(buildOgComparisonLines({}, {}).map(stripAnsi)).toEqual(['No OpenGraph tags found\n']);
+    expect(buildOgComparisonLines({}, {}).map(stripAnsi)).toEqual(['No OpenGraph tags found', '']);
   });
 
   test('returns diff lines without logging', () => {
