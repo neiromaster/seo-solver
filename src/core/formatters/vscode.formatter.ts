@@ -22,8 +22,10 @@ export function openVscodeDiff(
   label2: string,
 ): void {
   const tmp = tmpdir();
-  const f1 = join(tmp, `${prefix}_${urlSlug(label1)}.json`);
-  const f2 = join(tmp, `${prefix}_${urlSlug(label2)}.json`);
+  const slug1 = urlSlug(label1);
+  const slug2 = urlSlug(label2);
+  const f1 = join(tmp, `${prefix}_${slug1}.json`);
+  const f2 = join(tmp, `${prefix}_${slug1 === slug2 ? `${slug2}_2` : slug2}.json`);
   writeFileSync(f1, content1, 'utf8');
   writeFileSync(f2, content2, 'utf8');
   console.log(`\nSaved:\n  ${f1}\n  ${f2}`);
