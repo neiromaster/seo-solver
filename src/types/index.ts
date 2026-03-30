@@ -8,6 +8,6 @@ export type ValidationIssue = {
   location?: string;
 };
 
-export type OgData = Record<string, string>;
+export type OgData = Record<string, string | string[]>;
 
-export type FlatData = Record<string, string>;
+export type FlatData = Record<string, string | string[]>;

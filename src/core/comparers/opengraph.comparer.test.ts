@@ -57,6 +57,14 @@ describe('compareOg', () => {
     expect(out).toContain('img.jpg');
   });
 
+  test('renders duplicate og values as comma-separated text in diffs', () => {
+    compareOg({ 'og:image': ['img-a.jpg', 'img-b.jpg'] }, { 'og:image': ['img-a.jpg', 'img-c.jpg'] });
+    const out = output();
+    expect(out).toContain('og:image');
+    expect(out).toContain('img-a.jpg, img-b.jpg');
+    expect(out).toContain('img-a.jpg, img-c.jpg');
+  });
+
   test('handles only-added keys (left side empty)', () => {
     compareOg({}, { 'og:title': 'New', 'og:description': 'Desc' });
     const out = output();

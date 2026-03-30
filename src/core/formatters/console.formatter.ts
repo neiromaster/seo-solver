@@ -2,6 +2,11 @@ import { bold, green, red } from 'ansis';
 import { compareFlat } from '#core/comparers/helpers';
 import type { FlatData } from '#types';
 
+function formatFlatValue(value: string | string[] | undefined): string {
+  if (value === undefined) return '';
+  return Array.isArray(value) ? value.join(', ') : value;
+}
+
 export function buildFlatDiffLines(a: FlatData, b: FlatData): string[] {
   const { diffs, added, removed } = compareFlat(a, b);
   if (diffs.length + added.length + removed.length === 0) {
@@ -13,8 +18,8 @@ export function buildFlatDiffLines(a: FlatData, b: FlatData): string[] {
     lines.push(`    ${red`- ${va}`}`);
     lines.push(`    ${green`+ ${vb}`}`);
   }
-  for (const k of removed) lines.push(`  ${red`- ${k}: ${a[k] ?? ''}`}`);
-  for (const k of added) lines.push(`  ${green`+ ${k}: ${b[k] ?? ''}`}`);
+  for (const k of removed) lines.push(`  ${red`- ${k}: ${formatFlatValue(a[k])}`}`);
+  for (const k of added) lines.push(`  ${green`+ ${k}: ${formatFlatValue(b[k])}`}`);
   lines.push('');
   return lines;
 }
