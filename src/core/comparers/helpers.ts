@@ -1,6 +1,8 @@
+import { bold, green, red } from 'ansis';
 import type { FlatData, Schema } from '#types';
 
-function normalizeFlatValue(value: string | string[]): string {
+export function normalizeFlatValue(value: string | string[] | undefined): string {
+  if (value === undefined) return '';
   return Array.isArray(value) ? value.join(', ') : value;
 }
 
@@ -42,4 +44,32 @@ export function compareFlat(a: FlatData, b: FlatData): FlatDiffResult {
     }
   }
   return { diffs, added, removed };
+}
+
+export function buildFlatDiffLines(a: FlatData, b: FlatData): string[] {
+  const { diffs, added, removed } = compareFlat(a, b);
+  if (diffs.length + added.length + removed.length === 0) {
+    return [`${green`✓ identical`}`, ''];
+  }
+
+  const lines: string[] = [];
+  for (const { key, a: va, b: vb } of diffs) {
+    lines.push(`  ${bold(key)}`);
+    lines.push(`    ${red`- ${va}`}`);
+    lines.push(`    ${green`+ ${vb}`}`);
+  }
+  for (const k of removed) lines.push(`  ${red`- ${k}: ${normalizeFlatValue(a[k])}`}`);
+  for (const k of added) lines.push(`  ${green`+ ${k}: ${normalizeFlatValue(b[k])}`}`);
+  lines.push('');
+  return lines;
+}
+
+export function printLines(lines: string[]): void {
+  for (const line of lines) {
+    if (line === '') {
+      console.log();
+    } else {
+      console.log(line);
+    }
+  }
 }
