@@ -1,4 +1,4 @@
-import { boolean, command, flag, positional, string } from 'cmd-ts';
+import { boolean, command, flag, option, optional, positional, string } from 'cmd-ts';
 import type { RunDiff } from '#core/diff-runner';
 import type { safeRun as safeRunDefault } from '#core/errors';
 
@@ -26,19 +26,19 @@ export function createDiffCommand(deps: DiffCommandDeps) {
         short: 'o',
         description: 'Use OpenGraph instead of JSON-LD',
       }),
-      vscode: flag({
-        type: boolean,
-        long: 'vscode',
-        short: 'v',
-        description: 'Open VSCode diff viewer',
+      editor: option({
+        type: optional(string),
+        long: 'editor',
+        short: 'e',
+        description: 'Open diff in editor',
       }),
     },
-    handler: ({ url1, url2, curl, og, vscode }) =>
+    handler: ({ url1, url2, curl, og, editor }) =>
       deps.safeRun(async () => {
         await deps.runDiff(url1, url2, {
           useCurl: curl,
           useOg: og,
-          vscodeDiff: vscode,
+          editor,
         });
       }),
   });

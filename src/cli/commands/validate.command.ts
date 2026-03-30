@@ -1,4 +1,4 @@
-import { boolean, command, flag, positional, string } from 'cmd-ts';
+import { boolean, command, flag, option, optional, positional, string } from 'cmd-ts';
 
 import type { safeRun as safeRunDefault } from '#core/errors';
 import type { RunValidate } from '#core/validate-runner';
@@ -26,12 +26,19 @@ export function createValidateCommand(deps: ValidateCommandDeps) {
         short: 'o',
         description: 'Use OpenGraph instead of JSON-LD',
       }),
+      editor: option({
+        type: optional(string),
+        long: 'editor',
+        short: 'e',
+        description: 'Open extracted metadata in editor',
+      }),
     },
-    handler: ({ url, curl, og }) =>
+    handler: ({ url, curl, og, editor }) =>
       deps.safeRun(async () => {
         await deps.runValidate(url, {
           useCurl: curl,
           useOg: og,
+          editor,
         });
       }),
   });

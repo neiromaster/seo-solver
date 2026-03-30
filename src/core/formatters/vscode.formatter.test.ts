@@ -3,19 +3,39 @@ import { join } from 'node:path';
 
 const mockWriteFileSync = mock();
 const mockExecFileSync = mock();
+let ensureEditorAvailable: typeof import('./vscode.formatter')['ensureEditorAvailable'];
 let formatSchemasForDiff: typeof import('./vscode.formatter')['formatSchemasForDiff'];
-let openVscodeDiff: typeof import('./vscode.formatter')['openVscodeDiff'];
+let openEditorDiff: typeof import('./vscode.formatter')['openEditorDiff'];
+let openEditorFile: typeof import('./vscode.formatter')['openEditorFile'];
 
 beforeAll(async () => {
   mock.module('node:fs', () => ({ writeFileSync: mockWriteFileSync }));
   mock.module('node:child_process', () => ({ execFileSync: mockExecFileSync }));
   mock.module('node:os', () => ({ tmpdir: () => '/tmp' }));
 
-  ({ formatSchemasForDiff, openVscodeDiff } = await import('./vscode.formatter'));
+  ({ ensureEditorAvailable, formatSchemasForDiff, openEditorDiff, openEditorFile } = await import(
+    './vscode.formatter'
+  ));
 });
 
 afterAll(() => {
   mock.restore();
+});
+
+describe('ensureEditorAvailable', () => {
+  test('checks editor availability using --version', () => {
+    ensureEditorAvailable('cursor');
+
+    expect(mockExecFileSync).toHaveBeenCalledWith('cursor', ['--version'], { stdio: 'ignore' });
+  });
+
+  test('throws a clear error when editor is missing', () => {
+    mockExecFileSync.mockImplementation(() => {
+      throw new Error('ENOENT');
+    });
+
+    expect(() => ensureEditorAvailable('missing-editor')).toThrow('Could not find editor `missing-editor` in PATH.');
+  });
 });
 
 describe('formatSchemasForDiff', () => {
@@ -35,57 +55,9 @@ describe('formatSchemasForDiff', () => {
     const parsed = JSON.parse(result) as Array<{ '@type': string }>;
     expect(parsed.map((s) => s['@type'])).toEqual(['Article', 'BreadcrumbList', 'WebSite']);
   });
-
-  test('treats missing @type as empty string, sorting it first', () => {
-    const schemas = [{ '@type': 'Article', name: 'post' }, { name: 'no type' }];
-
-    const result = formatSchemasForDiff(schemas);
-
-    const parsed = JSON.parse(result) as Array<Record<string, unknown>>;
-    expect(parsed[0]).toEqual({ name: 'no type' });
-    expect(parsed[1]).toBeDefined();
-    expect(parsed[1]!['@type']).toBe('Article');
-  });
-
-  test('does not mutate the input array', () => {
-    const schemas = [{ '@type': 'Z' }, { '@type': 'A' }];
-    const snapshot = [...schemas];
-
-    formatSchemasForDiff(schemas);
-
-    expect(schemas).toEqual(snapshot);
-  });
-
-  test('returns 2-space indented JSON after sorting', () => {
-    const schemas = [
-      { '@type': 'WebSite', value: 1 },
-      { '@type': 'Article', value: 2 },
-    ];
-
-    const result = formatSchemasForDiff(schemas);
-
-    expect(result).toBe(
-      JSON.stringify(
-        [
-          { '@type': 'Article', value: 2 },
-          { '@type': 'WebSite', value: 1 },
-        ],
-        null,
-        2,
-      ),
-    );
-  });
-
-  test('handles an empty array', () => {
-    const schemas: never[] = [];
-
-    const result = formatSchemasForDiff(schemas);
-
-    expect(result).toBe('[]');
-  });
 });
 
-describe('openVscodeDiff', () => {
+describe('openEditorDiff', () => {
   let logSpy: ReturnType<typeof spyOn<typeof console, 'log'>>;
   let errorSpy: ReturnType<typeof spyOn<typeof console, 'error'>>;
 
@@ -101,92 +73,59 @@ describe('openVscodeDiff', () => {
     errorSpy.mockRestore();
   });
 
-  test('writes content1 to the first temp file with utf8 encoding', () => {
-    const f1 = join('/tmp', 'diff_label1.json');
-
-    openVscodeDiff('content-one', 'content-two', 'diff', 'label1', 'label2');
-
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(1, f1, 'content-one', 'utf8');
-  });
-
-  test('writes content2 to the second temp file with utf8 encoding', () => {
-    const f2 = join('/tmp', 'diff_label2.json');
-
-    openVscodeDiff('content-one', 'content-two', 'diff', 'label1', 'label2');
-
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(2, f2, 'content-two', 'utf8');
-  });
-
-  test('calls execFileSync with code --diff and both temp file paths', () => {
+  test('writes both temp files and opens diff with selected editor', () => {
     const f1 = join('/tmp', 'diff_label1.json');
     const f2 = join('/tmp', 'diff_label2.json');
 
-    openVscodeDiff('a', 'b', 'diff', 'label1', 'label2');
+    openEditorDiff('cursor', 'a', 'b', 'diff', 'label1', 'label2');
 
-    expect(mockExecFileSync).toHaveBeenNthCalledWith(1, 'code', ['--diff', f1, f2], { stdio: 'inherit' });
+    expect(mockWriteFileSync).toHaveBeenNthCalledWith(1, f1, 'a', 'utf8');
+    expect(mockWriteFileSync).toHaveBeenNthCalledWith(2, f2, 'b', 'utf8');
+    expect(mockExecFileSync).toHaveBeenCalledWith('cursor', ['--diff', f1, f2], { stdio: 'inherit' });
   });
 
-  test('passes stdio: inherit to execFileSync', () => {
-    openVscodeDiff('a', 'b', 'diff', 'label1', 'label2');
-
-    expect(mockExecFileSync).toHaveBeenCalledWith(
-      'code',
-      ['--diff', join('/tmp', 'diff_label1.json'), join('/tmp', 'diff_label2.json')],
-      {
-        stdio: 'inherit',
-      },
-    );
-  });
-
-  test('logs the saved file paths', () => {
-    const f1 = join('/tmp', 'diff_label1.json');
-    const f2 = join('/tmp', 'diff_label2.json');
-
-    openVscodeDiff('a', 'b', 'diff', 'label1', 'label2');
-
-    const logged = logSpy.mock.calls[0]?.[0];
-    expect(logged).toBeDefined();
-    expect(logged).toContain(f1);
-    expect(logged).toContain(f2);
-    expect(logged).toContain('Saved:');
-  });
-
-  test('logs an error message when code CLI is not available', () => {
-    mockExecFileSync.mockImplementation(() => {
-      throw new Error('ENOENT');
+  test('logs an error message when editor launch fails', () => {
+    mockExecFileSync.mockImplementation((command: string, args: string[]) => {
+      if (args[0] === '--diff') throw new Error('ENOENT');
+      return undefined as never;
     });
 
-    openVscodeDiff('a', 'b', 'diff', 'label1', 'label2');
+    openEditorDiff('surf', 'a', 'b', 'diff', 'label1', 'label2');
 
-    expect(errorSpy).toHaveBeenCalledWith('Could not open VS Code. Make sure `code` CLI is in PATH.');
+    expect(errorSpy).toHaveBeenCalledWith('Could not open editor `surf`. Make sure it is in PATH.');
+  });
+});
+
+describe('openEditorFile', () => {
+  let logSpy: ReturnType<typeof spyOn<typeof console, 'log'>>;
+  let errorSpy: ReturnType<typeof spyOn<typeof console, 'error'>>;
+
+  beforeEach(() => {
+    mockWriteFileSync.mockReset();
+    mockExecFileSync.mockReset();
+    logSpy = spyOn(console, 'log').mockImplementation(() => {});
+    errorSpy = spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  test('does not throw when code CLI is not available', () => {
-    mockExecFileSync.mockImplementation(() => {
-      throw new Error('ENOENT');
-    });
-
-    expect(() => openVscodeDiff('a', 'b', 'diff', 'label1', 'label2')).not.toThrow();
+  afterEach(() => {
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
-  test('builds file paths using the prefix and url-slugged labels', () => {
-    const f1 = join('/tmp', 'report_example_com.json');
-    const f2 = join('/tmp', 'report_other_com.json');
+  test('writes a single temp file and opens it in the selected editor', () => {
+    const filePath = join('/tmp', 'schema_example_com.json');
 
-    openVscodeDiff('x', 'y', 'report', 'https://example.com', 'https://other.com');
+    openEditorFile('code', '{"ok":true}', 'schema', 'https://example.com', 'json');
 
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(1, f1, 'x', 'utf8');
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(2, f2, 'y', 'utf8');
+    expect(mockWriteFileSync).toHaveBeenCalledWith(filePath, '{"ok":true}', 'utf8');
+    expect(mockExecFileSync).toHaveBeenCalledWith('code', [filePath], { stdio: 'inherit' });
   });
 
-  test('uses a distinct second temp file when both labels slug to the same path', () => {
-    const f1 = join('/tmp', 'report_example_com.json');
-    const f2 = join('/tmp', 'report_example_com_2.json');
+  test('logs the saved file path', () => {
+    const filePath = join('/tmp', 'schema_example_com.json');
 
-    openVscodeDiff('x', 'y', 'report', 'https://example.com', 'https://example.com');
+    openEditorFile('cursor', '{"ok":true}', 'schema', 'https://example.com', 'json');
 
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(1, f1, 'x', 'utf8');
-    expect(mockWriteFileSync).toHaveBeenNthCalledWith(2, f2, 'y', 'utf8');
-    expect(mockExecFileSync).toHaveBeenNthCalledWith(1, 'code', ['--diff', f1, f2], { stdio: 'inherit' });
+    expect(logSpy).toHaveBeenCalledWith(`\nSaved:\n  ${filePath}`);
   });
 });

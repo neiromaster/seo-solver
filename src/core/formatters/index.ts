@@ -1,2 +1,2 @@
 export { buildFlatDiffLines, printFlatDiff } from './console.formatter';
-export { formatSchemasForDiff, openVscodeDiff } from './vscode.formatter';
+export { ensureEditorAvailable, formatSchemasForDiff, openEditorDiff, openEditorFile } from './vscode.formatter';

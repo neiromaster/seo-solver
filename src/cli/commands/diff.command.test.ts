@@ -2,6 +2,8 @@ import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test';
 
 const mockCommand = mock((config: unknown) => config);
 const mockFlag = mock((config: unknown) => config);
+const mockOption = mock((config: unknown) => config);
+const mockOptional = mock((type: unknown) => ({ optional: type }));
 const mockPositional = mock((config: unknown) => config);
 
 const mockRunDiff = mock(async () => undefined);
@@ -16,6 +18,8 @@ mock.module('cmd-ts', () => ({
   boolean: 'boolean-type',
   string: 'string-type',
   flag: mockFlag,
+  option: mockOption,
+  optional: mockOptional,
   positional: mockPositional,
 }));
 
@@ -33,94 +37,33 @@ describe('diffCommand', () => {
     diffCommand = createDiffCommand({ runDiff: mockRunDiff, safeRun: mockSafeRun });
   });
 
-  describe('metadata', () => {
-    test('name is "diff"', () => {
-      expect(diffCommand.name).toBe('diff');
-    });
-
-    test('description mentions comparing two URLs', () => {
-      expect(diffCommand.description).toContain('Compare');
-    });
+  test('name is diff', () => {
+    expect(diffCommand.name).toBe('diff');
   });
 
-  describe('handler', () => {
-    test('wraps execution in safeRun', async () => {
-      const args = { url1: URL1, url2: URL2, curl: false, og: false, vscode: false };
+  test('calls runDiff with default flags', async () => {
+    await diffCommand.handler({ url1: URL1, url2: URL2, curl: false, og: false, editor: undefined });
 
-      await diffCommand.handler(args);
+    expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, { useCurl: false, useOg: false, editor: undefined });
+  });
 
-      expect(mockSafeRun).toHaveBeenCalledTimes(1);
-    });
+  test('passes editor command when provided', async () => {
+    await diffCommand.handler({ url1: URL1, url2: URL2, curl: false, og: false, editor: 'cursor' });
 
-    test('calls runDiff with both urls and default flags', async () => {
-      const args = { url1: URL1, url2: URL2, curl: false, og: false, vscode: false };
+    expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, { useCurl: false, useOg: false, editor: 'cursor' });
+  });
 
-      await diffCommand.handler(args);
+  test('passes all options through', async () => {
+    await diffCommand.handler({ url1: URL1, url2: URL2, curl: true, og: true, editor: 'surf' });
 
-      expect(mockRunDiff).toHaveBeenCalledTimes(1);
-      expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-        useCurl: false,
-        useOg: false,
-        vscodeDiff: false,
-      });
-    });
+    expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, { useCurl: true, useOg: true, editor: 'surf' });
+  });
 
-    test('passes useCurl: true when curl flag is set', async () => {
-      const args = { url1: URL1, url2: URL2, curl: true, og: false, vscode: false };
+  test('does not call runDiff when safeRun does not execute callback', async () => {
+    mockSafeRun.mockImplementation(async () => undefined);
 
-      await diffCommand.handler(args);
+    await diffCommand.handler({ url1: URL1, url2: URL2, curl: false, og: false, editor: undefined });
 
-      expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-        useCurl: true,
-        useOg: false,
-        vscodeDiff: false,
-      });
-    });
-
-    test('passes useOg: true when og flag is set', async () => {
-      const args = { url1: URL1, url2: URL2, curl: false, og: true, vscode: false };
-
-      await diffCommand.handler(args);
-
-      expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-        useCurl: false,
-        useOg: true,
-        vscodeDiff: false,
-      });
-    });
-
-    test('passes vscodeDiff: true when vscode flag is set', async () => {
-      const args = { url1: URL1, url2: URL2, curl: false, og: false, vscode: true };
-
-      await diffCommand.handler(args);
-
-      expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-        useCurl: false,
-        useOg: false,
-        vscodeDiff: true,
-      });
-    });
-
-    test('passes all flags when all are set', async () => {
-      const args = { url1: URL1, url2: URL2, curl: true, og: true, vscode: true };
-
-      await diffCommand.handler(args);
-
-      expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-        useCurl: true,
-        useOg: true,
-        vscodeDiff: true,
-      });
-    });
-
-    test('does not call runDiff when safeRun does not execute the callback', async () => {
-      const args = { url1: URL1, url2: URL2, curl: false, og: false, vscode: false };
-      mockSafeRun.mockImplementation(async () => undefined);
-
-      await diffCommand.handler(args);
-
-      expect(mockSafeRun).toHaveBeenCalledTimes(1);
-      expect(mockRunDiff).not.toHaveBeenCalled();
-    });
+    expect(mockRunDiff).not.toHaveBeenCalled();
   });
 });

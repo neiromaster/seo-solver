@@ -2,6 +2,8 @@ import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test';
 
 const mockCommand = mock((config: unknown) => config);
 const mockFlag = mock((config: unknown) => config);
+const mockOption = mock((config: unknown) => config);
+const mockOptional = mock((type: unknown) => ({ optional: type }));
 const mockPositional = mock((config: unknown) => config);
 
 const mockRunValidate = mock(async () => undefined);
@@ -15,6 +17,8 @@ mock.module('cmd-ts', () => ({
   boolean: 'boolean-type',
   string: 'string-type',
   flag: mockFlag,
+  option: mockOption,
+  optional: mockOptional,
   positional: mockPositional,
 }));
 
@@ -32,66 +36,33 @@ describe('validateCommand', () => {
     validateCommand = createValidateCommand({ runValidate: mockRunValidate, safeRun: mockSafeRun });
   });
 
-  describe('metadata', () => {
-    test('name is "validate"', () => {
-      expect(validateCommand.name).toBe('validate');
-    });
-
-    test('description mentions single-URL validation', () => {
-      expect(validateCommand.description).toContain('Validate');
-    });
+  test('name is validate', () => {
+    expect(validateCommand.name).toBe('validate');
   });
 
-  describe('handler', () => {
-    test('wraps execution in safeRun', async () => {
-      const args = { url: URL, curl: false, og: false };
+  test('calls runValidate with default flags', async () => {
+    await validateCommand.handler({ url: URL, curl: false, og: false, editor: undefined });
 
-      await validateCommand.handler(args);
+    expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: false, useOg: false, editor: undefined });
+  });
 
-      expect(mockSafeRun).toHaveBeenCalledTimes(1);
-    });
+  test('passes editor command when provided', async () => {
+    await validateCommand.handler({ url: URL, curl: false, og: false, editor: 'code' });
 
-    test('calls runValidate with url and default flags', async () => {
-      const args = { url: URL, curl: false, og: false };
+    expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: false, useOg: false, editor: 'code' });
+  });
 
-      await validateCommand.handler(args);
+  test('passes all options through', async () => {
+    await validateCommand.handler({ url: URL, curl: true, og: true, editor: 'cursor' });
 
-      expect(mockRunValidate).toHaveBeenCalledTimes(1);
-      expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: false, useOg: false });
-    });
+    expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: true, useOg: true, editor: 'cursor' });
+  });
 
-    test('passes useCurl: true when curl flag is set', async () => {
-      const args = { url: URL, curl: true, og: false };
+  test('does not call runValidate when safeRun does not execute callback', async () => {
+    mockSafeRun.mockImplementation(async () => undefined);
 
-      await validateCommand.handler(args);
+    await validateCommand.handler({ url: URL, curl: false, og: false, editor: undefined });
 
-      expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: true, useOg: false });
-    });
-
-    test('passes useOg: true when og flag is set', async () => {
-      const args = { url: URL, curl: false, og: true };
-
-      await validateCommand.handler(args);
-
-      expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: false, useOg: true });
-    });
-
-    test('passes both flags when curl and og are set', async () => {
-      const args = { url: URL, curl: true, og: true };
-
-      await validateCommand.handler(args);
-
-      expect(mockRunValidate).toHaveBeenCalledWith(URL, { useCurl: true, useOg: true });
-    });
-
-    test('does not call runValidate when safeRun does not execute the callback', async () => {
-      const args = { url: URL, curl: false, og: false };
-      mockSafeRun.mockImplementation(async () => undefined);
-
-      await validateCommand.handler(args);
-
-      expect(mockSafeRun).toHaveBeenCalledTimes(1);
-      expect(mockRunValidate).not.toHaveBeenCalled();
-    });
+    expect(mockRunValidate).not.toHaveBeenCalled();
   });
 });

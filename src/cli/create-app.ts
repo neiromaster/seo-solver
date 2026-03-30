@@ -38,6 +38,7 @@ export function createApp() {
   const runValidate = createRunValidate({
     metadataReader,
     schemaValidator,
+    diffViewer,
     log: console,
   });
 

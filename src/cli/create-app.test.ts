@@ -5,6 +5,8 @@ const mockSetDefaultHelpFormatter = mock(() => undefined);
 const mockSubcommands = mock((config: unknown) => config);
 const mockCommand = mock((config: unknown) => config);
 const mockFlag = mock((config: unknown) => config);
+const mockOption = mock((config: unknown) => config);
+const mockOptional = mock((type: unknown) => ({ optional: type }));
 const mockPositional = mock((config: unknown) => config);
 const mockCreateVercelFormatter = mock(() => ({}));
 const mockValidate = mock(async () => []);
@@ -17,6 +19,8 @@ mock.module('cmd-ts', () => ({
   boolean: 'boolean-type',
   string: 'string-type',
   flag: mockFlag,
+  option: mockOption,
+  optional: mockOptional,
   positional: mockPositional,
 }));
 mock.module('cmd-ts/batteries/vercel-formatter', () => ({
