@@ -20,7 +20,7 @@ export function extractSchemasFromHtml(html: string, url: string): Schema[] {
         return null;
       }
     })
-    .filter(Boolean);
+    .filter((value) => value !== null);
 
   if (schemas.length === 0) {
     throw new JsonParseError(url, lastError);
