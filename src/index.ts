@@ -1,3 +1,5 @@
+import { run } from 'cmd-ts';
+
 export { createDiffCommand, createValidateCommand } from '#cli/commands';
 export { createApp } from '#cli/create-app';
 export { createRunDiff } from '#core/diff-runner';
@@ -12,5 +14,7 @@ export * from './lib';
 export * from './types';
 
 if (import.meta.main) {
-  await import('./cli');
+  const { createApp } = await import('./cli/create-app');
+  const { app } = createApp();
+  run(app, process.argv.slice(2));
 }

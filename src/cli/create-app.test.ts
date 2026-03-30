@@ -23,7 +23,7 @@ mock.module('cmd-ts', () => ({
   optional: mockOptional,
   positional: mockPositional,
 }));
-mock.module('cmd-ts/batteries/vercel-formatter', () => ({
+mock.module('./vercel-formatter', () => ({
   createVercelFormatter: mockCreateVercelFormatter,
 }));
 mock.module('@adobe/structured-data-validator', () => ({

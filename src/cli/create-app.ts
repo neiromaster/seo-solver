@@ -1,5 +1,4 @@
 import { setDefaultHelpFormatter, subcommands } from 'cmd-ts';
-import { createVercelFormatter } from 'cmd-ts/batteries/vercel-formatter';
 import { compareJsonLd, compareOg } from '#core/comparers';
 import { createRunDiff, type RunDiff } from '#core/diff-runner';
 import { safeRun } from '#core/errors';
@@ -10,6 +9,7 @@ import { createRunValidate, type RunValidate } from '#core/validate-runner';
 import pkg from '../../package.json' with { type: 'json' };
 import { createDiffCommand } from './commands/diff.command';
 import { createValidateCommand } from './commands/validate.command';
+import { createVercelFormatter } from './vercel-formatter';
 
 export type AppServices = {
   metadataReader: MetadataReader;
