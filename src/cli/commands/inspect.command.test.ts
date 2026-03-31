@@ -8,7 +8,9 @@ const mockPositional = mock((config: unknown) => config);
 
 const mockRunInspect = mock(async () => undefined);
 const mockSafeRun = mock(async (fn: () => Promise<void>) => fn());
-const mockResolveFetcher = mock(() => ({ fetcherId: 'basic' as const }));
+const mockResolveFetcher = mock<(input: { fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }>(
+  () => ({ fetcherId: 'basic' }),
+);
 const mockWarn = mock(() => undefined);
 let inspectCommand: ReturnType<typeof import('./inspect.command')['createInspectCommand']>;
 
@@ -51,7 +53,7 @@ describe('inspectCommand', () => {
   });
 
   test('calls runInspect with default flags', async () => {
-    await inspectCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: undefined });
+    await inspectCommand.handler({ url: URL, fetcher: undefined, og: false, editor: undefined });
     expect(mockRunInspect).toHaveBeenCalledWith(URL, {
       fetcherId: 'basic',
       extractorId: 'jsonld',
@@ -61,7 +63,7 @@ describe('inspectCommand', () => {
   });
 
   test('uses editor-diff renderer when editor is provided', async () => {
-    await inspectCommand.handler({ url: URL, curl: false, fetcher: undefined, og: true, editor: 'code' });
+    await inspectCommand.handler({ url: URL, fetcher: undefined, og: true, editor: 'code' });
     expect(mockRunInspect).toHaveBeenCalledWith(URL, {
       fetcherId: 'basic',
       extractorId: 'opengraph',

@@ -28,3 +28,27 @@ test('maps adobe validator issues into V2 validation report', async () => {
   expect(report.issues[0]?.severity).toBe('error');
   expect(report.issues[0]?.code).toBe('headline');
 });
+
+test('omits non-finite nested indexes in mapped issue paths', async () => {
+  const runtime: SchemaOrgValidationRuntime = {
+    validateJsonLd: async () => [
+      {
+        issueMessage: 'Missing field',
+        severity: 'WARNING',
+        path: [{ type: 'Event', index: 0 }, { type: 'AggregateOffer' }],
+        fieldNames: ['highPrice'],
+      },
+    ],
+  };
+
+  const validator = new SchemaOrgValidator(runtime);
+
+  const report = await validator.validate({
+    extractorId: 'jsonld',
+    kind: 'jsonld',
+    source: { url: 'https://example.com', fetcherId: 'basic' },
+    data: [{ '@type': 'Event', offers: { '@type': 'AggregateOffer' } }],
+  } satisfies ExtractedDocument);
+
+  expect(report.issues[0]?.path).toBe('Event[1].AggregateOffer');
+});

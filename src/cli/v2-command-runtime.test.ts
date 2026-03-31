@@ -28,19 +28,19 @@ const { ensureEditorAvailable, presentV2Result, resolveV2FetcherOption, safeRunV
 );
 
 test('resolveV2FetcherOption maps basic to basic', () => {
-  expect(resolveV2FetcherOption({ curl: false, fetcher: 'basic' })).toEqual({ fetcherId: 'basic' });
+  expect(resolveV2FetcherOption({ fetcher: 'basic' })).toEqual({ fetcherId: 'basic' });
 });
 
 test('resolveV2FetcherOption maps chrome to browser', () => {
-  expect(resolveV2FetcherOption({ curl: false, fetcher: 'chrome' })).toEqual({
+  expect(resolveV2FetcherOption({ fetcher: 'chrome' })).toEqual({
     fetcherId: 'browser',
     warning: undefined,
   });
 });
 
-test('resolveV2FetcherOption rejects curl on V2 path', () => {
-  expect(() => resolveV2FetcherOption({ curl: false, fetcher: 'curl' })).toThrow(
-    'The curl fetcher is not supported on the V2 CLI path yet.',
+test('resolveV2FetcherOption rejects unsupported fetchers on V2 path', () => {
+  expect(() => resolveV2FetcherOption({ fetcher: 'curl' })).toThrow(
+    'Invalid value for --fetcher: curl. Allowed values on the V2 path: basic, chrome.',
   );
 });
 

@@ -12,7 +12,7 @@ export type InspectCommandDeps = {
     },
   ) => Promise<void>;
   safeRun: (fn: () => Promise<void>) => Promise<void>;
-  resolveFetcher: (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string };
+  resolveFetcher: (input: { fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string };
   warn: (message: string) => void;
 };
 
@@ -31,9 +31,9 @@ export function createInspectCommand(deps: InspectCommandDeps) {
         description: 'Open extracted metadata in editor',
       }),
     },
-    handler: ({ url, curl, fetcher, og, editor }) =>
+    handler: ({ url, fetcher, og, editor }) =>
       deps.safeRun(async () => {
-        const resolvedFetcher = deps.resolveFetcher({ curl, fetcher });
+        const resolvedFetcher = deps.resolveFetcher({ fetcher });
         if (resolvedFetcher.warning) deps.warn(resolvedFetcher.warning);
         await deps.runInspect(url, {
           fetcherId: resolvedFetcher.fetcherId,

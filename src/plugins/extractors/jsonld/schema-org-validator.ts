@@ -44,6 +44,12 @@ function toValidationIssue(issue: SchemaOrgRuntimeIssue) {
     severity: issue.severity === 'ERROR' ? 'error' : 'warning',
     code: issue.fieldNames.join('.') || 'validation',
     message: issue.issueMessage,
-    path: issue.path?.map((part) => `${part.type}[${part.index + 1}]`).join('.'),
+    path: issue.path?.map(formatPathPart).join('.'),
   } satisfies ValidationReport['issues'][number];
+}
+
+function formatPathPart(part: NonNullable<SchemaOrgRuntimeIssue['path']>[number]): string {
+  const { index } = part;
+  const hasFiniteIndex = typeof index === 'number' && Number.isFinite(index);
+  return hasFiniteIndex ? `${part.type}[${index + 1}]` : part.type;
 }

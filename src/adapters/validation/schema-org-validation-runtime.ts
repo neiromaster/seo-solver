@@ -5,7 +5,7 @@ type ValidatorModule = typeof import('@adobe/structured-data-validator');
 export type SchemaOrgRuntimeIssue = {
   severity: 'ERROR' | 'WARNING';
   issueMessage: string;
-  path: { type: string; index: number }[] | undefined;
+  path: { type: string; index?: number }[] | undefined;
   fieldNames: string[];
 };
 

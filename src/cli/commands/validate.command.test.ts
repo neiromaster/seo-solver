@@ -8,9 +8,9 @@ const mockPositional = mock((config: unknown) => config);
 
 const mockRunValidate = mock(async () => undefined);
 const mockSafeRun = mock(async (fn: () => Promise<void>) => fn());
-const mockResolveFetcher = mock<
-  (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }
->(() => ({ fetcherId: 'basic' }));
+const mockResolveFetcher = mock<(input: { fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }>(
+  () => ({ fetcherId: 'basic' }),
+);
 const mockWarn = mock(() => undefined);
 let validateCommand: ReturnType<typeof import('./validate.command')['createValidateCommand']>;
 
@@ -53,7 +53,7 @@ describe('validateCommand', () => {
   });
 
   test('calls runValidate with default flags', async () => {
-    await validateCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: undefined });
+    await validateCommand.handler({ url: URL, fetcher: undefined, og: false, editor: undefined });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
       fetcherId: 'basic',
@@ -64,7 +64,7 @@ describe('validateCommand', () => {
   });
 
   test('passes editor command when provided', async () => {
-    await validateCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: 'code' });
+    await validateCommand.handler({ url: URL, fetcher: undefined, og: false, editor: 'code' });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
       fetcherId: 'basic',
@@ -76,7 +76,7 @@ describe('validateCommand', () => {
 
   test('passes all options through', async () => {
     mockResolveFetcher.mockReturnValue({ fetcherId: 'browser', warning: 'warn' });
-    await validateCommand.handler({ url: URL, curl: true, fetcher: undefined, og: true, editor: 'cursor' });
+    await validateCommand.handler({ url: URL, fetcher: undefined, og: true, editor: 'cursor' });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
       fetcherId: 'browser',
@@ -89,7 +89,7 @@ describe('validateCommand', () => {
 
   test('uses fetcher resolver for explicit fetchers too', async () => {
     mockResolveFetcher.mockReturnValue({ fetcherId: 'browser' });
-    await validateCommand.handler({ url: URL, curl: true, fetcher: 'chrome:9222', og: false, editor: undefined });
+    await validateCommand.handler({ url: URL, fetcher: 'chrome:9222', og: false, editor: undefined });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
       fetcherId: 'browser',
@@ -102,7 +102,7 @@ describe('validateCommand', () => {
   test('does not call runValidate when safeRun does not execute callback', async () => {
     mockSafeRun.mockImplementation(async () => undefined);
 
-    await validateCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: undefined });
+    await validateCommand.handler({ url: URL, fetcher: undefined, og: false, editor: undefined });
 
     expect(mockRunValidate).not.toHaveBeenCalled();
   });

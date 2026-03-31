@@ -8,9 +8,9 @@ const mockPositional = mock((config: unknown) => config);
 
 const mockRunDiff = mock(async () => undefined);
 const mockSafeRun = mock(async (fn: () => Promise<void>) => fn());
-const mockResolveFetcher = mock<
-  (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }
->(() => ({ fetcherId: 'basic' }));
+const mockResolveFetcher = mock<(input: { fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }>(
+  () => ({ fetcherId: 'basic' }),
+);
 const mockWarn = mock(() => undefined);
 let diffCommand: ReturnType<typeof import('./diff.command')['createDiffCommand']>;
 
@@ -57,7 +57,6 @@ describe('diffCommand', () => {
     await diffCommand.handler({
       url1: URL1,
       url2: URL2,
-      curl: false,
       fetcher: undefined,
       og: false,
       editor: undefined,
@@ -72,7 +71,7 @@ describe('diffCommand', () => {
   });
 
   test('passes editor command when provided', async () => {
-    await diffCommand.handler({ url1: URL1, url2: URL2, curl: false, fetcher: undefined, og: false, editor: 'cursor' });
+    await diffCommand.handler({ url1: URL1, url2: URL2, fetcher: undefined, og: false, editor: 'cursor' });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
       fetcherId: 'basic',
@@ -84,7 +83,7 @@ describe('diffCommand', () => {
 
   test('passes all options through', async () => {
     mockResolveFetcher.mockReturnValue({ fetcherId: 'browser', warning: 'warn' });
-    await diffCommand.handler({ url1: URL1, url2: URL2, curl: true, fetcher: undefined, og: true, editor: 'surf' });
+    await diffCommand.handler({ url1: URL1, url2: URL2, fetcher: undefined, og: true, editor: 'surf' });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
       fetcherId: 'browser',
@@ -97,7 +96,7 @@ describe('diffCommand', () => {
 
   test('uses fetcher resolver for explicit fetchers too', async () => {
     mockResolveFetcher.mockReturnValue({ fetcherId: 'browser' });
-    await diffCommand.handler({ url1: URL1, url2: URL2, curl: true, fetcher: 'chrome', og: true, editor: undefined });
+    await diffCommand.handler({ url1: URL1, url2: URL2, fetcher: 'chrome', og: true, editor: undefined });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
       fetcherId: 'browser',
@@ -113,7 +112,6 @@ describe('diffCommand', () => {
     await diffCommand.handler({
       url1: URL1,
       url2: URL2,
-      curl: false,
       fetcher: undefined,
       og: false,
       editor: undefined,

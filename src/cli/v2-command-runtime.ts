@@ -12,17 +12,11 @@ export type V2FetcherResolution = {
   warning?: string;
 };
 
-export function resolveV2FetcherOption(input: { curl: boolean; fetcher?: string }): V2FetcherResolution {
-  const rawValue = input.fetcher ?? (input.curl ? 'curl' : 'basic');
+export function resolveV2FetcherOption(input: { fetcher?: string }): V2FetcherResolution {
+  const rawValue = input.fetcher ?? 'basic';
 
   if (rawValue === 'basic') {
     return { fetcherId: 'basic' };
-  }
-
-  if (rawValue === 'curl') {
-    throw new UsageError(
-      'The curl fetcher is not supported on the V2 CLI path yet. Use --fetcher basic or --fetcher chrome.',
-    );
   }
 
   if (rawValue === 'chrome' || rawValue.startsWith('chrome:')) {

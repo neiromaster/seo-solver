@@ -13,7 +13,7 @@ export type DiffCommandDeps = {
     },
   ) => Promise<void>;
   safeRun: (fn: () => Promise<void>) => Promise<void>;
-  resolveFetcher: (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string };
+  resolveFetcher: (input: { fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string };
   warn: (message: string) => void;
 };
 
@@ -38,9 +38,9 @@ export function createDiffCommand(deps: DiffCommandDeps) {
         description: 'Open diff in editor',
       }),
     },
-    handler: ({ url1, url2, curl, fetcher, og, editor }) =>
+    handler: ({ url1, url2, fetcher, og, editor }) =>
       deps.safeRun(async () => {
-        const resolvedFetcher = deps.resolveFetcher({ curl, fetcher });
+        const resolvedFetcher = deps.resolveFetcher({ fetcher });
 
         if (resolvedFetcher.warning) {
           deps.warn(resolvedFetcher.warning);
