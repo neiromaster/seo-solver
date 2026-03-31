@@ -1,49 +1,84 @@
 import { setDefaultHelpFormatter, subcommands } from 'cmd-ts';
-import { compareJsonLd, compareOg } from '#core/comparers';
-import { createRunDiff, type RunDiff } from '#core/diff-runner';
-import { safeRun } from '#core/errors';
-import { createDiffViewer, type DiffViewer } from '#core/services/diff-viewer';
-import { createMetadataReader, type MetadataReader } from '#core/services/metadata-reader';
-import { createSchemaValidator, type SchemaValidator } from '#core/services/schema-validator';
-import { createRunValidate, type RunValidate } from '#core/validate-runner';
+import { createEditorLauncher } from '#adapters/editor';
+import { createV2App } from '#bootstrap';
+import { createTerminalPresenter } from '#cli/presenters';
+import { ensureEditorAvailable, presentV2Result, resolveV2FetcherOption, safeRunV2 } from '#cli/v2-command-runtime';
 import pkg from '../../package.json' with { type: 'json' };
-import { createDiffCommand } from './commands/diff.command';
-import { createValidateCommand } from './commands/validate.command';
+import { createDiffCommand, createInspectCommand, createValidateCommand } from './commands';
 import { createVercelFormatter } from './vercel-formatter';
 
 export type AppServices = {
-  metadataReader: MetadataReader;
-  schemaValidator: SchemaValidator;
-  diffViewer: DiffViewer;
-  runDiff: RunDiff;
-  runValidate: RunValidate;
+  runDiff: ReturnType<typeof createV2App>['runDiff'];
+  runValidate: ReturnType<typeof createV2App>['runValidate'];
+  runInspect: ReturnType<typeof createV2App>['runInspect'];
 };
 
 export function createApp() {
-  const metadataReader = createMetadataReader();
-  const schemaValidator = createSchemaValidator({
-    fetchImpl: fetch,
-    loadValidatorModule: () => import('@adobe/structured-data-validator'),
-    log: console,
-  });
-  const diffViewer = createDiffViewer();
-
-  const runDiff = createRunDiff({
-    metadataReader,
-    diffViewer,
-    log: console,
-    compareOg,
-    compareJsonLd,
-  });
-  const runValidate = createRunValidate({
-    metadataReader,
-    schemaValidator,
-    diffViewer,
-    log: console,
+  const v2 = createV2App();
+  const presenter = createTerminalPresenter({
+    writeStdout: (text) => process.stdout.write(text),
+    editorLauncher: createEditorLauncher(),
   });
 
-  const diffCommand = createDiffCommand({ runDiff, safeRun, warn: console.warn });
-  const validateCommand = createValidateCommand({ runValidate, safeRun, warn: console.warn });
+  const diffCommand = createDiffCommand({
+    safeRun: safeRunV2,
+    resolveFetcher: resolveV2FetcherOption,
+    warn: console.warn,
+    runDiff: async (url1, url2, options) => {
+      await ensureEditorAvailable(options.editor);
+      const result = await v2.runDiff({
+        leftUrl: url1,
+        rightUrl: url2,
+        fetcherId: options.fetcherId,
+        extractorId: options.extractorId,
+        rendererId: options.rendererId,
+      });
+      await presentV2Result(presenter, result, { editor: options.editor });
+    },
+  });
+
+  const validateCommand = createValidateCommand({
+    safeRun: safeRunV2,
+    resolveFetcher: resolveV2FetcherOption,
+    warn: console.warn,
+    runValidate: async (url, options) => {
+      await ensureEditorAvailable(options.editor);
+
+      if (options.editor) {
+        const inspectResult = await v2.runInspect({
+          url,
+          fetcherId: options.fetcherId,
+          extractorId: options.extractorId,
+          rendererId: 'editor-diff',
+        });
+        await presentV2Result(presenter, inspectResult, { editor: options.editor });
+      }
+
+      const result = await v2.runValidate({
+        url,
+        fetcherId: options.fetcherId,
+        extractorId: options.extractorId,
+        rendererId: 'terminal',
+      });
+      await presentV2Result(presenter, result);
+    },
+  });
+
+  const inspectCommand = createInspectCommand({
+    safeRun: safeRunV2,
+    resolveFetcher: resolveV2FetcherOption,
+    warn: console.warn,
+    runInspect: async (url, options) => {
+      await ensureEditorAvailable(options.editor);
+      const result = await v2.runInspect({
+        url,
+        fetcherId: options.fetcherId,
+        extractorId: options.extractorId,
+        rendererId: options.rendererId,
+      });
+      await presentV2Result(presenter, result, { editor: options.editor });
+    },
+  });
 
   setDefaultHelpFormatter(
     createVercelFormatter({
@@ -58,6 +93,7 @@ export function createApp() {
     description: 'CLI tool for comparing and validating structured data (JSON-LD, OpenGraph) for SEO',
     cmds: {
       diff: diffCommand,
+      inspect: inspectCommand,
       validate: validateCommand,
     },
   });
@@ -65,11 +101,9 @@ export function createApp() {
   return {
     app,
     services: {
-      metadataReader,
-      schemaValidator,
-      diffViewer,
-      runDiff,
-      runValidate,
+      runDiff: v2.runDiff,
+      runValidate: v2.runValidate,
+      runInspect: v2.runInspect,
     },
   };
 }

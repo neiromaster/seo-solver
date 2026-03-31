@@ -1,5 +1,4 @@
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test';
-import { CURL_DEPRECATION_WARNING } from '#cli/fetcher-option';
 
 const mockCommand = mock((config: unknown) => config);
 const mockFlag = mock((config: unknown) => config);
@@ -9,6 +8,9 @@ const mockPositional = mock((config: unknown) => config);
 
 const mockRunDiff = mock(async () => undefined);
 const mockSafeRun = mock(async (fn: () => Promise<void>) => fn());
+const mockResolveFetcher = mock<
+  (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }
+>(() => ({ fetcherId: 'basic' }));
 const mockWarn = mock(() => undefined);
 let diffCommand: ReturnType<typeof import('./diff.command')['createDiffCommand']>;
 
@@ -35,9 +37,16 @@ describe('diffCommand', () => {
   beforeEach(() => {
     mockRunDiff.mockReset();
     mockSafeRun.mockReset();
+    mockResolveFetcher.mockReset();
     mockWarn.mockReset();
     mockSafeRun.mockImplementation(async (fn: () => Promise<void>) => fn());
-    diffCommand = createDiffCommand({ runDiff: mockRunDiff, safeRun: mockSafeRun, warn: mockWarn });
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'basic' });
+    diffCommand = createDiffCommand({
+      runDiff: mockRunDiff,
+      safeRun: mockSafeRun,
+      resolveFetcher: mockResolveFetcher,
+      warn: mockWarn,
+    });
   });
 
   test('name is diff', () => {
@@ -55,8 +64,9 @@ describe('diffCommand', () => {
     });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-      fetcher: { type: 'basic' },
-      useOg: false,
+      fetcherId: 'basic',
+      extractorId: 'jsonld',
+      rendererId: 'terminal',
       editor: undefined,
     });
   });
@@ -65,32 +75,36 @@ describe('diffCommand', () => {
     await diffCommand.handler({ url1: URL1, url2: URL2, curl: false, fetcher: undefined, og: false, editor: 'cursor' });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-      fetcher: { type: 'basic' },
-      useOg: false,
+      fetcherId: 'basic',
+      extractorId: 'jsonld',
+      rendererId: 'editor-diff',
       editor: 'cursor',
     });
   });
 
   test('passes all options through', async () => {
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'browser', warning: 'warn' });
     await diffCommand.handler({ url1: URL1, url2: URL2, curl: true, fetcher: undefined, og: true, editor: 'surf' });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-      fetcher: { type: 'curl' },
-      useOg: true,
+      fetcherId: 'browser',
+      extractorId: 'opengraph',
+      rendererId: 'editor-diff',
       editor: 'surf',
     });
-    expect(mockWarn).toHaveBeenCalledWith(CURL_DEPRECATION_WARNING);
+    expect(mockWarn).toHaveBeenCalledWith('warn');
   });
 
-  test('lets explicit fetcher override deprecated curl flag', async () => {
+  test('uses fetcher resolver for explicit fetchers too', async () => {
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'browser' });
     await diffCommand.handler({ url1: URL1, url2: URL2, curl: true, fetcher: 'chrome', og: true, editor: undefined });
 
     expect(mockRunDiff).toHaveBeenCalledWith(URL1, URL2, {
-      fetcher: { type: 'chrome', mode: 'launch' },
-      useOg: true,
+      fetcherId: 'browser',
+      extractorId: 'opengraph',
+      rendererId: 'terminal',
       editor: undefined,
     });
-    expect(mockWarn).toHaveBeenCalledWith(CURL_DEPRECATION_WARNING);
   });
 
   test('does not call runDiff when safeRun does not execute callback', async () => {

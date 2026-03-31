@@ -12,7 +12,7 @@ mock.module('cmd-ts', () => ({
   positional: mockPositional,
 }));
 
-const { createDiffCommand, createValidateCommand } = await import('./index');
+const { createDiffCommand, createInspectCommand, createValidateCommand } = await import('./index');
 
 afterAll(() => {
   mock.restore();
@@ -25,5 +25,9 @@ describe('commands barrel', () => {
 
   test('exports createDiffCommand', () => {
     expect(createDiffCommand).toBeDefined();
+  });
+
+  test('exports createInspectCommand', () => {
+    expect(createInspectCommand).toBeDefined();
   });
 });

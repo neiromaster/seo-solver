@@ -1,12 +1,19 @@
 import { boolean, command, flag, option, optional, positional, string } from 'cmd-ts';
 import { fetcherArgs } from '#cli/fetcher-args';
-import { resolveFetcherOption } from '#cli/fetcher-option';
-import type { RunDiff } from '#core/diff-runner';
-import type { safeRun as safeRunDefault } from '#core/errors';
 
 export type DiffCommandDeps = {
-  runDiff: RunDiff;
-  safeRun: typeof safeRunDefault;
+  runDiff: (
+    url1: string,
+    url2: string,
+    options: {
+      fetcherId: 'basic' | 'browser';
+      extractorId: 'jsonld' | 'opengraph';
+      rendererId: 'terminal' | 'editor-diff';
+      editor?: string;
+    },
+  ) => Promise<void>;
+  safeRun: (fn: () => Promise<void>) => Promise<void>;
+  resolveFetcher: (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string };
   warn: (message: string) => void;
 };
 
@@ -33,15 +40,16 @@ export function createDiffCommand(deps: DiffCommandDeps) {
     },
     handler: ({ url1, url2, curl, fetcher, og, editor }) =>
       deps.safeRun(async () => {
-        const resolvedFetcher = resolveFetcherOption({ curl, fetcher });
+        const resolvedFetcher = deps.resolveFetcher({ curl, fetcher });
 
         if (resolvedFetcher.warning) {
           deps.warn(resolvedFetcher.warning);
         }
 
         await deps.runDiff(url1, url2, {
-          fetcher: resolvedFetcher.fetcher,
-          useOg: og,
+          fetcherId: resolvedFetcher.fetcherId,
+          extractorId: og ? 'opengraph' : 'jsonld',
+          rendererId: editor ? 'editor-diff' : 'terminal',
           editor,
         });
       }),

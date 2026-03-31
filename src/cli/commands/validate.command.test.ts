@@ -1,5 +1,4 @@
 import { afterAll, beforeEach, describe, expect, mock, test } from 'bun:test';
-import { CURL_DEPRECATION_WARNING } from '#cli/fetcher-option';
 
 const mockCommand = mock((config: unknown) => config);
 const mockFlag = mock((config: unknown) => config);
@@ -9,6 +8,9 @@ const mockPositional = mock((config: unknown) => config);
 
 const mockRunValidate = mock(async () => undefined);
 const mockSafeRun = mock(async (fn: () => Promise<void>) => fn());
+const mockResolveFetcher = mock<
+  (input: { curl: boolean; fetcher?: string }) => { fetcherId: 'basic' | 'browser'; warning?: string }
+>(() => ({ fetcherId: 'basic' }));
 const mockWarn = mock(() => undefined);
 let validateCommand: ReturnType<typeof import('./validate.command')['createValidateCommand']>;
 
@@ -34,9 +36,16 @@ describe('validateCommand', () => {
   beforeEach(() => {
     mockRunValidate.mockReset();
     mockSafeRun.mockReset();
+    mockResolveFetcher.mockReset();
     mockWarn.mockReset();
     mockSafeRun.mockImplementation(async (fn: () => Promise<void>) => fn());
-    validateCommand = createValidateCommand({ runValidate: mockRunValidate, safeRun: mockSafeRun, warn: mockWarn });
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'basic' });
+    validateCommand = createValidateCommand({
+      runValidate: mockRunValidate,
+      safeRun: mockSafeRun,
+      resolveFetcher: mockResolveFetcher,
+      warn: mockWarn,
+    });
   });
 
   test('name is validate', () => {
@@ -47,8 +56,9 @@ describe('validateCommand', () => {
     await validateCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: undefined });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
-      fetcher: { type: 'basic' },
-      useOg: false,
+      fetcherId: 'basic',
+      extractorId: 'jsonld',
+      rendererId: 'terminal',
       editor: undefined,
     });
   });
@@ -57,32 +67,36 @@ describe('validateCommand', () => {
     await validateCommand.handler({ url: URL, curl: false, fetcher: undefined, og: false, editor: 'code' });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
-      fetcher: { type: 'basic' },
-      useOg: false,
+      fetcherId: 'basic',
+      extractorId: 'jsonld',
+      rendererId: 'terminal',
       editor: 'code',
     });
   });
 
   test('passes all options through', async () => {
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'browser', warning: 'warn' });
     await validateCommand.handler({ url: URL, curl: true, fetcher: undefined, og: true, editor: 'cursor' });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
-      fetcher: { type: 'curl' },
-      useOg: true,
+      fetcherId: 'browser',
+      extractorId: 'opengraph',
+      rendererId: 'terminal',
       editor: 'cursor',
     });
-    expect(mockWarn).toHaveBeenCalledWith(CURL_DEPRECATION_WARNING);
+    expect(mockWarn).toHaveBeenCalledWith('warn');
   });
 
-  test('lets explicit fetcher override deprecated curl flag', async () => {
+  test('uses fetcher resolver for explicit fetchers too', async () => {
+    mockResolveFetcher.mockReturnValue({ fetcherId: 'browser' });
     await validateCommand.handler({ url: URL, curl: true, fetcher: 'chrome:9222', og: false, editor: undefined });
 
     expect(mockRunValidate).toHaveBeenCalledWith(URL, {
-      fetcher: { type: 'chrome', mode: 'connect', target: 'localhost:9222' },
-      useOg: false,
+      fetcherId: 'browser',
+      extractorId: 'jsonld',
+      rendererId: 'terminal',
       editor: undefined,
     });
-    expect(mockWarn).toHaveBeenCalledWith(CURL_DEPRECATION_WARNING);
   });
 
   test('does not call runValidate when safeRun does not execute callback', async () => {
