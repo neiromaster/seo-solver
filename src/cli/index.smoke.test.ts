@@ -3,7 +3,7 @@ import { once } from 'node:events';
 import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 type CliResult = {
   exitCode: number;
@@ -202,7 +202,7 @@ async function startFixtureServer(routes: Record<string, RouteHandler>): Promise
 
 async function runCli(args: string[], envOverrides: Record<string, string> = {}): Promise<CliResult> {
   const proc = Bun.spawn(['bun', 'run', 'src/cli/index.ts', ...args], {
-    cwd: '/Users/gavro/projects/seo-solver',
+    cwd: resolve(import.meta.dir, '..', '..'),
     stdout: 'pipe',
     stderr: 'pipe',
     env: {

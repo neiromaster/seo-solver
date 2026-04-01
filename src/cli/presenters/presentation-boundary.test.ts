@@ -1,8 +1,8 @@
 import { expect, test } from 'bun:test';
 import { readdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
-const ROOT = '/Users/gavro/projects/seo-solver/src';
+const ROOT = resolve(import.meta.dir, '..', '..');
 const ENFORCED_DIRECTORIES = ['app', 'bootstrap', 'kernel', 'plugins'] as const;
 const FORBIDDEN_PATTERNS = [/console\.(log|error|warn|info)/, /process\.exit/, /stdout\.write/, /stderr\.write/];
 

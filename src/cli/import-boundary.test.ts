@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 import { readdir } from 'node:fs/promises';
 import { dirname, join, normalize, relative, resolve } from 'node:path';
 
-const ROOT = '/Users/gavro/projects/seo-solver/src';
+const ROOT = resolve(import.meta.dir, '..');
 
 const RULES: Record<string, string[]> = {
   kernel: ['kernel'],
