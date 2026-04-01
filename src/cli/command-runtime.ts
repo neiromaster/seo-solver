@@ -7,12 +7,12 @@ import pkg from '../../package.json' with { type: 'json' };
 
 const bugsUrl: string = pkg.bugs.url;
 
-export type V2FetcherResolution = {
+export type FetcherResolution = {
   fetcherId: 'basic' | 'browser';
   warning?: string;
 };
 
-export function resolveV2FetcherOption(input: { fetcher?: string }): V2FetcherResolution {
+export function resolveFetcherOption(input: { fetcher?: string }): FetcherResolution {
   const rawValue = input.fetcher ?? 'basic';
 
   if (rawValue === 'basic') {
@@ -23,15 +23,17 @@ export function resolveV2FetcherOption(input: { fetcher?: string }): V2FetcherRe
     return {
       fetcherId: 'browser',
       warning: rawValue.startsWith('chrome:')
-        ? 'Warning: remote chrome targets are not supported on the V2 path yet. Falling back to local browser launch.'
+        ? 'Warning: remote chrome targets are not supported on the current CLI path yet. Falling back to local browser launch.'
         : undefined,
     };
   }
 
-  throw new UsageError(`Invalid value for --fetcher: ${rawValue}. Allowed values on the V2 path: basic, chrome.`);
+  throw new UsageError(
+    `Invalid value for --fetcher: ${rawValue}. Allowed values on the current CLI path: basic, chrome.`,
+  );
 }
 
-export async function presentV2Result(
+export async function presentResult(
   presenter: RenderResultPresenter,
   result: Parameters<RenderResultPresenter['present']>[0],
   options?: { editor?: string },
@@ -39,7 +41,7 @@ export async function presentV2Result(
   process.exitCode = await presenter.present(result, options);
 }
 
-export async function safeRunV2(fn: () => Promise<void>): Promise<void> {
+export async function safeRun(fn: () => Promise<void>): Promise<void> {
   try {
     await fn();
   } catch (error) {

@@ -26,7 +26,7 @@ mock.module('cmd-ts', () => ({
   positional: mockPositional,
 }));
 mock.module('#bootstrap', () => ({
-  createV2App: () => ({
+  createRuntimeApp: () => ({
     runDiff: mockRunDiff,
     runValidate: mockRunValidate,
     runInspect: mockRunInspect,
@@ -88,7 +88,7 @@ describe('createApp', () => {
     expect(Object.keys(config.cmds)).toEqual(['diff', 'inspect', 'validate']);
   });
 
-  test('returns app plus v2 services', () => {
+  test('returns app plus runtime services', () => {
     const result = createApp();
 
     expect(result.app).toBeDefined();

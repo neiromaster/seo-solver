@@ -2,7 +2,7 @@ import { createRunDiff, createRunInspect, createRunValidate } from '#app';
 import { registerCapabilities } from '#bootstrap/register-capabilities';
 import { createCapabilityRegistry } from '#kernel';
 
-export function createV2App() {
+export function createRuntimeApp() {
   const registry = createCapabilityRegistry();
   registerCapabilities(registry);
 

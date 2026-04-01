@@ -23,36 +23,34 @@ afterEach(() => {
   mock.restore();
 });
 
-const { ensureEditorAvailable, presentV2Result, resolveV2FetcherOption, safeRunV2 } = await import(
-  './v2-command-runtime'
-);
+const { ensureEditorAvailable, presentResult, resolveFetcherOption, safeRun } = await import('./command-runtime');
 
-test('resolveV2FetcherOption maps basic to basic', () => {
-  expect(resolveV2FetcherOption({ fetcher: 'basic' })).toEqual({ fetcherId: 'basic' });
+test('resolveFetcherOption maps basic to basic', () => {
+  expect(resolveFetcherOption({ fetcher: 'basic' })).toEqual({ fetcherId: 'basic' });
 });
 
-test('resolveV2FetcherOption maps chrome to browser', () => {
-  expect(resolveV2FetcherOption({ fetcher: 'chrome' })).toEqual({
+test('resolveFetcherOption maps chrome to browser', () => {
+  expect(resolveFetcherOption({ fetcher: 'chrome' })).toEqual({
     fetcherId: 'browser',
     warning: undefined,
   });
 });
 
-test('resolveV2FetcherOption rejects unsupported fetchers on V2 path', () => {
-  expect(() => resolveV2FetcherOption({ fetcher: 'curl' })).toThrow(
-    'Invalid value for --fetcher: curl. Allowed values on the V2 path: basic, chrome.',
+test('resolveFetcherOption rejects unsupported fetchers on current path', () => {
+  expect(() => resolveFetcherOption({ fetcher: 'curl' })).toThrow(
+    'Invalid value for --fetcher: curl. Allowed values on the current CLI path: basic, chrome.',
   );
 });
 
-test('presentV2Result forwards exit code from presenter', async () => {
+test('presentResult forwards exit code from presenter', async () => {
   const presenter: RenderResultPresenter = { present: mock(async () => 7) };
-  await presentV2Result(presenter, { kind: 'text', content: 'hello' });
+  await presentResult(presenter, { kind: 'text', content: 'hello' });
   expect(process.exitCode).toBe(7);
 });
 
-test('safeRunV2 delegates legacy app errors to cli error handler', async () => {
+test('safeRun delegates legacy app errors to cli error handler', async () => {
   await expect(
-    safeRunV2(async () => {
+    safeRun(async () => {
       throw new TestLegacyError('legacy failure');
     }),
   ).rejects.toThrow('exit:1');

@@ -8,7 +8,7 @@ import { readFixture } from '#test-support';
 import { createRunDiff } from './run-diff';
 import { createRunValidate } from './run-validate';
 
-test('phase 2 diff happy path works through real V2 capabilities', async () => {
+test('phase 2 diff happy path works through real capabilities', async () => {
   const registry = createCapabilityRegistry();
   const fixtureBodies = {
     'https://example.test/left': await readFixture('jsonld-left.html'),
@@ -51,7 +51,7 @@ test('phase 2 diff happy path works through real V2 capabilities', async () => {
   }
 });
 
-test('phase 2 validate happy path works through real V2 capabilities', async () => {
+test('phase 2 validate happy path works through real capabilities', async () => {
   const registry = createCapabilityRegistry();
   const runtime: SchemaOrgValidationRuntime = {
     validateJsonLd: async () => [],

@@ -6,7 +6,7 @@ const ROOT = '/Users/gavro/projects/seo-solver/src';
 const ENFORCED_DIRECTORIES = ['app', 'bootstrap', 'kernel', 'plugins', 'adapters'] as const;
 const FORBIDDEN_IMPORTS = ['#core/', '#lib/'] as const;
 
-test('v2 production layers do not import legacy core or shared legacy lib aliases', async () => {
+test('production layers do not import legacy core or shared legacy lib aliases', async () => {
   const violations: string[] = [];
 
   for (const directory of ENFORCED_DIRECTORIES) {

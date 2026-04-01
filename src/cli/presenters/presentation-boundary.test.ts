@@ -6,7 +6,7 @@ const ROOT = '/Users/gavro/projects/seo-solver/src';
 const ENFORCED_DIRECTORIES = ['app', 'bootstrap', 'kernel', 'plugins'] as const;
 const FORBIDDEN_PATTERNS = [/console\.(log|error|warn|info)/, /process\.exit/, /stdout\.write/, /stderr\.write/];
 
-test('v2 non-cli layers do not print or terminate directly', async () => {
+test('non-cli layers do not print or terminate directly', async () => {
   const violations: string[] = [];
 
   for (const directory of ENFORCED_DIRECTORIES) {

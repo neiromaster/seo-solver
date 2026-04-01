@@ -30,7 +30,7 @@ afterEach(async () => {
   tempDirectories = [];
 });
 
-test('cli inspect command runs through the real v2 path for basic fetcher', async () => {
+test('cli inspect command runs through the real path for basic fetcher', async () => {
   const baseUrl = await startFixtureServer({
     '/': (_request, response) => {
       respondHtml(
@@ -48,7 +48,7 @@ test('cli inspect command runs through the real v2 path for basic fetcher', asyn
   expect(result.stdout).toContain('Smoke headline');
 });
 
-test('cli diff command runs through the real v2 path for basic fetcher', async () => {
+test('cli diff command runs through the real path for basic fetcher', async () => {
   const baseUrl = await startFixtureServer({
     '/left': (_request, response) => {
       respondHtml(
@@ -72,7 +72,7 @@ test('cli diff command runs through the real v2 path for basic fetcher', async (
   expect(result.stdout).toContain('headline');
 });
 
-test('cli diff --og runs through the real v2 path for opengraph', async () => {
+test('cli diff --og runs through the real path for opengraph', async () => {
   const baseUrl = await startFixtureServer({
     '/left': (_request, response) => {
       respondHtml(
@@ -115,7 +115,7 @@ test('cli validate --og --editor uses artifact path and succeeds', async () => {
   expect(result.stdout).toContain('No validators configured');
 });
 
-test('cli validate command runs through the real v2 path and surfaces validation failure', async () => {
+test('cli validate command runs through the real path and surfaces validation failure', async () => {
   const baseUrl = await startFixtureServer({
     '/': (_request, response) => {
       respondHtml(

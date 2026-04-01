@@ -3,7 +3,7 @@ import type { SchemaOrgValidationRuntime } from '#adapters/validation';
 import type { ExtractedDocument } from '#kernel';
 import { SchemaOrgValidator } from './schema-org-validator';
 
-test('maps adobe validator issues into V2 validation report', async () => {
+test('maps adobe validator issues into validation report', async () => {
   const runtime: SchemaOrgValidationRuntime = {
     validateJsonLd: async () => [
       {

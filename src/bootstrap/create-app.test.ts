@@ -1,8 +1,8 @@
 import { expect, test } from 'bun:test';
-import { createV2App } from './create-app';
+import { createRuntimeApp } from './create-app';
 
-test('createV2App registers the phase two baseline capabilities', () => {
-  const app = createV2App();
+test('createRuntimeApp registers the baseline capabilities', () => {
+  const app = createRuntimeApp();
 
   expect(app.registry.fetchers.has('basic')).toBe(true);
   expect(app.registry.fetchers.has('browser')).toBe(true);

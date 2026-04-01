@@ -12,7 +12,7 @@ const RULES: Record<string, string[]> = {
   bootstrap: ['bootstrap', 'app', 'kernel', 'plugins', 'adapters'],
 };
 
-test('v2 production layers respect import boundaries', async () => {
+test('production layers respect import boundaries', async () => {
   const violations: string[] = [];
 
   for (const [layer, allowedTargets] of Object.entries(RULES)) {
