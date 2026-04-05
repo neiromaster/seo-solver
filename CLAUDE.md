@@ -11,6 +11,20 @@ Default to pnpm for package management and workspace execution.
 - Use `pnpm --filter seo-solver <script>` for app-specific scripts
 - Use `pnpm exec <tool>` instead of `bunx` or `npx`
 
+## Changesets
+
+Before every commit, check whether the change affects public package behaviour (new features, bug fixes, breaking changes, dependency updates). If yes, manually create a changeset file in `.changeset/<slug>.md`:
+
+```md
+---
+"seo-solver": patch   # patch | minor | major
+---
+
+Short description of what changed and why.
+```
+
+Skip changesets for internal-only changes (tests, tooling, CI, docs, refactors that don't affect public API or behaviour).
+
 ## Testing
 
 Use Vitest through pnpm.
