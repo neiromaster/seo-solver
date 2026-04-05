@@ -1,11 +1,38 @@
 import { cyan, dim, red, underline, yellow } from 'ansis';
 import { createEditorLauncher } from '#adapters/editor';
 import type { RenderResultPresenter } from '#cli/presenters';
-import { AppError as LegacyAppError, UsageError } from '#core/errors';
-import { AppError as V2AppError } from '#kernel';
+import { AppError } from '#kernel';
 import pkg from '../../package.json' with { type: 'json' };
 
 const bugsUrl: string = pkg.bugs.url;
+
+export abstract class CliError extends Error {
+  abstract readonly exitCode: number;
+  abstract readonly userMessage: string;
+
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = new.target.name;
+  }
+
+  format(): string {
+    let output = this.userMessage;
+    if (this.cause instanceof Error && this.cause.message !== this.message) {
+      output += `\n\n  ${this.cause.message}`;
+    }
+    return output;
+  }
+}
+
+class UsageError extends CliError {
+  readonly exitCode = 1;
+  readonly userMessage: string;
+
+  constructor(message: string) {
+    super(message);
+    this.userMessage = message;
+  }
+}
 
 export type FetcherResolution = {
   fetcherId: 'basic' | 'browser';
@@ -58,7 +85,7 @@ export async function ensureEditorAvailable(editor?: string): Promise<void> {
 }
 
 function handleCliError(error: unknown): never {
-  if (error instanceof LegacyAppError) {
+  if (error instanceof CliError) {
     if (error.exitCode > 0) {
       console.error(`\n${red.bold`❌ Error`}\n`);
     }
@@ -67,7 +94,7 @@ function handleCliError(error: unknown): never {
     process.exit(error.exitCode);
   }
 
-  if (error instanceof V2AppError) {
+  if (error instanceof AppError) {
     console.error(`\n${red.bold`❌ Error`}\n`);
     console.error(error.message);
     console.error();

@@ -33,12 +33,6 @@
       "#bootstrap/*": [
         "./src/bootstrap/*"
       ],
-      "#core": [
-        "./src/core"
-      ],
-      "#core/*": [
-        "./src/core/*"
-      ],
       "#kernel": [
         "./src/kernel"
       ],

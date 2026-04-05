@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, mock, test } from 'bun:test';
 import type { RenderResultPresenter } from '#cli/presenters';
-import { AppError as LegacyAppError } from '#core/errors/AppError';
+import { CliError } from './command-runtime';
 
-class TestLegacyError extends LegacyAppError {
+class TestLegacyError extends CliError {
   readonly exitCode = 1;
   readonly userMessage = 'legacy failure';
 }
