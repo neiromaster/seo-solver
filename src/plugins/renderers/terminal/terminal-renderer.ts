@@ -1,5 +1,5 @@
-import { green, red, yellow } from 'ansis';
-import type { DiffChange, Renderer, RenderPayload, RenderResult } from '#kernel';
+import { dim, green, red, yellow } from 'ansis';
+import type { DiffChange, Renderer, RenderPayload, RenderResult, ValidationIssue, ValidationReport } from '#kernel';
 
 export class TerminalRenderer implements Renderer<RenderPayload> {
   readonly id = 'terminal';
@@ -22,18 +22,8 @@ export class TerminalRenderer implements Renderer<RenderPayload> {
       }
 
       for (const report of input.reports) {
-        lines.push(report.ok ? green(`✓ ${report.validatorId}`) : red(`✗ ${report.validatorId}`));
-
-        for (const issue of report.issues) {
-          lines.push(`  [${issue.severity}] ${issue.code}: ${issue.message}`);
-          if (issue.path) {
-            lines.push(`    at ${issue.path}`);
-          }
-        }
-
-        if (report.issues.length > 0) {
-          lines.push('');
-        }
+        lines.push(...formatValidationReport(report));
+        lines.push('');
       }
 
       return {
@@ -66,4 +56,91 @@ function formatChange(change: DiffChange): string[] {
   }
 
   return [yellow(`~ ${change.path}`), red(`  - ${change.left ?? ''}`), green(`  + ${change.right ?? ''}`)];
+}
+
+function formatValidationReport(report: ValidationReport): string[] {
+  if (report.issues.length === 0) {
+    return [green(`✓ ${report.validatorId} — no issues`)];
+  }
+
+  const summary = summarizeIssues(report.issues);
+  const lines = [
+    report.ok ? green(`✓ ${report.validatorId} — ${summary}`) : red(`✗ ${report.validatorId} — ${summary}`),
+  ];
+
+  for (const group of groupIssuesByPath(report.issues)) {
+    lines.push(yellow(`  ${group.path}`));
+
+    for (const issue of group.issues) {
+      lines.push(formatValidationIssue(issue));
+    }
+  }
+
+  return lines;
+}
+
+function formatValidationIssue(issue: ValidationIssue): string {
+  const colorize = getSeverityColor(issue.severity);
+  return `    ${colorize(issue.severity)} • ${colorize(issue.code)}: ${dim(issue.message)}`;
+}
+
+function getSeverityColor(severity: ValidationIssue['severity']): (text: string) => string {
+  if (severity === 'error') {
+    return red;
+  }
+
+  if (severity === 'warning') {
+    return yellow;
+  }
+
+  return green;
+}
+
+function summarizeIssues(issues: ValidationIssue[]): string {
+  const counts = {
+    error: 0,
+    warning: 0,
+    info: 0,
+  } satisfies Record<ValidationIssue['severity'], number>;
+
+  for (const issue of issues) {
+    counts[issue.severity] += 1;
+  }
+
+  const parts: string[] = [];
+
+  if (counts.error > 0) {
+    parts.push(`${counts.error} error${counts.error === 1 ? '' : 's'}`);
+  }
+
+  if (counts.warning > 0) {
+    parts.push(`${counts.warning} warning${counts.warning === 1 ? '' : 's'}`);
+  }
+
+  if (counts.info > 0) {
+    parts.push(`${counts.info} info`);
+  }
+
+  return parts.join(', ');
+}
+
+function groupIssuesByPath(issues: ValidationIssue[]): Array<{ path: string; issues: ValidationIssue[] }> {
+  const groups = new Map<string, ValidationIssue[]>();
+
+  for (const issue of issues) {
+    const path = issue.path ?? 'General';
+    const existing = groups.get(path);
+
+    if (existing) {
+      existing.push(issue);
+      continue;
+    }
+
+    groups.set(path, [issue]);
+  }
+
+  return [...groups.entries()].map(([path, groupedIssues]) => ({
+    path,
+    issues: groupedIssues,
+  }));
 }
