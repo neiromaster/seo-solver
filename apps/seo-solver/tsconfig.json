@@ -1,0 +1,71 @@
+{
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "#cli": [
+        "./src/cli"
+      ],
+      "#cli/*": [
+        "./src/cli/*"
+      ],
+      "#app": [
+        "./src/app"
+      ],
+      "#app/*": [
+        "./src/app/*"
+      ],
+      "#bootstrap": [
+        "./src/bootstrap"
+      ],
+      "#bootstrap/*": [
+        "./src/bootstrap/*"
+      ],
+      "#kernel": [
+        "./src/kernel"
+      ],
+      "#kernel/*": [
+        "./src/kernel/*"
+      ],
+      "#lib": [
+        "./src/lib"
+      ],
+      "#lib/*": [
+        "./src/lib/*"
+      ],
+      "#plugins": [
+        "./src/plugins"
+      ],
+      "#plugins/*": [
+        "./src/plugins/*"
+      ],
+      "#adapters": [
+        "./src/adapters"
+      ],
+      "#adapters/*": [
+        "./src/adapters/*"
+      ],
+      "#test-support": [
+        "./src/test-support"
+      ],
+      "#test-support/*": [
+        "./src/test-support/*"
+      ],
+      "#types": [
+        "./src/types"
+      ],
+      "#types/*": [
+        "./src/types/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}

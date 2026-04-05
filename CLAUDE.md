@@ -1,27 +1,24 @@
 ---
-description: Use Bun instead of Node.js, npm, pnpm, or vite.
+description: Use pnpm workspace commands for this repository.
 globs: "*.ts, *.tsx, *.html, *.css, *.js, *.jsx, package.json"
 alwaysApply: false
 ---
 
-Default to using Bun instead of Node.js.
+Default to pnpm for package management and workspace execution.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+- Use `pnpm install` instead of `bun install`, `npm install`, or `yarn install`
+- Use `pnpm run <script>` for root scripts
+- Use `pnpm --filter seo-solver <script>` for app-specific scripts
+- Use `pnpm exec <tool>` instead of `bunx` or `npx`
 
 ## Testing
 
-Use `bun test` to run tests.
+Use Vitest through pnpm.
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
+```ts
+import { expect, test } from 'vitest';
 
-test("hello world", () => {
+test('hello world', () => {
   expect(1).toBe(1);
 });
 ```

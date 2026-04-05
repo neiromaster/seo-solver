@@ -2,6 +2,19 @@
 
 CLI tool for comparing and validating SEO metadata from web pages.
 
+## Workspace
+
+This repository is a pnpm workspace monorepo. The publishable CLI lives in `apps/seo-solver`, and shared workspace configuration lives under `packages/*`.
+
+## Development
+
+```bash
+pnpm install
+pnpm build
+pnpm test
+pnpm typecheck
+```
+
 ## Features
 
 - Compare JSON-LD between two URLs
@@ -15,7 +28,7 @@ CLI tool for comparing and validating SEO metadata from web pages.
 ## Installation
 
 ```bash
-bun install -g seo-solver
+pnpm add -g seo-solver
 ```
 
 ## Usage

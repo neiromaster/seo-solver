@@ -1,0 +1,52 @@
+{
+  "name": "seo-solver",
+  "version": "0.0.3",
+  "description": "CLI tool for comparing and validating structured data (JSON-LD, OpenGraph) for SEO",
+  "type": "module",
+  "bin": {
+    "seo-solver": "dist/index.js"
+  },
+  "scripts": {
+    "start": "tsx src/cli/index.ts",
+    "build": "tsup --config tsup.config.ts",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@adobe/structured-data-validator": "^1.7.0",
+    "ansis": "^4.2.0",
+    "cmd-ts": "^0.15.0",
+    "playwright": "^1.58.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "seo",
+    "schema",
+    "json-ld",
+    "opengraph",
+    "structured-data",
+    "validator",
+    "comparison",
+    "cli",
+    "solver"
+  ],
+  "author": "Maxim (neiromaster) Gavrilenko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "apps/seo-solver"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
