@@ -8,3 +8,6 @@ pre-commit:
       glob: "*.{yml,yaml}"
       run: pnpm exec dprint fmt --staged {staged_files}
       stage_fixed: true
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: pnpm -r --if-present typecheck
