@@ -11,7 +11,7 @@
     "build": "tsup --config tsup.config.ts",
     "prepack": "pnpm run build",
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {

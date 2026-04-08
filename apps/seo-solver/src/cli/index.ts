@@ -1,6 +1,5 @@
-import { run } from 'cmd-ts';
-import { createApp } from './create-app';
+// CLI entry point — implementation to be rebuilt
+// See: refactor/monorepo-workspace-restructure branch
 
-const { app } = createApp();
-
-run(app, process.argv.slice(2));
+console.log('seo-solver CLI — placeholder');
+process.exit(0);

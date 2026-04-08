@@ -1,0 +1,27 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@seo-solver/fetch": [
+        "../fetch/src/index.ts"
+      ],
+      "@seo-solver/types": [
+        "../types/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "../fetch/src/**/*.ts",
+    "../types/src/**/*.ts",
+    "src/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "../fetch/src/**/*.spec.ts",
+    "../fetch/src/**/*.test.ts",
+    "../fetch/src/test-support/**/*.ts",
+    "dist"
+  ]
+}

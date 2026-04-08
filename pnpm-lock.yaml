@@ -56,6 +56,27 @@ importers:
         specifier: ^1.58.2
         version: 1.59.1
 
+  packages/fetch:
+    dependencies:
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../types
+
+  packages/fetch-playwright:
+    dependencies:
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      "@seo-solver/fetch":
+        specifier: workspace:*
+        version: link:../fetch
+      playwright:
+        specifier: ^1.58.2
+        version: 1.59.1
+
+  packages/types: {}
+
   packages/typescript-config: {}
 
 packages:

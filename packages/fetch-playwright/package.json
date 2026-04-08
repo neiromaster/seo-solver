@@ -1,0 +1,36 @@
+{
+  "name": "@seo-solver/fetch-playwright",
+  "version": "0.0.0",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts && tsc --project tsconfig.build.json",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@seo-solver/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@seo-solver/fetch": "workspace:*",
+    "playwright": "^1.58.2"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.40.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": false
+    }
+  }
+}

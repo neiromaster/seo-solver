@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@seo-solver/fetch": [
+        "../fetch/dist/index.d.ts"
+      ],
+      "@seo-solver/types": [
+        "../types/dist/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-support/**/*.ts",
+    "vitest.config.ts"
+  ]
+}
