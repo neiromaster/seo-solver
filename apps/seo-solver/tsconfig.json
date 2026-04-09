@@ -4,65 +4,35 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "#cli": [
-        "./src/cli"
+      "@seo-solver/compare": [
+        "../../packages/compare/src/index.ts"
       ],
-      "#cli/*": [
-        "./src/cli/*"
+      "@seo-solver/extract": [
+        "../../packages/extract/src/index.ts"
       ],
-      "#app": [
-        "./src/app"
+      "@seo-solver/fetch": [
+        "../../packages/fetch/src/index.ts"
       ],
-      "#app/*": [
-        "./src/app/*"
+      "@seo-solver/report": [
+        "../../packages/report/src/index.ts"
       ],
-      "#bootstrap": [
-        "./src/bootstrap"
+      "@seo-solver/types": [
+        "../../packages/types/src/index.ts"
       ],
-      "#bootstrap/*": [
-        "./src/bootstrap/*"
-      ],
-      "#kernel": [
-        "./src/kernel"
-      ],
-      "#kernel/*": [
-        "./src/kernel/*"
-      ],
-      "#lib": [
-        "./src/lib"
-      ],
-      "#lib/*": [
-        "./src/lib/*"
-      ],
-      "#plugins": [
-        "./src/plugins"
-      ],
-      "#plugins/*": [
-        "./src/plugins/*"
-      ],
-      "#adapters": [
-        "./src/adapters"
-      ],
-      "#adapters/*": [
-        "./src/adapters/*"
-      ],
-      "#test-support": [
-        "./src/test-support"
-      ],
-      "#test-support/*": [
-        "./src/test-support/*"
-      ],
-      "#types": [
-        "./src/types"
-      ],
-      "#types/*": [
-        "./src/types/*"
+      "@seo-solver/validate": [
+        "../../packages/validate/src/index.ts"
       ]
     }
   },
   "include": [
+    "../../packages/types/src/**/*.ts",
+    "../../packages/fetch/src/**/*.ts",
+    "../../packages/extract/src/**/*.ts",
+    "../../packages/validate/src/**/*.ts",
+    "../../packages/compare/src/**/*.ts",
+    "../../packages/report/src/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.tsx",
+    "__tests__/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": [

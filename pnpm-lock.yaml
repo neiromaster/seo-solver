@@ -43,18 +43,33 @@ importers:
 
   apps/seo-solver:
     dependencies:
-      "@adobe/structured-data-validator":
-        specifier: ^1.7.0
-        version: 1.7.0
-      ansis:
-        specifier: ^4.2.0
-        version: 4.2.0
+      "@seo-solver/compare":
+        specifier: workspace:*
+        version: link:../../packages/compare
+      "@seo-solver/extract":
+        specifier: workspace:*
+        version: link:../../packages/extract
+      "@seo-solver/fetch":
+        specifier: workspace:*
+        version: link:../../packages/fetch
+      "@seo-solver/report":
+        specifier: workspace:*
+        version: link:../../packages/report
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../../packages/types
+      "@seo-solver/validate":
+        specifier: workspace:*
+        version: link:../../packages/validate
       cmd-ts:
         specifier: ^0.15.0
         version: 0.15.0
-      playwright:
-        specifier: ^1.58.2
-        version: 1.59.1
+
+  packages/compare:
+    dependencies:
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../types
 
   packages/extract:
     dependencies:
@@ -84,9 +99,27 @@ importers:
         specifier: ^1.58.2
         version: 1.59.1
 
+  packages/report:
+    dependencies:
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../types
+      ansis:
+        specifier: ^4.2.0
+        version: 4.2.0
+
   packages/types: {}
 
   packages/typescript-config: {}
+
+  packages/validate:
+    dependencies:
+      "@adobe/structured-data-validator":
+        specifier: ^1.7.0
+        version: 1.7.0
+      "@seo-solver/types":
+        specifier: workspace:*
+        version: link:../types
 
 packages:
   "@adobe/structured-data-validator@1.7.0":
