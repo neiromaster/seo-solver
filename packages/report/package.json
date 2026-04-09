@@ -1,0 +1,25 @@
+{
+  "name": "@seo-solver/report",
+  "version": "0.0.0",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts && tsc --project tsconfig.build.json",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@seo-solver/types": "workspace:*",
+    "ansis": "^4.2.0"
+  }
+}

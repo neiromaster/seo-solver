@@ -1,0 +1,17 @@
+✗ https://example.com/page  200 OK  (342ms)
+
+── OpenGraph ───────────────────────────────────────────
+  ✗ error    og/title-missing               og:title is required for social sharing  [og:title]
+  ⚠ warning  og/description-too-long        og:description exceeds 200 characters (actual: 121)  [og:description]
+
+── Meta ────────────────────────────────────────────────
+  ⚠ warning  meta/title-too-long            Title exceeds 60 characters (actual: 71)  [title]
+
+── Headings ────────────────────────────────────────────
+  ✓ All checks passed
+
+── Canonical ───────────────────────────────────────────
+  ℹ info     canonical/mismatch-og-url      Canonical URL does not match og:url  [canonical]
+
+── Summary ─────────────────────────────────────────────
+  1 errors · 2 warnings · 1 info
