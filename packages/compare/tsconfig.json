@@ -1,0 +1,20 @@
+{
+  "extends": "../typescript-config/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@seo-solver/types": [
+        "../types/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "../types/src/**/*.ts",
+    "src/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}
