@@ -22,6 +22,15 @@ type WaeData = {
   errors: unknown[];
 };
 
+const ADOBE_PATTERNS: ReadonlyArray<readonly [pattern: RegExp, ruleId: string]> = [
+  [/Property ".*?" for type ".*?" is not supported/i, 'unsupported-property'],
+  [/Required attribute ".*?" is missing/i, 'required-missing'],
+  [/Recommended attribute ".*?" is missing/i, 'recommended-missing'],
+  [/Invalid value .* for property/i, 'invalid-value'],
+  [/expects type ".*?" but got/i, 'type-mismatch'],
+  [/Unknown type/i, 'unknown-type'],
+];
+
 export class JsonLdValidator {
   readonly type = 'jsonld';
 
@@ -128,7 +137,7 @@ export class JsonLdValidator {
       const issues = (await validator.validate(grouped)) as AdobeIssue[];
       return issues.map((issue) => ({
         severity: issue.severity === 'ERROR' ? 'error' : 'warning',
-        rule: `jsonld/adobe/${slugify(issue.issueMessage ?? 'issue')}`,
+        rule: adobeRuleId(issue.issueMessage ?? 'issue'),
         message: issue.issueMessage ?? 'Structured data validation issue',
         path: serializeAdobePath(issue),
       }));
@@ -240,14 +249,24 @@ function serializeAdobePath(issue: AdobeIssue): string | undefined {
   return issue.fieldNames && issue.fieldNames.length > 0 ? issue.fieldNames[0] : undefined;
 }
 
-function slugify(value: string): string {
-  return (
-    value
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 80) || 'issue'
-  );
+function adobeRuleId(issueMessage: string): string {
+  for (const [pattern, id] of ADOBE_PATTERNS) {
+    if (pattern.test(issueMessage)) {
+      return `jsonld/adobe/${id}`;
+    }
+  }
+
+  return `jsonld/adobe/${shortHash(issueMessage)}`;
+}
+
+function shortHash(value: string): string {
+  let hash = 0;
+
+  for (const char of value) {
+    hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
+  }
+
+  return Math.abs(hash).toString(36).slice(0, 8) || 'issue';
 }
 
 async function loadSchemaOrgJson(): Promise<unknown | null> {

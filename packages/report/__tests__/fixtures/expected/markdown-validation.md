@@ -19,8 +19,8 @@
 
 | Severity | Rule | Message |
 |----------|------|---------|
-| ✗ Error | `og/title-missing` | og:title is required for social sharing |
-| ⚠ Warning | `og/description-too-long` | og:description exceeds 200 characters (actual: 121) |
+| ✗ Error | `og/title-missing` | og:title is required for social sharing<br />- og:title |
+| ⚠ Warning | `og/description-too-long` | og:description exceeds 200 characters (actual: 121)<br />- og:description |
 
 </details>
 
@@ -31,7 +31,7 @@
 
 | Severity | Rule | Message |
 |----------|------|---------|
-| ⚠ Warning | `meta/title-too-long` | Title exceeds 60 characters (actual: 71) |
+| ⚠ Warning | `meta/title-too-long` | Title exceeds 60 characters (actual: 71)<br />- title |
 
 </details>
 
@@ -46,6 +46,6 @@
 
 | Severity | Rule | Message |
 |----------|------|---------|
-| ℹ Info | `canonical/mismatch-og-url` | Canonical URL does not match og:url |
+| ℹ Info | `canonical/mismatch-og-url` | Canonical URL does not match og:url<br />- canonical |
 
 </details>

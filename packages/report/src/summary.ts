@@ -1,4 +1,21 @@
-import type { ComparisonReport, ComparisonSummary, ValidationReport, ValidationSummary } from '@seo-solver/types';
+import type {
+  ComparisonReport,
+  ComparisonSummary,
+  Diagnostic,
+  Severity,
+  ValidationReport,
+  ValidationSummary,
+} from '@seo-solver/types';
+
+export type DiagnosticGroup = {
+  severity: Severity;
+  rule: string;
+  message: string;
+  paths: string[];
+  expected?: unknown;
+  actual?: unknown;
+  count: number;
+};
 
 export function hasFailed(report: ValidationReport): boolean {
   return report.validations.some((validation) =>
@@ -60,4 +77,35 @@ export function summarizeComparison(report: ComparisonReport): ComparisonSummary
   }
 
   return summary;
+}
+
+export function groupDiagnostics(diagnostics: Diagnostic[]): DiagnosticGroup[] {
+  const groups = new Map<string, DiagnosticGroup>();
+
+  for (const diagnostic of diagnostics) {
+    const key = `${diagnostic.rule}::${diagnostic.severity}::${diagnostic.message}`;
+    const existing = groups.get(key);
+
+    if (existing) {
+      existing.count += 1;
+
+      if (diagnostic.path) {
+        existing.paths.push(diagnostic.path);
+      }
+
+      continue;
+    }
+
+    groups.set(key, {
+      severity: diagnostic.severity,
+      rule: diagnostic.rule,
+      message: diagnostic.message,
+      paths: diagnostic.path ? [diagnostic.path] : [],
+      expected: diagnostic.expected,
+      actual: diagnostic.actual,
+      count: 1,
+    });
+  }
+
+  return [...groups.values()];
 }

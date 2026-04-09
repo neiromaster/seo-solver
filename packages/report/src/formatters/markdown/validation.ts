@@ -1,6 +1,6 @@
 import type { ReporterConfig, ValidationReport } from '@seo-solver/types';
 import { filterDiagnosticsBySeverity } from '../../filter.js';
-import { summarizeValidation } from '../../summary.js';
+import { groupDiagnostics, summarizeValidation } from '../../summary.js';
 import {
   escapeMarkdownTableCell,
   formatSeverityIcon,
@@ -49,14 +49,15 @@ export function formatMarkdownValidation(report: ValidationReport, config: Repor
       continue;
     }
 
+    const groups = groupDiagnostics(visibleDiagnostics);
     const block = [
       '| Severity | Rule | Message |',
       '|----------|------|---------|',
-      ...visibleDiagnostics.map(
-        (diagnostic) =>
-          `| ${formatSeverityIcon(diagnostic.severity)} ${formatSeverityLabel(diagnostic.severity)} | \`${escapeMarkdownTableCell(
-            diagnostic.rule,
-          )}\` | ${escapeMarkdownTableCell(diagnostic.message)} |`,
+      ...groups.map(
+        (group) =>
+          `| ${formatSeverityIcon(group.severity)} ${formatSeverityLabel(group.severity)} | \`${escapeMarkdownTableCell(
+            `${group.rule}${group.count > 1 ? ` ×${group.count}` : ''}`,
+          )}\` | ${escapeMarkdownTableCell([group.message, ...group.paths.map((path) => `- ${path}`)].join('\n'))} |`,
       ),
     ];
 

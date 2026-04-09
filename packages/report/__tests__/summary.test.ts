@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { hasFailed, summarizeComparison, summarizeValidation } from '../src/index.js';
+import { groupDiagnostics, hasFailed, summarizeComparison, summarizeValidation } from '../src/index.js';
 import { comparisonReportFixture } from './fixtures/comparison-report.js';
 import { validationReportFixture } from './fixtures/validation-report.js';
 
@@ -22,5 +22,48 @@ describe('summary helpers', () => {
       removed: 1,
       total: 5,
     });
+  });
+
+  test('groupDiagnostics merges identical diagnostics and preserves first-seen order', () => {
+    expect(
+      groupDiagnostics([
+        {
+          severity: 'warning',
+          rule: 'jsonld/adobe/unsupported-property',
+          message: 'Property "startDate" for type "Offer" is not supported',
+          path: 'Place[0].Event[0].offers',
+        },
+        {
+          severity: 'warning',
+          rule: 'jsonld/adobe/unsupported-property',
+          message: 'Property "startDate" for type "Offer" is not supported',
+          path: 'Place[0].Event[1].offers',
+        },
+        {
+          severity: 'info',
+          rule: 'jsonld/duplicate-type',
+          message: 'Multiple JSON-LD blocks with @type "Place"',
+        },
+      ]),
+    ).toEqual([
+      {
+        severity: 'warning',
+        rule: 'jsonld/adobe/unsupported-property',
+        message: 'Property "startDate" for type "Offer" is not supported',
+        paths: ['Place[0].Event[0].offers', 'Place[0].Event[1].offers'],
+        expected: undefined,
+        actual: undefined,
+        count: 2,
+      },
+      {
+        severity: 'info',
+        rule: 'jsonld/duplicate-type',
+        message: 'Multiple JSON-LD blocks with @type "Place"',
+        paths: [],
+        expected: undefined,
+        actual: undefined,
+        count: 1,
+      },
+    ]);
   });
 });

@@ -60,7 +60,7 @@ describe('JsonLdValidator', () => {
       },
       {
         severity: 'error',
-        rule: 'jsonld/adobe/required-attribute-price-is-missing',
+        rule: 'jsonld/adobe/required-missing',
         message: 'Required attribute "price" is missing',
         path: 'Product[0]',
       },
@@ -130,7 +130,7 @@ describe('JsonLdValidator', () => {
     ]);
   });
 
-  test('exact Adobe rule disable filters one rule without suppressing Adobe validation', async () => {
+  test('exact Adobe rule disable filters the whole short-id bucket without suppressing Adobe validation', async () => {
     readFileMock.mockRejectedValue(new Error('cache miss'));
     statMock.mockRejectedValue(new Error('cache miss'));
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ '@graph': [] }) }));
@@ -148,7 +148,7 @@ describe('JsonLdValidator', () => {
     ]);
 
     const result = await createValidationPipeline({
-      disableRules: ['jsonld/adobe/required-attribute-price-is-missing'],
+      disableRules: ['jsonld/adobe/required-missing'],
     }).validate([{ type: 'jsonld', source: '', data: [{ '@context': 'https://schema.org', '@type': 'Product' }] }]);
 
     expect(validateSpy).toHaveBeenCalledTimes(1);
@@ -156,14 +156,7 @@ describe('JsonLdValidator', () => {
       {
         type: 'jsonld',
         source: '',
-        diagnostics: [
-          {
-            severity: 'error',
-            rule: 'jsonld/adobe/required-attribute-name-is-missing',
-            message: 'Required attribute "name" is missing',
-            path: 'Product[0]',
-          },
-        ],
+        diagnostics: [],
       },
     ]);
   });
