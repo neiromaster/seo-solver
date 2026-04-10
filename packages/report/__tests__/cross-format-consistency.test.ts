@@ -35,7 +35,7 @@ describe('cross-format consistency', () => {
 
     expect(json.hasDiffs).toBe(true);
     expect(json.summary).toEqual({ changed: 2, added: 2, removed: 1, identical: 1, total: 5 });
-    expect(terminal).toContain('2 changed · 2 added · 1 removed · 1 identical');
+    expect(terminal).toContain('2 changed · 2 added · 1 removed');
     expect(markdown).toContain('2 changed · 2 added · 1 removed · 1 identical');
     expect(html).toContain('2 changed');
     expect(html).toContain('2 added');

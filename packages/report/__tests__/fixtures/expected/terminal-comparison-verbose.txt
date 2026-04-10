@@ -3,30 +3,28 @@ Comparing:
   B: https://example.com  200 OK  (187ms)
 
 ── OpenGraph ───────────────────────────────────────────
-  ~ changed  og:title
-             before: "Draft Title That Was Used During Development Phase"
-             after:  "Final Title For Production Release"
+  ~ og:title
+    − Draft Title That Was Used During Development Phase
+    + Final Title For Production Release
 
-  ~ changed  og:description
-             before: "Line 1\nLine 2 with <draft>"
-             after:  "Updated line with <final> and a much longer description to exercise truncation in normal mode"
+  ~ og:description
+    − Line 1
+    − Line 2 with <draft>
+    + Updated line with <final> and a much longer description to exercise truncation in normal mode
 
-  + added    og:type
-             after:  "article"
-
+  + og:type
+    + article
 
 ── Meta ────────────────────────────────────────────────
   ✓ Identical
 
 ── Headings ────────────────────────────────────────────
-  + added    [2]
-             after:  "h3 \"Enterprise | Pro\""
-
+  + [2]
+    + h3 "Enterprise | Pro"
 
 ── JSON-LD ─────────────────────────────────────────────
-  - removed  (entire type)
-             before: {"@type":"Product","name":"Widget <script>"}
-
+  - (entire type not present in B)
 
 ── Summary ─────────────────────────────────────────────
-  2 changed · 2 added · 1 removed · 1 identical
+  2 changed · 2 added · 1 removed
+  ~ changed  + added  - removed

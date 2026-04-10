@@ -1,9 +1,7 @@
 import type { ComparisonReport, ReporterConfig } from '@seo-solver/types';
 import { summarizeComparison } from '../../summary.js';
 import {
-  formatComparisonSummaryLine,
   formatDiffIcon,
-  formatDiffInline,
   formatDiffPath,
   formatStatus,
   formatTypeLabel,
@@ -26,6 +24,51 @@ function colorDiff(colors: TerminalColors, kind: 'added' | 'removed' | 'changed'
   return colors.changed(value);
 }
 
+function formatRawValue(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (value === undefined) {
+    return 'undefined';
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
+    return String(value);
+  }
+
+  return formatFullValue(value);
+}
+
+function formatEntryPath(kind: 'added' | 'removed' | 'changed', path: string): string {
+  if (path !== '(entire type)') {
+    return path;
+  }
+
+  if (kind === 'added') {
+    return '(entire type not present in A)';
+  }
+
+  if (kind === 'removed') {
+    return '(entire type not present in B)';
+  }
+
+  return path;
+}
+
+function pushValueLines(lines: string[], colors: TerminalColors, kind: 'added' | 'removed', value: unknown): void {
+  const prefix = kind === 'removed' ? '−' : '+';
+  const color = kind === 'removed' ? colors.removed : colors.added;
+
+  for (const valueLine of formatRawValue(value).split(/\r?\n/)) {
+    lines.push(`    ${color(`${prefix} ${valueLine}`)}`);
+  }
+}
+
+function formatTerminalSummaryLine(summary: ReturnType<typeof summarizeComparison>): string {
+  return `${summary.changed} changed · ${summary.added} added · ${summary.removed} removed`;
+}
+
 export function formatTerminalComparison(report: ComparisonReport, config: ResolvedTerminalConfig): string {
   const colors = createTerminalColors(config.color);
   const summary = summarizeComparison(report);
@@ -33,7 +76,7 @@ export function formatTerminalComparison(report: ComparisonReport, config: Resol
   const headerIcon = hasDiffs ? colors.changed('~') : colors.pass('✓');
 
   if (config.verbosity === 'quiet') {
-    return `${headerIcon} ${report.urlA} ↔ ${report.urlB}  ${formatComparisonSummaryLine(summary)}`;
+    return `${headerIcon} ${report.urlA} ↔ ${report.urlB}  ${formatTerminalSummaryLine(summary)}`;
   }
 
   const lines = [
@@ -54,33 +97,28 @@ export function formatTerminalComparison(report: ComparisonReport, config: Resol
 
     for (const diff of comparison.diffs) {
       const icon = colorDiff(colors, diff.kind, formatDiffIcon(diff.kind));
-      const label = colorDiff(colors, diff.kind, diff.kind);
-      const path = formatDiffPath(diff);
+      const path = formatEntryPath(diff.kind, formatDiffPath(diff));
 
-      if (config.verbosity === 'verbose') {
-        lines.push(`  ${icon} ${label.padEnd(8)} ${path}`);
+      lines.push(`  ${icon} ${path}`);
 
-        if (diff.kind === 'changed') {
-          lines.push(`             before: ${formatFullValue(diff.before)}`);
-          lines.push(`             after:  ${formatFullValue(diff.after)}`);
-        } else if (diff.kind === 'added') {
-          lines.push(`             after:  ${formatFullValue(diff.after)}`);
-        } else {
-          lines.push(`             before: ${formatFullValue(diff.before)}`);
+      if (diff.kind === 'changed') {
+        pushValueLines(lines, colors, 'removed', diff.before);
+        pushValueLines(lines, colors, 'added', diff.after);
+      } else if (diff.kind === 'added') {
+        if (diff.path !== '') {
+          pushValueLines(lines, colors, 'added', diff.after);
         }
-
-        lines.push('');
-        continue;
+      } else if (diff.path !== '') {
+        pushValueLines(lines, colors, 'removed', diff.before);
       }
 
-      lines.push(`  ${icon} ${label.padEnd(8)} ${path.padEnd(16)} ${formatDiffInline(diff, false)}`);
+      lines.push('');
     }
-
-    lines.push('');
   }
 
   lines.push(renderSectionHeading('Summary'));
-  lines.push(`  ${colors.bold(formatComparisonSummaryLine(summary))}`);
+  lines.push(`  ${colors.bold(formatTerminalSummaryLine(summary))}`);
+  lines.push(`  ${colors.dim('~ changed  + added  - removed')}`);
 
   return lines.join('\n');
 }

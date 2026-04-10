@@ -7,18 +7,22 @@ describe('terminal comparison formatter', () => {
     const output = formatComparison(comparisonReportFixture, { color: false, format: 'terminal' });
 
     expect(output).toContain('✓ Identical');
-    expect(output).toContain('(entire type)');
-    expect(output).toContain('2 changed · 2 added · 1 removed · 1 identical');
+    expect(output).toContain('(entire type not present in B)');
+    expect(output).toContain('2 changed · 2 added · 1 removed');
+    expect(output).toContain('~ changed  + added  - removed');
   });
 
-  test('truncates long values in normal mode but not in verbose mode', () => {
+  test('renders full multiline values in both normal and verbose mode', () => {
     const normalOutput = formatComparison(comparisonReportFixture, { color: false, verbosity: 'normal' });
     const verboseOutput = formatComparison(comparisonReportFixture, { color: false, verbosity: 'verbose' });
 
-    expect(normalOutput).toContain('"Draft Title That Was Used During Development P...');
+    expect(normalOutput).toContain('− Draft Title That Was Used During Development Phase');
+    expect(normalOutput).toContain('+ Final Title For Production Release');
+    expect(normalOutput).toContain('− Line 1');
+    expect(normalOutput).toContain('− Line 2 with <draft>');
     expect(verboseOutput).toContain('Draft Title That Was Used During Development Phase');
     expect(verboseOutput).toContain(
-      'after:  "Updated line with <final> and a much longer description to exercise truncation in normal mode"',
+      '+ Updated line with <final> and a much longer description to exercise truncation in normal mode',
     );
   });
 });
