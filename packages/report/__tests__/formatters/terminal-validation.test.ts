@@ -6,7 +6,7 @@ import { validationReportFixture } from '../fixtures/validation-report.js';
 describe('terminal validation formatter', () => {
   test('renders quiet output as a single summary line', () => {
     expect(formatValidation(validationReportFixture, { color: false, verbosity: 'quiet' })).toBe(
-      '✗ https://example.com/page  1 errors · 2 warnings · 1 info',
+      '✗ https://example.com/page  1 errors · 3 warnings · 0 info',
     );
   });
 
@@ -17,8 +17,8 @@ describe('terminal validation formatter', () => {
       verbosity: 'normal',
     });
 
-    expect(output).not.toContain('canonical/mismatch-og-url');
-    expect(output).toContain('1 errors · 2 warnings · 1 info');
+    expect(output).toContain('canonical/mismatch-og-url');
+    expect(output).toContain('1 errors · 3 warnings · 0 info');
     expect(output).toContain('✓ All checks passed');
   });
 

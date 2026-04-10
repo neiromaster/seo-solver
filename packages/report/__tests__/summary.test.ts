@@ -7,9 +7,9 @@ describe('summary helpers', () => {
   test('summarizeValidation counts full diagnostic set and hasFailed only tracks errors', () => {
     expect(summarizeValidation(validationReportFixture)).toEqual({
       errors: 1,
-      info: 1,
+      info: 0,
       total: 4,
-      warnings: 2,
+      warnings: 3,
     });
     expect(hasFailed(validationReportFixture)).toBe(true);
   });

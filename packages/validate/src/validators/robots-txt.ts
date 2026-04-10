@@ -2,6 +2,8 @@ import type { ExtractionEnvelope, RobotsTxtData } from '@seo-solver/types';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 import { isAbsoluteUrl } from '../utils/url.js';
 
+const SOCIAL_BOT_NAMES = ['TelegramBot', 'Twitterbot', 'facebookexternalhit', 'LinkedInBot'];
+
 export class RobotsTxtValidator {
   readonly type = 'robots-txt';
 
@@ -62,6 +64,31 @@ export class RobotsTxtValidator {
         data.crawlDelay !== null && data.crawlDelay > 10
           ? { actual: data.crawlDelay, message: `Crawl-delay of ${data.crawlDelay}s may slow indexing` }
           : null,
+    },
+    {
+      id: 'robots/blocks-social-bots',
+      severity: 'warning',
+      message: 'robots.txt blocks social crawler user agents',
+      check: (data) => {
+        const diagnostics = data.groups.flatMap((group, index) => {
+          const blockedBots = group.userAgents.filter((userAgent) =>
+            SOCIAL_BOT_NAMES.some((botName) => userAgent.includes(botName)),
+          );
+          if (blockedBots.length === 0 || !group.disallow.includes('/') || group.allow.length > 0) {
+            return [];
+          }
+
+          return [
+            {
+              path: `groups[${index}]`,
+              actual: blockedBots,
+              message: `robots.txt blocks social bots: ${blockedBots.join(', ')}`,
+            },
+          ];
+        });
+
+        return diagnostics.length > 0 ? diagnostics : null;
+      },
     },
   ];
 

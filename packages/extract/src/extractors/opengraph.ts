@@ -2,7 +2,7 @@ import type { ExtractionEnvelope, FetchResult, OpenGraphData, ResourceType } fro
 import { type ParsedDocument, parseHtml } from '../parse-html.js';
 import { ensureWarningList } from './shared.js';
 
-const OPEN_GRAPH_PREFIXES = ['og:', 'article:', 'book:', 'music:', 'video:', 'profile:'];
+const OPEN_GRAPH_PREFIXES = ['og:', 'article:', 'book:', 'music:', 'video:', 'profile:', 'al:', 'vk:'];
 
 export class OpenGraphExtractor {
   readonly type = 'opengraph';

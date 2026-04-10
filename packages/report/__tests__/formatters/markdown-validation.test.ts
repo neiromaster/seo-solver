@@ -21,7 +21,7 @@ describe('markdown validation formatter', () => {
     });
 
     expect(output).not.toContain('<details>');
-    expect(output).not.toContain('canonical/mismatch-og-url');
+    expect(output).toContain('canonical/mismatch-og-url');
   });
 
   test('does not mark hidden diagnostics as passing', () => {

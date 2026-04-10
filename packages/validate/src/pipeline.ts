@@ -7,7 +7,6 @@ import type {
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
-  ValidatePipelineCallOptions,
   ValidationPipeline,
   ValidationPipelineConfig,
   ValidationResult,
@@ -20,6 +19,7 @@ import { MetaTagsValidator } from './validators/meta.js';
 import { OpenGraphValidator } from './validators/opengraph.js';
 import { resolveValidators } from './validators/registry.js';
 import { RobotsTxtValidator } from './validators/robots-txt.js';
+import { TwitterCardValidator } from './validators/twitter.js';
 
 export function createValidationPipeline(config: ValidationPipelineConfig = {}): ValidationPipeline {
   const configuredValidators = resolveValidators(config, config.validators);
@@ -36,6 +36,7 @@ export function createValidationPipeline(config: ValidationPipelineConfig = {}):
       });
 
       const results: ValidationResult[] = [];
+      const wildcardValidators = selectedValidators.filter((validator) => validator.type === '*');
       for (const envelope of envelopes) {
         const matchingValidators = selectedValidators.filter((validator) => validator.type === envelope.type);
         if (matchingValidators.length === 0) {
@@ -49,6 +50,7 @@ export function createValidationPipeline(config: ValidationPipelineConfig = {}):
           }
 
           diagnostics = diagnostics.concat(
+            // biome-ignore lint/performance/noAwaitInLoops: validators run sequentially per envelope
             await validator.validate(envelope, envelopes, {
               disableAdobeValidation:
                 validator.type === 'jsonld' &&
@@ -63,6 +65,38 @@ export function createValidationPipeline(config: ValidationPipelineConfig = {}):
           source: envelope.source,
           diagnostics: ruleFilter.apply(diagnostics),
         });
+      }
+
+      if (wildcardValidators.length > 0) {
+        const firstEnvelope = envelopes[0];
+        if (!firstEnvelope) {
+          return results;
+        }
+
+        let diagnostics: Diagnostic[] = [];
+        for (const validator of wildcardValidators) {
+          diagnostics = diagnostics.concat(
+            // biome-ignore lint/performance/noAwaitInLoops: validators run sequentially for cross-checks
+            await validator.validate(firstEnvelope, envelopes, {
+              disableAdobeValidation: false,
+              isRuleEnabled: (ruleId) => !ruleFilter.isDisabled(ruleId),
+            }),
+          );
+        }
+
+        const filteredDiagnostics = ruleFilter.apply(diagnostics);
+        if (filteredDiagnostics.length > 0) {
+          const existing = results.find((r) => r.type === firstEnvelope.type);
+          if (existing) {
+            existing.diagnostics.push(...filteredDiagnostics);
+          } else {
+            results.push({
+              type: '*',
+              source: firstEnvelope.source,
+              diagnostics: filteredDiagnostics,
+            });
+          }
+        }
       }
 
       return results;
@@ -89,6 +123,10 @@ export async function validateJsonLd(data: JsonLdData): Promise<Diagnostic[]> {
 
 export async function validateMetaTags(data: MetaTagsData): Promise<Diagnostic[]> {
   return new MetaTagsValidator().validate(toEnvelope('meta', data));
+}
+
+export async function validateTwitterCards(data: MetaTagsData): Promise<Diagnostic[]> {
+  return new TwitterCardValidator().validate(toEnvelope('meta', data));
 }
 
 export async function validateHeadings(data: HeadingsData): Promise<Diagnostic[]> {

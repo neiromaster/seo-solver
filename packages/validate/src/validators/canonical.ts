@@ -23,7 +23,7 @@ export class CanonicalValidator {
     },
     {
       id: 'canonical/mismatch-og-url',
-      severity: 'info',
+      severity: 'warning',
       message: 'Canonical URL does not match og:url',
       check: (data, context) => {
         if (!context || data.canonical === null) {

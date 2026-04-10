@@ -3,5 +3,9 @@ import type { ExtractionEnvelope } from './extraction-envelope.js';
 
 export type Validator = {
   readonly type: string;
-  validate(envelope: ExtractionEnvelope, context?: ExtractionEnvelope[]): Promise<Diagnostic[]>;
+  validate(
+    envelope: ExtractionEnvelope,
+    context?: ExtractionEnvelope[],
+    options?: { disableAdobeValidation?: boolean; isRuleEnabled?: (ruleId: string) => boolean },
+  ): Promise<Diagnostic[]>;
 };

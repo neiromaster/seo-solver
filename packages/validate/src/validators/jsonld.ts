@@ -1,7 +1,14 @@
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
-import type { Diagnostic, ExtractionEnvelope, JsonLdData, JsonLdEntry } from '@seo-solver/types';
+import type {
+  CanonicalData,
+  Diagnostic,
+  ExtractionEnvelope,
+  JsonLdData,
+  JsonLdEntry,
+  OpenGraphData,
+} from '@seo-solver/types';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 const SCHEMA_CACHE_FILE = join(homedir(), '.cache', 'seo-solver', 'schema-org.jsonld');
@@ -80,6 +87,61 @@ export class JsonLdValidator {
         const diagnostics = [...counts.entries()].flatMap(([type, count]) =>
           count > 1 ? [{ actual: count, message: `Multiple JSON-LD blocks with @type '${type}'` }] : [],
         );
+        return diagnostics.length > 0 ? diagnostics : null;
+      },
+    },
+    {
+      id: 'jsonld/url-mismatch-canonical',
+      severity: 'info',
+      message: 'JSON-LD url does not match the canonical URL',
+      check: (data, context) => {
+        const canonical = findCanonicalEnvelope(context)?.data.canonical;
+        if (!canonical) {
+          return null;
+        }
+
+        const diagnostics = flattenJsonLdObjects(data)
+          .map((entry) => ({ entry, url: getJsonLdString(entry.value, 'url') }))
+          .filter(({ url }) => typeof url === 'string' && url !== canonical)
+          .map(({ entry, url }) => ({ path: `${entry.path}.url`, expected: canonical, actual: url }));
+
+        return diagnostics.length > 0 ? diagnostics : null;
+      },
+    },
+    {
+      id: 'jsonld/name-mismatch-og-title',
+      severity: 'info',
+      message: 'JSON-LD name does not match og:title',
+      check: (data, context) => {
+        const ogTitle = getFirstOpenGraphValue(findOpenGraphEnvelope(context)?.data, 'og:title');
+        if (!ogTitle) {
+          return null;
+        }
+
+        const diagnostics = flattenJsonLdObjects(data)
+          .filter((entry) => hasAnyType(entry.value, ['Article', 'Product']))
+          .map((entry) => ({ entry, name: getJsonLdString(entry.value, 'name') }))
+          .filter(({ name }) => typeof name === 'string' && name !== ogTitle)
+          .map(({ entry, name }) => ({ path: `${entry.path}.name`, expected: ogTitle, actual: name }));
+
+        return diagnostics.length > 0 ? diagnostics : null;
+      },
+    },
+    {
+      id: 'jsonld/image-mismatch-og-image',
+      severity: 'info',
+      message: 'JSON-LD image does not match og:image',
+      check: (data, context) => {
+        const ogImage = getFirstOpenGraphValue(findOpenGraphEnvelope(context)?.data, 'og:image');
+        if (!ogImage) {
+          return null;
+        }
+
+        const diagnostics = flattenJsonLdObjects(data)
+          .map((entry) => ({ entry, image: getJsonLdImage(entry.value) }))
+          .filter(({ image }) => typeof image === 'string' && image !== ogImage)
+          .map(({ entry, image }) => ({ path: `${entry.path}.image`, expected: ogImage, actual: image }));
+
         return diagnostics.length > 0 ? diagnostics : null;
       },
     },
@@ -218,6 +280,34 @@ function getTypeValues(value: Record<string, unknown>): string[] {
   return type.filter((entry): entry is string => typeof entry === 'string' && entry !== '');
 }
 
+function hasAnyType(value: Record<string, unknown>, expectedTypes: string[]): boolean {
+  const types = new Set(getTypeValues(value));
+  return expectedTypes.some((entry) => types.has(entry));
+}
+
+function getJsonLdString(value: Record<string, unknown>, key: string): string | null {
+  const candidate = value[key];
+  return typeof candidate === 'string' && candidate !== '' ? candidate : null;
+}
+
+function getJsonLdImage(value: Record<string, unknown>): string | null {
+  const image = value.image;
+  if (typeof image === 'string' && image !== '') {
+    return image;
+  }
+
+  if (Array.isArray(image)) {
+    return image.find((entry): entry is string => typeof entry === 'string' && entry !== '') ?? null;
+  }
+
+  if (typeof image === 'object' && image !== null) {
+    const imageRecord = image as Record<string, unknown>;
+    return typeof imageRecord.url === 'string' && imageRecord.url !== '' ? imageRecord.url : null;
+  }
+
+  return null;
+}
+
 function toWaeData(data: JsonLdData): WaeData {
   const grouped: Record<string, Record<string, unknown>[]> = {};
 
@@ -324,4 +414,29 @@ async function loadAdobeValidator(): Promise<
   }
 
   throw new Error('Unable to load @adobe/structured-data-validator Validator export');
+}
+
+function findCanonicalEnvelope(
+  context: ExtractionEnvelope[] | undefined,
+): ExtractionEnvelope<CanonicalData> | undefined {
+  return context?.find((entry): entry is ExtractionEnvelope<CanonicalData> => entry.type === 'canonical');
+}
+
+function findOpenGraphEnvelope(
+  context: ExtractionEnvelope[] | undefined,
+): ExtractionEnvelope<OpenGraphData> | undefined {
+  return context?.find((entry): entry is ExtractionEnvelope<OpenGraphData> => entry.type === 'opengraph');
+}
+
+function getFirstOpenGraphValue(data: OpenGraphData | undefined, key: string): string | null {
+  if (!data) {
+    return null;
+  }
+
+  const value = data[key];
+  if (typeof value === 'string') {
+    return value || null;
+  }
+
+  return Array.isArray(value) ? (value.find((entry) => entry !== '') ?? null) : null;
 }

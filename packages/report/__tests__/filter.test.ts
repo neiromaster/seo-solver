@@ -14,6 +14,7 @@ describe('filterDiagnosticsBySeverity', () => {
       'error',
       'warning',
       'warning',
+      'warning',
     ]);
   });
 

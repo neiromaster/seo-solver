@@ -30,4 +30,24 @@ describe('OpenGraphExtractor', () => {
   test('extracts from body when head is missing', () => {
     expect(extractOpenGraph(readFixture('no-head.html'))?.['og:title']).toBe('Body OG');
   });
+
+  test('extracts app links and vk property namespaces', () => {
+    const result = extractOpenGraph(
+      '<html><head><meta property="og:title" content="Title"><meta property="al:ios:url" content="example://page"><meta property="al:android:package" content="com.example.app"><meta property="vk:image" content="https://example.com/vk.jpg"></head></html>',
+    );
+
+    expect(result).toEqual({
+      'og:title': 'Title',
+      'al:ios:url': 'example://page',
+      'al:android:package': 'com.example.app',
+      'vk:image': 'https://example.com/vk.jpg',
+    });
+  });
+
+  test('supports vk name fallback in addition to property extraction', () => {
+    const result = extractOpenGraph(
+      '<html><head><meta name="vk:image" content="https://example.com/name-vk.jpg"></head></html>',
+    );
+    expect(result?.['vk:image']).toBe('https://example.com/name-vk.jpg');
+  });
 });

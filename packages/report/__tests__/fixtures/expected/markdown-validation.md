@@ -9,8 +9,8 @@
 | Severity | Count |
 |----------|-------|
 | Errors | 1 |
-| Warnings | 2 |
-| Info | 1 |
+| Warnings | 3 |
+| Info | 0 |
 
 ## OpenGraph
 
@@ -46,6 +46,6 @@
 
 | Severity | Rule | Message |
 |----------|------|---------|
-| ℹ Info | `canonical/mismatch-og-url` | Canonical URL does not match og:url<br />- canonical |
+| ⚠ Warning | `canonical/mismatch-og-url` | Canonical URL does not match og:url<br />- canonical |
 
 </details>

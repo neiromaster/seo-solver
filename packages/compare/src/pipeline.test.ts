@@ -16,11 +16,19 @@ describe('createComparisonPipeline', () => {
     const result = createComparisonPipeline().compare(
       [
         { type: 'opengraph', source: 'https://a.example', data: { 'og:title': 'A' } },
-        { type: 'meta', source: 'https://a.example', data: { title: 'T', charset: 'utf-8', name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: 'https://a.example',
+          data: { title: 'T', charset: 'utf-8', name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
       [
         { type: 'opengraph', source: 'https://b.example', data: { 'og:title': 'B' } },
-        { type: 'meta', source: 'https://b.example', data: { title: 'T', charset: 'utf-8', name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: 'https://b.example',
+          data: { title: 'T', charset: 'utf-8', name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
     );
 
@@ -42,7 +50,13 @@ describe('createComparisonPipeline', () => {
 
   test('reports removed and added types at the type level', () => {
     const result = createComparisonPipeline().compare(
-      [{ type: 'meta', source: 'https://a.example', data: { title: null, charset: null, name: {}, httpEquiv: {} } }],
+      [
+        {
+          type: 'meta',
+          source: 'https://a.example',
+          data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
+      ],
       [{ type: 'canonical', source: 'https://b.example', data: { canonical: 'https://b.example', hreflang: [] } }],
     );
 
@@ -51,7 +65,13 @@ describe('createComparisonPipeline', () => {
         type: 'meta',
         sourceA: 'https://a.example',
         sourceB: 'https://b.example',
-        diffs: [{ kind: 'removed', path: '', before: { title: null, charset: null, name: {}, httpEquiv: {} } }],
+        diffs: [
+          {
+            kind: 'removed',
+            path: '',
+            before: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+          },
+        ],
       },
       {
         type: 'canonical',
@@ -79,11 +99,19 @@ describe('createComparisonPipeline', () => {
     const result = pipeline.compare(
       [
         { type: 'opengraph', source: '', data: { 'og:title': 'A' } },
-        { type: 'meta', source: '', data: { title: 'A', charset: null, name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'A', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
       [
         { type: 'opengraph', source: '', data: { 'og:title': 'B' } },
-        { type: 'meta', source: '', data: { title: 'B', charset: null, name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'B', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
       { types: ['meta'] },
     );
@@ -95,11 +123,19 @@ describe('createComparisonPipeline', () => {
     const result = createComparisonPipeline({ types: ['meta', 'opengraph'] }).compare(
       [
         { type: 'opengraph', source: '', data: { 'og:title': 'A' } },
-        { type: 'meta', source: '', data: { title: 'A', charset: null, name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'A', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
       [
         { type: 'opengraph', source: '', data: { 'og:title': 'B' } },
-        { type: 'meta', source: '', data: { title: 'B', charset: null, name: {}, httpEquiv: {} } },
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'B', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
       ],
     );
 
@@ -115,8 +151,20 @@ describe('createComparisonPipeline', () => {
     };
 
     const result = createComparisonPipeline({ comparators: [customComparator] }).compare(
-      [{ type: 'meta', source: '', data: { title: 'A', charset: null, name: {}, httpEquiv: {} } }],
-      [{ type: 'meta', source: '', data: { title: 'B', charset: null, name: {}, httpEquiv: {} } }],
+      [
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'A', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
+      ],
+      [
+        {
+          type: 'meta',
+          source: '',
+          data: { title: 'B', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
+      ],
     );
 
     expect(result[0]?.diffs).toEqual([{ kind: 'changed', path: 'title', before: 'A', after: 'forced' }]);
@@ -139,8 +187,8 @@ describe('level 1 compare functions', () => {
   test('compareMetaTags returns diff entries', () => {
     expect(
       compareMetaTags(
-        { title: 'A', charset: null, name: {}, httpEquiv: {} },
-        { title: 'B', charset: null, name: {}, httpEquiv: {} },
+        { title: 'A', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        { title: 'B', charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
       ),
     ).toEqual([{ kind: 'changed', path: 'title', before: 'A', after: 'B' }]);
   });

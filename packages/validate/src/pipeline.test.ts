@@ -1,10 +1,15 @@
 import { describe, expect, test } from 'vitest';
+import { createExtractorPipeline, htmlToMinimalFetchResult } from '../../extract/src/index.js';
 import { createValidationPipeline, validateAll } from './index.js';
 
 describe('createValidationPipeline', () => {
   test('validates envelopes in order', async () => {
     const envelopes = [
-      { type: 'meta', source: 'https://example.com', data: { title: null, charset: 'utf-8', name: {}, httpEquiv: {} } },
+      {
+        type: 'meta',
+        source: 'https://example.com',
+        data: { title: null, charset: 'utf-8', name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+      },
       { type: 'headings', source: 'https://example.com', data: [{ level: 1, text: 'Heading' }] },
     ];
 
@@ -20,7 +25,11 @@ describe('createValidationPipeline', () => {
 
   test('supports selective validators', async () => {
     const result = await createValidationPipeline({ validators: ['meta'] }).validate([
-      { type: 'meta', source: '', data: { title: null, charset: null, name: {}, httpEquiv: {} } },
+      {
+        type: 'meta',
+        source: '',
+        data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+      },
       { type: 'headings', source: '', data: [] },
     ]);
 
@@ -41,7 +50,11 @@ describe('createValidationPipeline', () => {
     };
 
     const result = await createValidationPipeline({ validators: [customValidator] }).validate([
-      { type: 'meta', source: '', data: { title: null, charset: null, name: {}, httpEquiv: {} } },
+      {
+        type: 'meta',
+        source: '',
+        data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+      },
     ]);
 
     expect(result).toEqual([
@@ -60,7 +73,11 @@ describe('createValidationPipeline', () => {
     });
 
     const result = await pipeline.validate([
-      { type: 'meta', source: '', data: { title: 'Long enough title', charset: 'utf-8', name: {}, httpEquiv: {} } },
+      {
+        type: 'meta',
+        source: '',
+        data: { title: 'Long enough title', charset: 'utf-8', name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+      },
     ]);
 
     expect(result[0]?.diagnostics).toEqual([
@@ -71,7 +88,13 @@ describe('createValidationPipeline', () => {
   test('supports per-call disabled rule union', async () => {
     const pipeline = createValidationPipeline({ disableRules: ['meta/charset-missing'] });
     const result = await pipeline.validate(
-      [{ type: 'meta', source: '', data: { title: null, charset: null, name: {}, httpEquiv: {} } }],
+      [
+        {
+          type: 'meta',
+          source: '',
+          data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        },
+      ],
       { disableRules: ['meta/viewport-missing'] },
     );
 
@@ -108,6 +131,93 @@ describe('createValidationPipeline', () => {
 
     expect(result[0]?.diagnostics).toEqual(
       expect.arrayContaining([expect.objectContaining({ rule: 'canonical/mismatch-og-url' })]),
+    );
+  });
+
+  test('runs wildcard cross validators once and merges diagnostics into existing results', async () => {
+    const result = await createValidationPipeline().validate([
+      {
+        type: 'meta',
+        source: 'https://example.com/page',
+        data: {
+          title: 'Healthy Title Example',
+          charset: 'utf-8',
+          name: { robots: 'noindex,follow' },
+          httpEquiv: {},
+          lang: 'en',
+          itemprop: {},
+        },
+      },
+      {
+        type: 'opengraph',
+        source: 'https://example.com/page',
+        data: {
+          'og:title': 'Article title',
+          'og:type': 'website',
+          'article:published_time': '2024-01-01T00:00:00Z',
+        },
+      },
+    ]);
+
+    expect(result.map((entry) => entry.type)).toEqual(['meta', 'opengraph']);
+    expect(result[0]?.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ rule: 'cross/noindex-with-seo' }),
+        expect.objectContaining({ rule: 'cross/og-type-content-mismatch' }),
+      ]),
+    );
+  });
+
+  test('treats twitter and itemprop metadata as seo signals for noindex cross-validation', async () => {
+    const result = await createValidationPipeline().validate([
+      {
+        type: 'meta',
+        source: 'https://example.com/page',
+        data: {
+          title: 'Healthy Title Example',
+          charset: 'utf-8',
+          name: {
+            robots: 'noindex,follow',
+            'twitter:card': 'summary',
+          },
+          httpEquiv: {},
+          lang: 'en',
+          itemprop: { image: 'https://example.com/itemprop.jpg' },
+        },
+      },
+    ]);
+
+    expect(result[0]?.diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ rule: 'cross/noindex-with-seo' })]),
+    );
+  });
+
+  test('validates app links and vk rules from real extracted html', async () => {
+    const html =
+      '<!doctype html><html lang="en"><head><title>Example page title</title><meta name="description" content="A sufficiently descriptive meta description for validation coverage."><meta name="viewport" content="width=device-width, initial-scale=1"><meta property="og:title" content="OG Title"><meta property="og:image" content="https://example.com/og.jpg"><meta property="al:ios:url" content="example://page"><meta property="vk:image" content="https://example.com/vk-property.jpg"><meta name="vk:image" content="https://example.com/vk-name.jpg"></head><body><h1>Heading</h1></body></html>';
+    const envelopes = createExtractorPipeline().extract(htmlToMinimalFetchResult(html, 'html'));
+
+    const result = await createValidationPipeline().validate(envelopes);
+
+    expect(result.find((entry) => entry.type === 'opengraph')?.diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ rule: 'applinks/ios-incomplete' })]),
+    );
+    expect(result.find((entry) => entry.type === 'opengraph')?.diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ rule: 'vk/image-present' })]),
+    );
+  });
+
+  test('validates vk property-only markup without requiring a meta envelope', async () => {
+    const html =
+      '<!doctype html><html><head><meta property="vk:image" content="https://example.com/vk-property.jpg"></head><body></body></html>';
+    const envelopes = createExtractorPipeline().extract(htmlToMinimalFetchResult(html, 'html'));
+
+    expect(envelopes.map((entry) => entry.type)).toEqual(['opengraph']);
+
+    const result = await createValidationPipeline().validate(envelopes);
+
+    expect(result[0]?.diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ rule: 'vk/image-present' })]),
     );
   });
 });

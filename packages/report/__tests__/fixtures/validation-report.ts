@@ -57,7 +57,7 @@ export const validationReportFixture: ValidationReport = {
           message: 'Canonical URL does not match og:url',
           path: 'canonical',
           rule: 'canonical/mismatch-og-url',
-          severity: 'info',
+          severity: 'warning',
         },
       ],
       source: 'https://example.com/page',

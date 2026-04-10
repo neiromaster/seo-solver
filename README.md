@@ -17,13 +17,11 @@ pnpm typecheck
 
 ## Features
 
-- Compare JSON-LD between two URLs
-- Compare OpenGraph tags between two URLs with `--og`
-- Validate JSON-LD on a single URL
-- Open diffs in a VS Code-like editor with `diff --editor <command>`
-- Open extracted JSON-LD or OpenGraph data in a VS Code-like editor with `validate --editor <command>`
-- Fail fast if the requested editor command is not available in `PATH`
-- Fetch via `basic` (default), `curl`, or Chrome via `--fetcher`
+- Compare extracted SEO data between two URLs
+- Validate extracted SEO and social metadata on a single URL
+- Extract raw SEO data without running validation
+- List available validation rules from the CLI
+- Fetch via `native` (default) or `playwright` via `--fetcher`
 
 ## Installation
 
@@ -36,65 +34,87 @@ pnpm add -g seo-solver
 The CLI uses subcommands:
 
 ```bash
-seo-solver diff <url1> <url2> [flags]
+seo-solver compare <url1> <url2> [flags]
 seo-solver validate <url> [flags]
+seo-solver extract <url> [flags]
+seo-solver list-rules [flags]
 ```
 
 ## Examples
 
 ```bash
-# Compare JSON-LD and open the diff in Cursor
-seo-solver diff https://example.com https://example.com/new --editor cursor
+# Compare the default extractor set between two pages
+seo-solver compare https://example.com https://example.com/new
 
-# Compare OpenGraph and open the diff in VS Code
-seo-solver diff https://example.com https://example.com/new --og --editor code
+# Compare only OpenGraph data
+seo-solver compare https://example.com https://example.com/new --extractors opengraph
 
-# Validate a page's JSON-LD
+# Validate a page with the default extractor set
 seo-solver validate https://example.com
 
-# Force curl fetching
-seo-solver validate https://example.com --fetcher curl
+# Use the native fetcher explicitly
+seo-solver validate https://example.com --fetcher native
 
-# Launch Chrome via Playwright for browser-based extraction
-seo-solver diff https://example.com https://example.com/new --fetcher chrome
+# Use the Playwright fetcher for browser-based comparison
+seo-solver compare https://example.com https://example.com/new --fetcher playwright
 
-# Connect to an existing Chrome instance with remote debugging enabled
-seo-solver validate https://example.com --fetcher chrome:9222
+# Use the Playwright fetcher for validation
+seo-solver validate https://example.com --fetcher playwright
 
-# Open extracted metadata in Surf, then continue validation
-seo-solver validate https://example.com --editor surf
+# Extract raw metadata without validation
+seo-solver extract https://example.com --extractors opengraph,meta
 
-# Open extracted OpenGraph in Cursor
-seo-solver validate https://example.com --og --editor cursor
+# Validate only OpenGraph-derived metadata
+seo-solver validate https://example.com --extractors opengraph
+
+# Limit validation to OpenGraph and meta tags
+seo-solver validate https://example.com --extractors opengraph,meta
+
+# Show the available validation rules as JSON
+seo-solver list-rules --format json
 ```
 
 ## Options
 
-### `diff`
+### `compare`
 
 | Flag | Alias | Description |
 |------|-------|-------------|
-| `--fetcher <value>` | `-f` | Select fetcher backend: `basic`, `curl`, `chrome`, or `chrome:<port\|host:port\|url>` |
-| `--curl` | `-c` | Deprecated: use `--fetcher curl` |
-| `--og` | `-o` | Compare OpenGraph instead of JSON-LD |
-| `--editor <command>` | `-e` | Open diff in editor |
+| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
+| `--extractors <list>` | `-e` | Limit comparison to selected extractors, e.g. `opengraph`, `meta`, `jsonld` |
+| `--output <path>` | `-o` | Write comparison output to a file |
 
 ### `validate`
 
 | Flag | Alias | Description |
 |------|-------|-------------|
-| `--fetcher <value>` | `-f` | Select fetcher backend: `basic`, `curl`, `chrome`, or `chrome:<port\|host:port\|url>` |
-| `--curl` | `-c` | Deprecated: use `--fetcher curl` |
-| `--og` | `-o` | Read OpenGraph instead of JSON-LD |
-| `--editor <command>` | `-e` | Open extracted metadata in editor |
+| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
+| `--extractors <list>` | `-e` | Limit validation to selected extractors, e.g. `opengraph`, `meta`, `jsonld` |
+| `--format <terminal\|json\|markdown\|html>` | `-f` | Choose the report output format |
+| `--min-severity <level>` | — | Show diagnostics at or above the selected severity |
+| `--disable-rule <rule>` | — | Disable one or more validation rules |
+| `--severity-override <rule=severity>` | — | Override severity for a specific rule |
+| `--output <path>` | `-o` | Write validation output to a file |
 
-> If `--editor` is provided, the CLI first checks that the editor command exists in `PATH` and fails immediately if it does not.
+### `extract`
+
+| Flag | Alias | Description |
+|------|-------|-------------|
+| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
+| `--extractors <list>` | `-e` | Limit extraction to selected extractors |
+| `--format <json>` | `-f` | Choose the extract output format |
+| `--output <path>` | `-o` | Write extracted JSON output to a file |
+
+### `list-rules`
+
+| Flag | Alias | Description |
+|------|-------|-------------|
+| `--format <terminal\|json>` | `-f` | Choose human-readable or JSON rule output |
+| `--output <path>` | `-o` | Write rule output to a file |
+
+> Default fetcher is `native` when no fetcher flag is provided.
 >
-> Default fetcher is `basic` when no fetcher flag is provided.
->
-> `-c` is kept for backward compatibility and prints a deprecation warning. If both `-c` and `--fetcher` are passed, `--fetcher` wins.
->
-> `validate --og` fetches and reports OpenGraph tags, but OpenGraph validation itself is not implemented yet.
+> `validate` runs the configured extractor set and validates the extracted metadata. Use `--extractors` to focus on specific sources such as OpenGraph, meta tags, or JSON-LD.
 
 ## License
 

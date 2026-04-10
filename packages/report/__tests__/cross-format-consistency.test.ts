@@ -13,15 +13,15 @@ describe('cross-format consistency', () => {
     const markdown = formatValidation(validationReportFixture, { format: 'markdown' });
     const html = formatValidation(validationReportFixture, { format: 'html' });
 
-    expect(json.summary).toEqual({ errors: 1, warnings: 2, info: 1, total: 4 });
+    expect(json.summary).toEqual({ errors: 1, warnings: 3, info: 0, total: 4 });
     expect(json.passed).toBe(!hasFailed(validationReportFixture));
-    expect(terminal).toContain('1 errors · 2 warnings · 1 info');
+    expect(terminal).toContain('1 errors · 3 warnings · 0 info');
     expect(markdown).toContain('| Errors | 1 |');
-    expect(markdown).toContain('| Warnings | 2 |');
-    expect(markdown).toContain('| Info | 1 |');
+    expect(markdown).toContain('| Warnings | 3 |');
+    expect(markdown).toContain('| Info | 0 |');
     expect(html).toContain('1 errors');
-    expect(html).toContain('2 warnings');
-    expect(html).toContain('1 info');
+    expect(html).toContain('3 warnings');
+    expect(html).toContain('0 info');
   });
 
   test('comparison formats agree on diff counts', () => {

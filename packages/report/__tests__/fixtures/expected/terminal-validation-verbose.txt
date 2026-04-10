@@ -24,7 +24,7 @@
   ✓ All checks passed
 
 ── Canonical ───────────────────────────────────────────
-  ℹ info     canonical/mismatch-og-url
+  ⚠ warning  canonical/mismatch-og-url
              Canonical URL does not match og:url
              path:     canonical
              expected: https://example.com/page
@@ -32,4 +32,4 @@
              value:    "https://example.com/other?<tag>"
 
 ── Summary ─────────────────────────────────────────────
-  1 errors · 2 warnings · 1 info
+  1 errors · 3 warnings · 0 info

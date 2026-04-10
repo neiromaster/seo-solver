@@ -22,6 +22,8 @@ export class MetaTagsExtractor {
       charset: null,
       name: {},
       httpEquiv: {},
+      lang: document('html').first().attr('lang') ?? null,
+      itemprop: {},
     };
 
     const title = document('title').first();
@@ -38,6 +40,7 @@ export class MetaTagsExtractor {
       const node = document(element);
       const name = node.attr('name');
       const httpEquiv = node.attr('http-equiv');
+      const itemprop = node.attr('itemprop');
       const content = node.attr('content');
 
       if (name && content !== undefined && !isOpenGraphLikeName(name)) {
@@ -47,9 +50,20 @@ export class MetaTagsExtractor {
       if (httpEquiv && content !== undefined) {
         data.httpEquiv[httpEquiv.toLowerCase()] = content;
       }
+
+      if (itemprop && content !== undefined) {
+        data.itemprop[itemprop.toLowerCase()] = content;
+      }
     }
 
-    if (data.title === null && data.charset === null && isRecordEmpty(data.name) && isRecordEmpty(data.httpEquiv)) {
+    if (
+      data.title === null &&
+      data.charset === null &&
+      data.lang === null &&
+      isRecordEmpty(data.name) &&
+      isRecordEmpty(data.httpEquiv) &&
+      isRecordEmpty(data.itemprop)
+    ) {
       return null;
     }
 

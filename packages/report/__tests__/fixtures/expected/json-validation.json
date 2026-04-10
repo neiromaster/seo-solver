@@ -59,7 +59,7 @@
           "message": "Canonical URL does not match og:url",
           "path": "canonical",
           "rule": "canonical/mismatch-og-url",
-          "severity": "info"
+          "severity": "warning"
         }
       ],
       "source": "https://example.com/page",
@@ -69,8 +69,8 @@
   "passed": false,
   "summary": {
     "errors": 1,
-    "warnings": 2,
-    "info": 1,
+    "warnings": 3,
+    "info": 0,
     "total": 4
   }
 }
