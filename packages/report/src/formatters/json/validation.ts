@@ -1,4 +1,5 @@
-import type { ReporterConfig, ValidationReport } from '@seo-solver/types';
+import type { ReporterConfig } from '@seo-solver/types/report';
+import type { ValidationReport } from '@seo-solver/types/validate';
 import { hasFailed, summarizeValidation } from '../../summary.js';
 
 export function formatJsonValidation(report: ValidationReport, config: ReporterConfig): string {
@@ -8,5 +9,7 @@ export function formatJsonValidation(report: ValidationReport, config: ReporterC
     summary: summarizeValidation(report),
   };
 
-  return JSON.stringify(payload, null, config.jsonPretty === false ? undefined : 2);
+  const indent = config.jsonPretty === false ? undefined : 2;
+  const output = JSON.stringify(payload, null, indent);
+  return indent === undefined ? output : `${output}\n`;
 }

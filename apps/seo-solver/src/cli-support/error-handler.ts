@@ -1,4 +1,4 @@
-import { FetchError } from '@seo-solver/fetch';
+import { isFetchErrorLike } from '@seo-solver/fetch';
 
 export class CLIError extends Error {
   constructor(message: string) {
@@ -14,9 +14,21 @@ export function handleError(error: unknown): void {
     return;
   }
 
-  if (error instanceof FetchError) {
+  if (isFetchErrorLike(error)) {
     console.error(`Fetch error (${error.code}): ${error.message}`);
-    console.error(`  URL: ${error.url}`);
+
+    if (error.url) {
+      console.error(`  URL: ${error.url}`);
+    }
+
+    if (error.backend) {
+      console.error(`  Backend: ${error.backend}`);
+    }
+
+    if (error.installHint) {
+      console.error(`  Hint: ${error.installHint}`);
+    }
+
     process.exitCode = 2;
     return;
   }

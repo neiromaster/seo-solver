@@ -3,12 +3,12 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import type {
   CanonicalData,
-  Diagnostic,
   ExtractionEnvelope,
   JsonLdData,
   JsonLdEntry,
   OpenGraphData,
-} from '@seo-solver/types';
+} from '@seo-solver/types/extract';
+import type { Diagnostic } from '@seo-solver/types/validate';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 const SCHEMA_CACHE_FILE = join(homedir(), '.cache', 'seo-solver', 'schema-org.jsonld');

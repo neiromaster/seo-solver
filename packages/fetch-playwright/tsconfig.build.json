@@ -12,8 +12,14 @@
       "@seo-solver/fetch": [
         "../fetch/dist/index.d.ts"
       ],
+      "@seo-solver/fetch/advanced": [
+        "../fetch/dist/advanced.d.ts"
+      ],
       "@seo-solver/types": [
         "../types/dist/index.d.ts"
+      ],
+      "@seo-solver/types/*": [
+        "../types/dist/*.d.ts"
       ]
     }
   },

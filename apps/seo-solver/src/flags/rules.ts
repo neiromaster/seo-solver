@@ -1,4 +1,4 @@
-import type { Severity } from '@seo-solver/types';
+import type { Severity } from '@seo-solver/types/validate';
 import { array, multioption, string } from 'cmd-ts';
 import { isSeverity } from '../types.js';
 

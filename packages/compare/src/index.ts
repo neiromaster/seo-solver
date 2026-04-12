@@ -6,7 +6,7 @@ export type {
   ComparisonResult,
   DiffEntry,
   DiffKind,
-} from '@seo-solver/types';
+} from '@seo-solver/types/compare';
 export { GenericComparator } from './comparators/generic.js';
 export { HeadingsComparator } from './comparators/headings.js';
 export { diff } from './diff.js';

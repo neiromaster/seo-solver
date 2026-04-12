@@ -1,4 +1,4 @@
-import type { Extractor } from '@seo-solver/types';
+import type { Extractor } from '@seo-solver/types/extract';
 import { describe, expect, test, vi } from 'vitest';
 import { ExtractionError } from './errors.js';
 import * as parseHtmlModule from './parse-html.js';

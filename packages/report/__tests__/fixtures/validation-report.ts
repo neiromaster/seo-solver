@@ -1,4 +1,4 @@
-import type { ValidationReport } from '@seo-solver/types';
+import type { ValidationReport } from '@seo-solver/types/validate';
 
 export const validationReportFixture: ValidationReport = {
   fetch: {

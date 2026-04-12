@@ -1,4 +1,5 @@
-import type { Comparator, DiffEntry, ExtractionEnvelope, HeadingEntry } from '@seo-solver/types';
+import type { Comparator, DiffEntry } from '@seo-solver/types/compare';
+import type { ExtractionEnvelope, HeadingEntry } from '@seo-solver/types/extract';
 
 export class HeadingsComparator implements Comparator {
   readonly type = 'headings';

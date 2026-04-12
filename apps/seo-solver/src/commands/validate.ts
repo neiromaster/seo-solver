@@ -1,5 +1,9 @@
 import { hasFailed } from '@seo-solver/report';
 import { command } from 'cmd-ts';
+import { handleError } from '../cli-support/error-handler.js';
+import { resolveFetcher } from '../cli-support/fetcher-registry.js';
+import { writeOutput } from '../cli-support/output.js';
+import { buildReporter } from '../cli-support/reporter-config.js';
 import { extractorsFlag, parseExtractors } from '../flags/extractor.js';
 import { fetcherFlags } from '../flags/fetcher.js';
 import { formatFlag } from '../flags/format.js';
@@ -8,11 +12,7 @@ import { disableRulesFlag, parseSeverityOverrides, severityOverrideFlag } from '
 import { minSeverityFlag } from '../flags/severity.js';
 import { urlArg } from '../flags/url.js';
 import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { buildReporter } from '../shared/build-reporter.js';
-import { handleError } from '../shared/error-handler.js';
-import { resolveFetcher } from '../shared/resolve-fetcher.js';
-import { runValidate } from '../shared/run-validate.js';
-import { writeOutput } from '../shared/write-output.js';
+import { runValidate } from '../workflows/validate.js';
 
 export const validateCommand = command({
   name: 'validate',

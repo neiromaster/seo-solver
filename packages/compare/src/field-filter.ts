@@ -1,4 +1,4 @@
-import type { DiffEntry } from '@seo-solver/types';
+import type { DiffEntry } from '@seo-solver/types/compare';
 
 export function filterDiffs(diffs: DiffEntry[], ignoreFields: string[] = []): DiffEntry[] {
   if (ignoreFields.length === 0) {

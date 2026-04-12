@@ -32,7 +32,10 @@ describe('validate command', () => {
     const result = await runCLI(['validate', `${server.baseUrl}/`, '--fetcher', 'playwright']);
 
     expect(result.exitCode).toBe(2);
-    expect(result.stderr).toContain('Fetcher "playwright" requires package "@seo-solver/fetch-playwright"');
+    expect(result.stderr).toContain(
+      'Fetch error (MISSING_OPTIONAL_BACKEND): Playwright fetcher requires package "@seo-solver/fetch-playwright"',
+    );
+    expect(result.stderr).toContain('Hint: pnpm add @seo-solver/fetch-playwright');
     expect(result.stderr).not.toContain('CLIError:');
   });
 

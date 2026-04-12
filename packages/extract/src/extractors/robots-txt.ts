@@ -1,11 +1,6 @@
-import type {
-  ExtractionEnvelope,
-  ExtractionWarning,
-  FetchResult,
-  ResourceType,
-  RobotsTxtData,
-  RobotsTxtGroup,
-} from '@seo-solver/types';
+import type { ResourceType } from '@seo-solver/types';
+import type { ExtractionEnvelope, ExtractionWarning, RobotsTxtData, RobotsTxtGroup } from '@seo-solver/types/extract';
+import type { FetchResult } from '@seo-solver/types/fetch';
 import { stripBom, trimTrailingInlineComment } from '../utils/normalize.js';
 
 export class RobotsTxtExtractor {

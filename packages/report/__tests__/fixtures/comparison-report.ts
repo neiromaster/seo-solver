@@ -1,4 +1,4 @@
-import type { ComparisonReport } from '@seo-solver/types';
+import type { ComparisonReport } from '@seo-solver/types/compare';
 
 export const comparisonReportFixture: ComparisonReport = {
   comparisons: [

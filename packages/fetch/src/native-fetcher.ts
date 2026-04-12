@@ -1,4 +1,4 @@
-import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types';
+import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types/fetch';
 import { detectResourceType } from './detect-resource-type.js';
 import { FetchError } from './errors.js';
 import { mergeOptions, type ResolvedFetchOptions } from './merge-options.js';

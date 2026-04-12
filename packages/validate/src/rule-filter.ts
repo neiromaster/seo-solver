@@ -1,4 +1,4 @@
-import type { Diagnostic, Severity } from '@seo-solver/types';
+import type { Diagnostic, Severity } from '@seo-solver/types/validate';
 
 export type RuleFilterConfig = {
   disableRules: string[];

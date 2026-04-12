@@ -1,4 +1,4 @@
-import type { ExtractionEnvelope, HeadingsData } from '@seo-solver/types';
+import type { ExtractionEnvelope, HeadingsData } from '@seo-solver/types/extract';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 export class HeadingsValidator {

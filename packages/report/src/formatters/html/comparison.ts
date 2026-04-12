@@ -1,4 +1,5 @@
-import type { ComparisonReport, DiffEntry, ReporterConfig } from '@seo-solver/types';
+import type { ComparisonReport, DiffEntry } from '@seo-solver/types/compare';
+import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../summary.js';
 import {
   escapeHtml,

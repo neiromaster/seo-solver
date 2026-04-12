@@ -1,4 +1,4 @@
-import type { Reporter, ReporterConfig } from '@seo-solver/types';
+import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
 import { formatHtmlComparison } from './comparison.js';
 import { formatHtmlValidation } from './validation.js';
 

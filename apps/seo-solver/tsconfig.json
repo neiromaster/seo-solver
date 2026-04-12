@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/typescript-config/base.json",
+  "extends": "../../packages/typescript-config/cli.json",
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
@@ -18,6 +18,9 @@
       ],
       "@seo-solver/types": [
         "../../packages/types/src/index.ts"
+      ],
+      "@seo-solver/types/*": [
+        "../../packages/types/src/*.ts"
       ],
       "@seo-solver/validate": [
         "../../packages/validate/src/index.ts"

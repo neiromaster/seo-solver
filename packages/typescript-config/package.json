@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./base": "./base.json"
+    "./base": "./base.json",
+    "./node-lib": "./node-lib.json",
+    "./cli": "./cli.json"
   }
 }

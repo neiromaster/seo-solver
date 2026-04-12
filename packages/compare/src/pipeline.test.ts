@@ -1,4 +1,4 @@
-import type { Comparator } from '@seo-solver/types';
+import type { Comparator } from '@seo-solver/types/compare';
 import { describe, expect, test } from 'vitest';
 import {
   compareAll,

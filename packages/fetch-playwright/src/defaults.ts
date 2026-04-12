@@ -1,4 +1,4 @@
-import type { RetryOptions } from '@seo-solver/types';
+import type { RetryOptions } from '@seo-solver/types/fetch';
 
 export const DEFAULT_TIMEOUT = 30_000;
 export const DEFAULT_MAX_REDIRECTS = 5;

@@ -1,4 +1,4 @@
-import type { Validator as PublicValidator, ValidationPipelineConfig } from '@seo-solver/types';
+import type { Validator as PublicValidator, ValidationPipelineConfig } from '@seo-solver/types/validate';
 import type { RuleAwareValidator } from '../utils/rules.js';
 import { AppLinksValidator } from './applinks.js';
 import { CanonicalValidator } from './canonical.js';

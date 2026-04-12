@@ -1,4 +1,4 @@
-import type { ValidationReport } from '@seo-solver/types';
+import type { ValidationReport } from '@seo-solver/types/validate';
 import { describe, expect, test } from 'vitest';
 import { formatValidation } from '../../src/index.js';
 import { validationReportFixture } from '../fixtures/validation-report.js';

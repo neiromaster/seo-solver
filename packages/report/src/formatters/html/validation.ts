@@ -1,4 +1,5 @@
-import type { Diagnostic, ReporterConfig, ValidationReport } from '@seo-solver/types';
+import type { ReporterConfig } from '@seo-solver/types/report';
+import type { Diagnostic, ValidationReport } from '@seo-solver/types/validate';
 import { filterDiagnosticsBySeverity } from '../../filter.js';
 import { summarizeValidation } from '../../summary.js';
 import {

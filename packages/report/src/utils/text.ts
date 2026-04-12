@@ -1,11 +1,6 @@
-import type {
-  ComparisonSummary,
-  Diagnostic,
-  DiffEntry,
-  DiffKind,
-  Severity,
-  ValidationSummary,
-} from '@seo-solver/types';
+import type { ComparisonSummary, DiffEntry, DiffKind } from '@seo-solver/types/compare';
+import type { ValidationSummary } from '@seo-solver/types/report';
+import type { Diagnostic, Severity } from '@seo-solver/types/validate';
 import { formatFullValue, truncateValue } from './truncate.js';
 
 const TYPE_LABELS: Record<string, string> = {

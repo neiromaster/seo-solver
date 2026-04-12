@@ -1,11 +1,6 @@
-import type {
-  ComparisonReport,
-  ComparisonSummary,
-  Diagnostic,
-  Severity,
-  ValidationReport,
-  ValidationSummary,
-} from '@seo-solver/types';
+import type { ComparisonReport, ComparisonSummary } from '@seo-solver/types/compare';
+import type { ValidationSummary } from '@seo-solver/types/report';
+import type { Diagnostic, Severity, ValidationReport } from '@seo-solver/types/validate';
 
 export type DiagnosticGroup = {
   severity: Severity;

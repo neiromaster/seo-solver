@@ -1,4 +1,4 @@
-import type { ExtractionEnvelope, MetaTagsData } from '@seo-solver/types';
+import type { ExtractionEnvelope, MetaTagsData } from '@seo-solver/types/extract';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 const TITLE_LIMIT = 60;

@@ -1,4 +1,4 @@
-import type { DiffEntry } from '@seo-solver/types';
+import type { DiffEntry } from '@seo-solver/types/compare';
 import { appendArrayPath, appendObjectPath } from './utils/path.js';
 
 export type DiffOptions = {

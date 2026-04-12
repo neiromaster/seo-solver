@@ -1,16 +1,16 @@
 import { command } from 'cmd-ts';
+import { handleError } from '../cli-support/error-handler.js';
+import { resolveFetcher } from '../cli-support/fetcher-registry.js';
+import { writeOutput } from '../cli-support/output.js';
+import { buildReporter } from '../cli-support/reporter-config.js';
 import { extractorsFlag, parseExtractors } from '../flags/extractor.js';
 import { fetcherFlags } from '../flags/fetcher.js';
 import { formatFlag } from '../flags/format.js';
 import { outputFlag } from '../flags/output.js';
 import { urlArgA, urlArgB } from '../flags/url.js';
 import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { buildReporter } from '../shared/build-reporter.js';
-import { handleError } from '../shared/error-handler.js';
-import { resolveFetcher } from '../shared/resolve-fetcher.js';
-import { runCompare } from '../shared/run-compare.js';
-import { writeOutput } from '../shared/write-output.js';
 import { hasDiffs } from '../types.js';
+import { runCompare } from '../workflows/compare.js';
 
 export const compareCommand = command({
   name: 'compare',

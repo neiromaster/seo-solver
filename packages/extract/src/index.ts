@@ -1,11 +1,13 @@
 export type {
   CanonicalData,
   CanonicalHrefLang,
+  ExtractedPage,
   ExtractionEnvelope,
   ExtractionWarning,
   Extractor,
   ExtractorPipeline,
   ExtractorPipelineConfig,
+  ExtractPipelineCallOptions,
   HeadingEntry,
   HeadingsData,
   JsonLdData,
@@ -14,7 +16,9 @@ export type {
   OpenGraphData,
   RobotsTxtData,
   RobotsTxtGroup,
-} from '@seo-solver/types';
+  TargetCatalogEntry,
+  TargetKey,
+} from '@seo-solver/types/extract';
 export { ExtractionError } from './errors.js';
 export { CanonicalExtractor } from './extractors/canonical.js';
 export { HeadingsExtractor } from './extractors/headings.js';

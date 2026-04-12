@@ -1,10 +1,10 @@
 import { createValidationPipeline } from '@seo-solver/validate';
 import { command } from 'cmd-ts';
+import { handleError } from '../cli-support/error-handler.js';
+import { writeOutput } from '../cli-support/output.js';
 import { formatFlag } from '../flags/format.js';
 import { outputFlag } from '../flags/output.js';
 import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { handleError } from '../shared/error-handler.js';
-import { writeOutput } from '../shared/write-output.js';
 import { resolveListRulesFormat } from '../types.js';
 
 export const listRulesCommand = command({

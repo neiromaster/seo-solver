@@ -1,16 +1,18 @@
 import type {
   CanonicalData,
-  Diagnostic,
   ExtractionEnvelope,
   HeadingsData,
   JsonLdData,
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
+} from '@seo-solver/types/extract';
+import type {
+  Diagnostic,
   ValidationPipeline,
   ValidationPipelineConfig,
   ValidationResult,
-} from '@seo-solver/types';
+} from '@seo-solver/types/validate';
 import { createRuleFilter } from './rule-filter.js';
 import { CanonicalValidator } from './validators/canonical.js';
 import { HeadingsValidator } from './validators/headings.js';

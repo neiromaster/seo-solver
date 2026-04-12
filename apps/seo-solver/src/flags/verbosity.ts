@@ -1,4 +1,4 @@
-import type { Verbosity } from '@seo-solver/types';
+import type { Verbosity } from '@seo-solver/types/report';
 import { flag } from 'cmd-ts';
 
 export const verboseFlag = flag({

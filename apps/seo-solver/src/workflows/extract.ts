@@ -1,5 +1,6 @@
 import { createExtractorPipeline } from '@seo-solver/extract';
-import type { ExtractionEnvelope, Fetcher, FetchResult } from '@seo-solver/types';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract';
+import type { Fetcher, FetchResult } from '@seo-solver/types/fetch';
 
 export type ExtractOptions = {
   extractors?: string[];

@@ -1,4 +1,4 @@
-import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types';
+import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types/fetch';
 import type { Browser, BrowserContext, BrowserType, Page, Response, Route } from 'playwright';
 import { DEFAULT_BLOCK_RESOURCE_TYPES } from './defaults.js';
 import { FetchError } from './errors.js';
@@ -32,7 +32,10 @@ export class PlaywrightFetcher implements Fetcher {
 
   async fetch(url: string, options?: FetchOptions): Promise<FetchResult> {
     if (this.disposed) {
-      throw new Error('PlaywrightFetcher has been disposed');
+      throw new FetchError('Playwright fetcher has been disposed', url, 'DISPOSED_FETCHER', undefined, {
+        backend: 'playwright',
+        retryable: false,
+      });
     }
 
     const requestUrl = parseRequestUrl(url);
@@ -108,7 +111,10 @@ export class PlaywrightFetcher implements Fetcher {
 
   private async ensureContext(): Promise<BrowserContext> {
     if (this.disposed) {
-      throw new Error('PlaywrightFetcher has been disposed');
+      throw new FetchError('Playwright fetcher has been disposed', undefined, 'DISPOSED_FETCHER', undefined, {
+        backend: 'playwright',
+        retryable: false,
+      });
     }
 
     if (this.context) {
@@ -159,6 +165,16 @@ export class PlaywrightFetcher implements Fetcher {
 
 export function createFetcher(config?: PlaywrightFetcherConfig): Fetcher {
   return new PlaywrightFetcher(config);
+}
+
+export async function fetchUrl(url: string, options?: FetchOptions): Promise<FetchResult> {
+  const fetcher = createFetcher(options);
+
+  try {
+    return await fetcher.fetch(url, options);
+  } finally {
+    await fetcher.dispose();
+  }
 }
 
 function parseRequestUrl(url: string): string {

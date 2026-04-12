@@ -1,4 +1,4 @@
-import type { Reporter, ReporterConfig } from '@seo-solver/types';
+import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
 import { shouldUseColor } from '../../utils/color-detect.js';
 import { formatTerminalComparison } from './comparison.js';
 import { formatTerminalValidation } from './validation.js';

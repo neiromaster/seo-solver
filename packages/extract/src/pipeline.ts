@@ -3,8 +3,8 @@ import type {
   Extractor,
   ExtractorPipeline,
   ExtractorPipelineConfig,
-  FetchResult,
-} from '@seo-solver/types';
+} from '@seo-solver/types/extract';
+import type { FetchResult } from '@seo-solver/types/fetch';
 import { ExtractionError } from './errors.js';
 import { CanonicalExtractor } from './extractors/canonical.js';
 import { HeadingsExtractor } from './extractors/headings.js';

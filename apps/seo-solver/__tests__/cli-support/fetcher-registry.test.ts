@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { CLIError } from '../../src/shared/error-handler.js';
-import { resolveFetcher } from '../../src/shared/resolve-fetcher.js';
+import { resolveFetcher } from '../../src/cli-support/fetcher-registry.js';
 
 describe('resolveFetcher', () => {
   test('returns the native fetcher by default', async () => {
@@ -23,11 +22,11 @@ describe('resolveFetcher', () => {
         userAgent: undefined,
         retry: undefined,
       }),
-    ).rejects.toEqual(
-      new CLIError(
-        'Fetcher "playwright" requires package "@seo-solver/fetch-playwright".\nInstall it: pnpm add @seo-solver/fetch-playwright',
-      ),
-    );
+    ).rejects.toMatchObject({
+      code: 'MISSING_OPTIONAL_BACKEND',
+      backend: 'playwright',
+      installHint: 'pnpm add @seo-solver/fetch-playwright',
+    });
   });
 
   test('throws a helpful error for unknown fetchers', async () => {
@@ -38,10 +37,9 @@ describe('resolveFetcher', () => {
         userAgent: undefined,
         retry: undefined,
       }),
-    ).rejects.toEqual(
-      new CLIError(
-        'Fetcher "unknown" requires package "@seo-solver/fetch-unknown".\nInstall it: pnpm add @seo-solver/fetch-unknown',
-      ),
-    );
+    ).rejects.toMatchObject({
+      code: 'UNKNOWN_BACKEND',
+      backend: 'unknown',
+    });
   });
 });

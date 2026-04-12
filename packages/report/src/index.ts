@@ -1,4 +1,6 @@
-import type { ComparisonReport, ReporterConfig, ValidationReport } from '@seo-solver/types';
+import type { ComparisonReport } from '@seo-solver/types/compare';
+import type { ReporterConfig } from '@seo-solver/types/report';
+import type { ValidationReport } from '@seo-solver/types/validate';
 import { createReporter } from './create-reporter.js';
 
 export function formatValidation(report: ValidationReport, options?: ReporterConfig): string {
@@ -9,16 +11,16 @@ export function formatComparison(report: ComparisonReport, options?: ReporterCon
   return createReporter(options).formatComparison(report);
 }
 
+export type { ComparisonReport } from '@seo-solver/types/compare';
 export type {
-  ComparisonReport,
   ComparisonSummary,
   Reporter,
   ReporterConfig,
   ReportFormat,
-  ValidationReport,
   ValidationSummary,
   Verbosity,
-} from '@seo-solver/types';
+} from '@seo-solver/types/report';
+export type { ValidationReport } from '@seo-solver/types/validate';
 export { createReporter } from './create-reporter.js';
 export { filterDiagnosticsBySeverity } from './filter.js';
 export type { DiagnosticGroup } from './summary.js';

@@ -1,6 +1,7 @@
-import type { Fetcher, Severity, ValidationReport } from '@seo-solver/types';
+import type { Fetcher } from '@seo-solver/types/fetch';
+import type { Severity, ValidationReport } from '@seo-solver/types/validate';
 import { createValidationPipeline } from '@seo-solver/validate';
-import { type ExtractOptions, runExtract } from './run-extract.js';
+import { type ExtractOptions, runExtract } from './extract.js';
 
 export type ValidateOptions = ExtractOptions & {
   disableRules?: string[];

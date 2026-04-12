@@ -1,7 +1,6 @@
 export type {
   CanonicalData,
   CanonicalHrefLang,
-  Diagnostic,
   ExtractionEnvelope,
   HeadingsData,
   JsonLdData,
@@ -10,13 +9,15 @@ export type {
   OpenGraphData,
   RobotsTxtData,
   RobotsTxtGroup,
-  Severity,
+} from '@seo-solver/types/extract';
+export type {
+  Diagnostic,
   ValidatePipelineCallOptions,
   ValidationPipeline,
   ValidationPipelineConfig,
   ValidationResult,
   Validator,
-} from '@seo-solver/types';
+} from '@seo-solver/types/validate';
 export { ValidationError } from './errors.js';
 export {
   createValidationPipeline,

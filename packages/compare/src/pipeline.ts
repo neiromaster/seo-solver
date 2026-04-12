@@ -1,16 +1,18 @@
 import type {
-  CanonicalData,
   ComparePipelineCallOptions,
   ComparisonPipeline,
   ComparisonPipelineConfig,
   ComparisonResult,
+} from '@seo-solver/types/compare';
+import type {
+  CanonicalData,
   ExtractionEnvelope,
   HeadingsData,
   JsonLdData,
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
-} from '@seo-solver/types';
+} from '@seo-solver/types/extract';
 import { GenericComparator } from './comparators/generic.js';
 import { HeadingsComparator } from './comparators/headings.js';
 import { resolveComparator } from './comparators/registry.js';

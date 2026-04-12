@@ -11,6 +11,9 @@
     "paths": {
       "@seo-solver/types": [
         "../types/dist/index.d.ts"
+      ],
+      "@seo-solver/types/*": [
+        "../types/dist/*.d.ts"
       ]
     }
   },

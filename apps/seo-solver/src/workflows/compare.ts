@@ -1,6 +1,7 @@
 import { createComparisonPipeline } from '@seo-solver/compare';
-import type { ComparisonReport, Fetcher } from '@seo-solver/types';
-import { type ExtractOptions, runExtract } from './run-extract.js';
+import type { ComparisonReport } from '@seo-solver/types/compare';
+import type { Fetcher } from '@seo-solver/types/fetch';
+import { type ExtractOptions, runExtract } from './extract.js';
 
 export interface CompareOptions extends ExtractOptions {
   ignoreFields?: Record<string, string[]>;

@@ -1,4 +1,4 @@
-import type { Reporter, ReporterConfig } from '@seo-solver/types';
+import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
 import { createHtmlReporter } from './formatters/html/html-reporter.js';
 import { createJsonReporter } from './formatters/json/json-reporter.js';
 import { createMarkdownReporter } from './formatters/markdown/markdown-reporter.js';

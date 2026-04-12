@@ -1,4 +1,4 @@
-import type { Diagnostic, Severity } from '@seo-solver/types';
+import type { Diagnostic, Severity } from '@seo-solver/types/validate';
 
 export const SEVERITY_ORDER: Record<Severity, number> = {
   error: 3,

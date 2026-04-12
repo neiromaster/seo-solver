@@ -1,4 +1,4 @@
-import type { FetcherConfig, FetchOptions, RetryOptions } from '@seo-solver/types';
+import type { FetcherConfig, FetchOptions, RetryOptions } from '@seo-solver/types/fetch';
 import {
   DEFAULT_HEADERS,
   DEFAULT_MAX_REDIRECTS,

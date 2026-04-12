@@ -1,4 +1,4 @@
-import type { ExtractionEnvelope, RobotsTxtData } from '@seo-solver/types';
+import type { ExtractionEnvelope, RobotsTxtData } from '@seo-solver/types/extract';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 import { isAbsoluteUrl } from '../utils/url.js';
 

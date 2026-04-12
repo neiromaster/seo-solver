@@ -1,4 +1,5 @@
-import type { ExtractionEnvelope, ExtractionWarning, Extractor, FetchResult } from '@seo-solver/types';
+import type { ExtractionEnvelope, ExtractionWarning, Extractor } from '@seo-solver/types/extract';
+import type { FetchResult } from '@seo-solver/types/fetch';
 import type { ParsedDocument } from '../parse-html.js';
 
 export type ExtractionErrorPolicy = 'skip' | 'throw' | 'include';

@@ -1,4 +1,5 @@
-import type { ComparisonReport, ReporterConfig } from '@seo-solver/types';
+import type { ComparisonReport } from '@seo-solver/types/compare';
+import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../summary.js';
 
 export function formatJsonComparison(report: ComparisonReport, config: ReporterConfig): string {
@@ -9,5 +10,7 @@ export function formatJsonComparison(report: ComparisonReport, config: ReporterC
     summary,
   };
 
-  return JSON.stringify(payload, null, config.jsonPretty === false ? undefined : 2);
+  const indent = config.jsonPretty === false ? undefined : 2;
+  const output = JSON.stringify(payload, null, indent);
+  return indent === undefined ? output : `${output}\n`;
 }

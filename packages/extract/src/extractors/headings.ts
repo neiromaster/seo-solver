@@ -1,4 +1,6 @@
-import type { ExtractionEnvelope, FetchResult, HeadingsData, ResourceType } from '@seo-solver/types';
+import type { ResourceType } from '@seo-solver/types';
+import type { ExtractionEnvelope, HeadingsData } from '@seo-solver/types/extract';
+import type { FetchResult } from '@seo-solver/types/fetch';
 import { type ParsedDocument, parseHtml } from '../parse-html.js';
 import { normalizeWhitespace } from '../utils/normalize.js';
 

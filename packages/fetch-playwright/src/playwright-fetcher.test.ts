@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { PlaywrightFetcher } from './playwright-fetcher.js';
+import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';
 import { createTestServer, type TestServer } from './test-support/test-server.js';
 
 describe('PlaywrightFetcher', () => {
@@ -97,7 +97,15 @@ describe('PlaywrightFetcher', () => {
   test('fetch after dispose throws', async () => {
     const fetcher = new PlaywrightFetcher();
     await fetcher.dispose();
-    await expect(fetcher.fetch(`${server.baseUrl}/`)).rejects.toThrow('disposed');
+    await expect(fetcher.fetch(`${server.baseUrl}/`)).rejects.toMatchObject({ code: 'DISPOSED_FETCHER' });
+  });
+
+  test('supports simple fetchUrl helper', async () => {
+    const result = await fetchUrl(`${server.baseUrl}/`);
+
+    expect(result.statusCode).toBe(200);
+    expect(result.resourceType).toBe('html');
+    expect(result.body).toContain('<h1>Hello</h1>');
   });
 
   test('supports parallel fetches', async () => {

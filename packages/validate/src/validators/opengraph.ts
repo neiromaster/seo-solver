@@ -1,4 +1,4 @@
-import type { CanonicalData, ExtractionEnvelope, MetaTagsData, OpenGraphData } from '@seo-solver/types';
+import type { CanonicalData, ExtractionEnvelope, MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 import { isAbsoluteUrl } from '../utils/url.js';
 

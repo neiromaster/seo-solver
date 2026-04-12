@@ -1,4 +1,6 @@
-import type { ExtractionEnvelope, FetchResult, OpenGraphData, ResourceType } from '@seo-solver/types';
+import type { ResourceType } from '@seo-solver/types';
+import type { ExtractionEnvelope, OpenGraphData } from '@seo-solver/types/extract';
+import type { FetchResult } from '@seo-solver/types/fetch';
 import { type ParsedDocument, parseHtml } from '../parse-html.js';
 import { ensureWarningList } from './shared.js';
 

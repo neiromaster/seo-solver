@@ -1,4 +1,5 @@
-import type { Comparator, DiffEntry, ExtractionEnvelope } from '@seo-solver/types';
+import type { Comparator, DiffEntry } from '@seo-solver/types/compare';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract';
 import { diff } from '../diff.js';
 
 export type GenericComparatorOptions = {

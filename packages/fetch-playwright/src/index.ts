@@ -1,14 +1,16 @@
+export type { ResourceType } from '@seo-solver/types';
 export type {
+  FetchErrorCode,
+  FetchErrorLike,
   Fetcher,
   FetcherConfig,
   FetchOptions,
   FetchResult,
-  ResourceType,
   RetryOptions,
-} from '@seo-solver/types';
+} from '@seo-solver/types/fetch';
+export { isFetchErrorLike } from '@seo-solver/types/fetch';
 export { detectResourceType } from './detect-resource-type.js';
-export { FetchError, type FetchErrorCode } from './errors.js';
-export { pageToFetchResult } from './page-to-fetch-result.js';
+export { FetchError } from './errors.js';
 
 export type { PlaywrightFetcherConfig } from './playwright-fetcher.js';
-export { createFetcher, PlaywrightFetcher } from './playwright-fetcher.js';
+export { createFetcher, fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';

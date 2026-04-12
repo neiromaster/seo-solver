@@ -1,4 +1,4 @@
-import type { Extractor, ExtractorPipelineConfig } from '@seo-solver/types';
+import type { Extractor, ExtractorPipelineConfig } from '@seo-solver/types/extract';
 import { CanonicalExtractor } from './canonical.js';
 import { HeadingsExtractor } from './headings.js';
 import { JsonLdExtractor } from './jsonld.js';
