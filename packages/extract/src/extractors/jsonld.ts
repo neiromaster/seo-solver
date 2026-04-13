@@ -1,5 +1,6 @@
 import type { ResourceType } from '@seo-solver/types';
-import type { ExtractionEnvelope, ExtractionWarning, JsonLdData, JsonLdEntry } from '@seo-solver/types/extract';
+import type { JsonLdData, JsonLdEntry } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope, ExtractionWarning } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
 import { ExtractionError } from '../errors.js';
 import { type ParsedDocument, parseHtml } from '../parse-html.js';

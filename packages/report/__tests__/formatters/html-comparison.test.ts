@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparison } from '../../src/index.js';
+import { formatComparisonReport } from '../../src/index.js';
 import { comparisonReportFixture } from '../fixtures/comparison-report.js';
 
 describe('html comparison formatter', () => {
   test('renders both urls and diff css classes without external assets', () => {
-    const output = formatComparison(comparisonReportFixture, { format: 'html' });
+    const output = formatComparisonReport(comparisonReportFixture, { format: 'html' });
 
     expect(output).toContain('https://staging.example.com');
     expect(output).toContain('https://example.com');

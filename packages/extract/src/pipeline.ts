@@ -1,10 +1,12 @@
+import type { ExtractedPage, ExtractHtmlOptions, ExtractPageOptions } from '@seo-solver/types/extract';
 import type {
   ExtractionEnvelope,
   Extractor,
   ExtractorPipeline,
   ExtractorPipelineConfig,
-} from '@seo-solver/types/extract';
+} from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
+import { listTargets } from './catalog.js';
 import { ExtractionError } from './errors.js';
 import { CanonicalExtractor } from './extractors/canonical.js';
 import { HeadingsExtractor } from './extractors/headings.js';
@@ -14,13 +16,14 @@ import { OpenGraphExtractor } from './extractors/opengraph.js';
 import { resolveExtractors } from './extractors/registry.js';
 import { isHtmlExtractor } from './extractors/shared.js';
 import * as parseHtmlModule from './parse-html.js';
+import { toExtractedPage } from './result.js';
 
 export function createExtractorPipeline(config: ExtractorPipelineConfig = {}): ExtractorPipeline {
-  const configuredExtractors = resolveExtractors(config, config.extractors);
+  const configuredExtractors = resolveExtractors(config, config.targets);
 
   return {
     extract(input, options) {
-      const selectedExtractors = resolveExtractors(config, options?.extractors ?? configuredExtractors);
+      const selectedExtractors = resolveExtractors(config, options?.targets ?? configuredExtractors);
       const matchingExtractors = selectedExtractors.filter((extractor) =>
         extractor.accepts.includes(input.resourceType),
       );
@@ -58,7 +61,7 @@ export function createExtractorPipeline(config: ExtractorPipelineConfig = {}): E
                 );
           }
 
-          if (config.onError === 'include') {
+          if (config.onError === 'report') {
             envelopes.push({
               type: extractor.type,
               source: input.url,
@@ -79,8 +82,23 @@ export function createExtractorPipeline(config: ExtractorPipelineConfig = {}): E
 
 export function extractAll(html: string): ExtractionEnvelope[] {
   return createExtractorPipeline({
-    extractors: ['opengraph', 'jsonld', 'meta', 'headings', 'canonical'],
+    targets: ['opengraph', 'jsonld', 'meta', 'headings', 'canonical'],
   }).extract(htmlToMinimalFetchResult(html, 'html'));
+}
+
+export function extractPage(input: FetchResult, options: ExtractPageOptions = {}): ExtractedPage {
+  const targets = options.targets ?? defaultTargetsForResourceType(input.resourceType);
+  const pipeline = createExtractorPipeline({
+    targets,
+    onError: options.onError,
+  });
+
+  return toExtractedPage(input, pipeline.extract(input));
+}
+
+export function extractHtml(html: string, options: ExtractHtmlOptions = {}): ExtractedPage {
+  const fetchResult = htmlToMinimalFetchResult(html, 'html', options.url, options.statusCode ?? 200);
+  return extractPage(fetchResult, options);
 }
 
 export function extractOpenGraph(html: string) {
@@ -103,11 +121,20 @@ export function extractCanonical(html: string) {
   return new CanonicalExtractor().extract(htmlToMinimalFetchResult(html, 'html'))?.data ?? null;
 }
 
-export function htmlToMinimalFetchResult(body: string, resourceType: FetchResult['resourceType']): FetchResult {
+export function extractRobotsText(text: string, options: { url?: string } = {}): ExtractedPage {
+  return extractPage(htmlToMinimalFetchResult(text, 'robots-txt', options.url, 200), { targets: ['robotsTxt'] });
+}
+
+export function htmlToMinimalFetchResult(
+  body: string,
+  resourceType: FetchResult['resourceType'],
+  url = 'about:blank',
+  statusCode = 200,
+): FetchResult {
   return {
-    requestUrl: '',
-    url: '',
-    statusCode: 200,
+    requestUrl: url,
+    url,
+    statusCode,
     headers: {},
     body,
     resourceType,
@@ -119,4 +146,10 @@ export function htmlToMinimalFetchResult(body: string, resourceType: FetchResult
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function defaultTargetsForResourceType(resourceType: FetchResult['resourceType']) {
+  return listTargets()
+    .filter((entry) => entry.defaultEnabled && entry.resourceTypes.includes(resourceType))
+    .map((entry) => entry.key);
 }

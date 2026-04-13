@@ -11,7 +11,15 @@ export async function resolveFetcher(flags: FetcherFlags): Promise<Fetcher> {
   const config: FetcherConfig = {
     timeout: flags.timeout,
     userAgent: flags.userAgent,
-    retry: flags.retry ? { attempts: flags.retry } : undefined,
+    retry:
+      flags.retry || flags.retryDelayMs || flags.retryBackoff || flags.respectRetryAfter
+        ? {
+            attempts: flags.retry,
+            delay: flags.retryDelayMs,
+            backoff: flags.retryBackoff === 'exponential' ? 'exponential' : 'fixed',
+            respectRetryAfter: flags.respectRetryAfter === undefined ? undefined : flags.respectRetryAfter === 'true',
+          }
+        : undefined,
   };
   const name = flags.fetcher ?? 'native';
 
@@ -83,9 +91,16 @@ function isModuleNotFound(error: unknown, moduleName: string): boolean {
     return true;
   }
 
+  if (error.message.includes(`Could not resolve "${moduleName}"`)) {
+    return true;
+  }
+
   if (nodeError.cause instanceof Error) {
     const cause = nodeError.cause as Error & { code?: string };
-    return cause.code === 'ERR_MODULE_NOT_FOUND' && cause.message.includes(moduleName);
+    return (
+      (cause.code === 'ERR_MODULE_NOT_FOUND' && cause.message.includes(moduleName)) ||
+      cause.message.includes(`Could not resolve "${moduleName}"`)
+    );
   }
 
   return false;

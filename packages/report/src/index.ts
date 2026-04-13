@@ -3,12 +3,12 @@ import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
 import { createReporter } from './create-reporter.js';
 
-export function formatValidation(report: ValidationReport, options?: ReporterConfig): string {
-  return createReporter(options).formatValidation(report);
+export function formatValidationReport(report: ValidationReport, options?: ReporterConfig): string {
+  return createReporter(options).formatValidationReport(report);
 }
 
-export function formatComparison(report: ComparisonReport, options?: ReporterConfig): string {
-  return createReporter(options).formatComparison(report);
+export function formatComparisonReport(report: ComparisonReport, options?: ReporterConfig): string {
+  return createReporter(options).formatComparisonReport(report);
 }
 
 export type { ComparisonReport } from '@seo-solver/types/compare';
@@ -24,4 +24,4 @@ export type { ValidationReport } from '@seo-solver/types/validate';
 export { createReporter } from './create-reporter.js';
 export { filterDiagnosticsBySeverity } from './filter.js';
 export type { DiagnosticGroup } from './summary.js';
-export { groupDiagnostics, hasFailed, summarizeComparison, summarizeValidation } from './summary.js';
+export { groupDiagnostics, hasDiffs, hasFailed, summarizeComparison, summarizeValidation } from './summary.js';

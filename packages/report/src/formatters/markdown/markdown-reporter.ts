@@ -4,10 +4,10 @@ import { formatMarkdownValidation } from './validation.js';
 
 export function createMarkdownReporter(config: ReporterConfig): Reporter {
   return {
-    formatComparison(report) {
+    formatComparisonReport(report) {
       return formatMarkdownComparison(report, config);
     },
-    formatValidation(report) {
+    formatValidationReport(report) {
       return formatMarkdownValidation(report, config);
     },
   };

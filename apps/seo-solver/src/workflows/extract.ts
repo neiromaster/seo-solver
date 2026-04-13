@@ -1,26 +1,21 @@
-import { createExtractorPipeline } from '@seo-solver/extract';
-import type { ExtractionEnvelope } from '@seo-solver/types/extract';
+import { extractPage } from '@seo-solver/extract';
+import type { ExtractedPage, TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher, FetchResult } from '@seo-solver/types/fetch';
 
 export type ExtractOptions = {
-  extractors?: string[];
+  targets?: TargetKey[];
 };
 
 export type ExtractResult = {
   fetchResult: FetchResult;
-  envelopes: ExtractionEnvelope[];
+  page: ExtractedPage;
 };
 
 export async function runExtract(fetcher: Fetcher, url: string, options: ExtractOptions = {}): Promise<ExtractResult> {
   const fetchResult = await fetcher.fetch(url);
-  const pipeline =
-    options.extractors === undefined
-      ? createExtractorPipeline()
-      : createExtractorPipeline({
-          extractors: options.extractors,
-        });
+  const page = extractPage(fetchResult, {
+    targets: options.targets,
+  });
 
-  const envelopes = pipeline.extract(fetchResult);
-
-  return { fetchResult, envelopes };
+  return { fetchResult, page };
 }

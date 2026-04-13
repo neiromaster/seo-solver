@@ -16,6 +16,6 @@ export type ReporterConfig = {
 };
 
 export type Reporter = {
-  formatValidation(report: ValidationReport): string;
-  formatComparison(report: ComparisonReport): string;
+  formatValidationReport(report: ValidationReport): string;
+  formatComparisonReport(report: ComparisonReport): string;
 };

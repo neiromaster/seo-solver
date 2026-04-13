@@ -4,10 +4,10 @@ import { formatHtmlValidation } from './validation.js';
 
 export function createHtmlReporter(config: ReporterConfig): Reporter {
   return {
-    formatComparison(report) {
+    formatComparisonReport(report) {
       return formatHtmlComparison(report, config);
     },
-    formatValidation(report) {
+    formatValidationReport(report) {
       return formatHtmlValidation(report, config);
     },
   };

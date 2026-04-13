@@ -2,7 +2,7 @@ import { command } from 'cmd-ts';
 import { CLIError, handleError } from '../cli-support/error-handler.js';
 import { resolveFetcher } from '../cli-support/fetcher-registry.js';
 import { writeOutput } from '../cli-support/output.js';
-import { extractorsFlag, parseExtractors } from '../flags/extractor.js';
+import { parseTargets, targetsFlag } from '../flags/extractor.js';
 import { fetcherFlags } from '../flags/fetcher.js';
 import { formatFlag } from '../flags/format.js';
 import { outputFlag } from '../flags/output.js';
@@ -20,7 +20,7 @@ export const extractCommand = command({
     verbose: verboseFlag,
     quiet: quietFlag,
     ...fetcherFlags,
-    extractors: extractorsFlag,
+    targets: targetsFlag,
     output: outputFlag,
   },
   handler: async (args) => {
@@ -28,8 +28,8 @@ export const extractCommand = command({
 
     try {
       fetcher = await resolveFetcher(args);
-      const { fetchResult, envelopes } = await runExtract(fetcher, args.url, {
-        extractors: parseExtractors(args.extractors),
+      const { page } = await runExtract(fetcher, args.url, {
+        targets: parseTargets(args.targets),
       });
       const format = resolveExtractFormat(args.format);
 
@@ -40,13 +40,9 @@ export const extractCommand = command({
       await writeOutput(
         JSON.stringify(
           {
-            url: fetchResult.url,
-            statusCode: fetchResult.statusCode,
-            timing: fetchResult.timing,
-            extractions: envelopes.map((envelope) => ({
-              type: envelope.type,
-              data: envelope.data,
-            })),
+            source: page.source,
+            data: page.data,
+            errors: page.errors,
           },
           null,
           2,

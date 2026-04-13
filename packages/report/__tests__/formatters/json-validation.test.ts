@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { formatValidation, hasFailed } from '../../src/index.js';
+import { formatValidationReport, hasFailed } from '../../src/index.js';
 import { validationReportFixture } from '../fixtures/validation-report.js';
 
 describe('json validation formatter', () => {
   test('keeps all diagnostics regardless of minSeverity and exposes passed state', () => {
-    const output = formatValidation(validationReportFixture, {
+    const output = formatValidationReport(validationReportFixture, {
       format: 'json',
       jsonPretty: true,
       minSeverity: 'error',
@@ -22,7 +22,7 @@ describe('json validation formatter', () => {
   });
 
   test('supports compact output', () => {
-    const output = formatValidation(validationReportFixture, { format: 'json', jsonPretty: false });
+    const output = formatValidationReport(validationReportFixture, { format: 'json', jsonPretty: false });
 
     expect(output).not.toContain('\n');
     expect(() => JSON.parse(output)).not.toThrow();

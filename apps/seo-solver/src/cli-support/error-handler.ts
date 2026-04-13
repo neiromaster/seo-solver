@@ -1,4 +1,5 @@
 import { isFetchErrorLike } from '@seo-solver/fetch';
+import { ValidationError } from '@seo-solver/validate';
 
 export class CLIError extends Error {
   constructor(message: string) {
@@ -9,6 +10,12 @@ export class CLIError extends Error {
 
 export function handleError(error: unknown): void {
   if (error instanceof CLIError) {
+    console.error(`Error: ${error.message}`);
+    process.exitCode = 2;
+    return;
+  }
+
+  if (error instanceof ValidationError) {
     console.error(`Error: ${error.message}`);
     process.exitCode = 2;
     return;

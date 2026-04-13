@@ -1,4 +1,5 @@
 import { FetchError } from '@seo-solver/fetch';
+import { ValidationError } from '@seo-solver/validate';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { CLIError, handleError } from '../../src/cli-support/error-handler.js';
 
@@ -48,5 +49,12 @@ describe('handleError', () => {
 
     expect(process.exitCode).toBe(2);
     expect(errorSpy).toHaveBeenCalledWith('Unexpected error: boom');
+  });
+
+  test('formats validation errors and sets exit code 2', () => {
+    handleError(new ValidationError('Invalid severity override: broken', 'INVALID_SEVERITY_OVERRIDE', 'broken'));
+
+    expect(process.exitCode).toBe(2);
+    expect(errorSpy).toHaveBeenCalledWith('Error: Invalid severity override: broken');
   });
 });

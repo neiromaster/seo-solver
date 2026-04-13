@@ -1,17 +1,17 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparison, formatValidation, hasFailed } from '../src/index.js';
+import { formatComparisonReport, formatValidationReport, hasFailed } from '../src/index.js';
 import { comparisonReportFixture } from './fixtures/comparison-report.js';
 import { validationReportFixture } from './fixtures/validation-report.js';
 
 describe('cross-format consistency', () => {
   test('validation formats agree on summary counts and pass/fail', () => {
-    const json = JSON.parse(formatValidation(validationReportFixture, { format: 'json' })) as {
+    const json = JSON.parse(formatValidationReport(validationReportFixture, { format: 'json' })) as {
       passed: boolean;
       summary: { errors: number; warnings: number; info: number; total: number };
     };
-    const terminal = formatValidation(validationReportFixture, { color: false, verbosity: 'normal' });
-    const markdown = formatValidation(validationReportFixture, { format: 'markdown' });
-    const html = formatValidation(validationReportFixture, { format: 'html' });
+    const terminal = formatValidationReport(validationReportFixture, { color: false, verbosity: 'normal' });
+    const markdown = formatValidationReport(validationReportFixture, { format: 'markdown' });
+    const html = formatValidationReport(validationReportFixture, { format: 'html' });
 
     expect(json.summary).toEqual({ errors: 1, warnings: 3, info: 0, total: 4 });
     expect(json.passed).toBe(!hasFailed(validationReportFixture));
@@ -25,13 +25,13 @@ describe('cross-format consistency', () => {
   });
 
   test('comparison formats agree on diff counts', () => {
-    const json = JSON.parse(formatComparison(comparisonReportFixture, { format: 'json' })) as {
+    const json = JSON.parse(formatComparisonReport(comparisonReportFixture, { format: 'json' })) as {
       hasDiffs: boolean;
       summary: { changed: number; added: number; removed: number; identical: number; total: number };
     };
-    const terminal = formatComparison(comparisonReportFixture, { color: false, verbosity: 'normal' });
-    const markdown = formatComparison(comparisonReportFixture, { format: 'markdown' });
-    const html = formatComparison(comparisonReportFixture, { format: 'html' });
+    const terminal = formatComparisonReport(comparisonReportFixture, { color: false, verbosity: 'normal' });
+    const markdown = formatComparisonReport(comparisonReportFixture, { format: 'markdown' });
+    const html = formatComparisonReport(comparisonReportFixture, { format: 'html' });
 
     expect(json.hasDiffs).toBe(true);
     expect(json.summary).toEqual({ changed: 2, added: 2, removed: 1, identical: 1, total: 5 });

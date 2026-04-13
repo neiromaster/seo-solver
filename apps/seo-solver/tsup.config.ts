@@ -5,6 +5,7 @@ export default defineConfig({
   format: ['esm'],
   splitting: false,
   clean: true,
+  external: ['@seo-solver/fetch-playwright'],
   sourcemap: true,
   banner: {
     js: '#!/usr/bin/env node',

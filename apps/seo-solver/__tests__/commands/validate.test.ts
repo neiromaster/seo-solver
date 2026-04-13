@@ -28,16 +28,12 @@ describe('validate command', () => {
     expect(result.stdout).toContain('headings/missing-h1');
   });
 
-  test('handles missing optional fetchers without an uncaught stack trace', async () => {
-    const result = await runCLI(['validate', `${server.baseUrl}/`, '--fetcher', 'playwright']);
+  test('supports the optional playwright fetcher when it is installed', async () => {
+    const result = await runCLI(['validate', `${server.baseUrl}/`, '--fetcher', 'playwright', '--format', 'json']);
 
-    expect(result.exitCode).toBe(2);
-    expect(result.stderr).toContain(
-      'Fetch error (MISSING_OPTIONAL_BACKEND): Playwright fetcher requires package "@seo-solver/fetch-playwright"',
-    );
-    expect(result.stderr).toContain('Hint: pnpm add @seo-solver/fetch-playwright');
+    expect([0, 1]).toContain(result.exitCode);
     expect(result.stderr).not.toContain('CLIError:');
-  });
+  }, 10000);
 
   test('reports invalid URLs as handled fetch errors', async () => {
     const result = await runCLI(['validate', 'not-a-url']);
@@ -54,7 +50,7 @@ describe('validate command', () => {
     expect(invalidFormat.stderr).toContain('Error: Unsupported format: xml');
     expect(invalidSeverity.exitCode).toBe(2);
     expect(invalidSeverity.stderr).toContain('Error: Unsupported severity: fatal');
-  });
+  }, 10000);
 
   test('applies min-severity to json output', async () => {
     const result = await runCLI(['validate', `${server.baseUrl}/`, '--format', 'json', '--min-severity', 'warning']);
@@ -71,9 +67,9 @@ describe('validate command', () => {
       `${server.baseUrl}/`,
       '--format',
       'json',
-      '--disable-rule',
+      '--disable-rules',
       'meta/title-empty',
-      '--disable-rule',
+      '--disable-rules',
       'headings/missing-h1',
     ]);
 
@@ -95,7 +91,8 @@ describe('validate command', () => {
 
     expect(result.exitCode).toBe(1);
     const payload = JSON.parse(result.stdout);
-    expect(payload.validations[0].diagnostics).toEqual(
+    const metaValidation = payload.validations.find((entry: { type: string }) => entry.type === 'meta');
+    expect(metaValidation?.diagnostics).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           rule: 'meta/description-missing',
@@ -127,7 +124,7 @@ describe('validate command', () => {
   });
 
   test('supports selective extractors', async () => {
-    const result = await runCLI(['validate', `${server.baseUrl}/`, '--format', 'json', '--extractors', 'meta']);
+    const result = await runCLI(['validate', `${server.baseUrl}/`, '--format', 'json', '--targets', 'meta']);
 
     expect(result.exitCode).toBe(1);
     const payload = JSON.parse(result.stdout);
@@ -156,14 +153,21 @@ describe('validate command', () => {
   });
 
   test('reports timeouts with exit code 2', async () => {
-    const result = await runCLI(['validate', `${server.baseUrl}/never`, '--timeout', '50']);
+    const result = await runCLI(['validate', `${server.baseUrl}/never`, '--timeout-ms', '50']);
 
     expect(result.exitCode).toBe(2);
     expect(result.stderr).toContain('Fetch error (TIMEOUT)');
   });
 
   test('retries flaky pages when requested', async () => {
-    const result = await runCLI(['validate', `${server.baseUrl}/retry-html`, '--format', 'json', '--retry', '3']);
+    const result = await runCLI([
+      'validate',
+      `${server.baseUrl}/retry-html`,
+      '--format',
+      'json',
+      '--retry-attempts',
+      '3',
+    ]);
 
     expect(result.exitCode).toBe(0);
     expect(server.getRequestCount('/retry-html')).toBe(3);

@@ -14,7 +14,7 @@ export const validationReportFixture: ValidationReport = {
         {
           message: 'og:title is required for social sharing',
           path: 'og:title',
-          rule: 'og/title-missing',
+          rule: 'opengraph/title-missing',
           severity: 'error',
         },
         {
@@ -23,7 +23,7 @@ export const validationReportFixture: ValidationReport = {
           expected: '≤ 200',
           message: 'og:description exceeds 200 characters (actual: 121)',
           path: 'og:description',
-          rule: 'og/description-too-long',
+          rule: 'opengraph/description-too-long',
           severity: 'warning',
         },
       ],

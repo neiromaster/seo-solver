@@ -1,4 +1,4 @@
-import type { Comparator, ComparisonPipelineConfig } from '@seo-solver/types/compare';
+import type { Comparator, ComparisonPipelineConfig } from '@seo-solver/types/compare-advanced';
 import { GenericComparator } from './generic.js';
 import { HeadingsComparator } from './headings.js';
 

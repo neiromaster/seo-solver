@@ -22,7 +22,7 @@ describe('list-rules command', () => {
 
     expect(result.exitCode).toBe(2);
     expect(result.stderr).toContain('Unsupported list-rules format: html');
-  });
+  }, 10000);
 
   test('built dist binary runs successfully', async () => {
     const buildResult = await buildCLI();

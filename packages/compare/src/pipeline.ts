@@ -1,18 +1,20 @@
+import type { ComparisonReport, ComparisonResult } from '@seo-solver/types/compare';
 import type {
   ComparePipelineCallOptions,
   ComparisonPipeline,
   ComparisonPipelineConfig,
-  ComparisonResult,
-} from '@seo-solver/types/compare';
+} from '@seo-solver/types/compare-advanced';
 import type {
   CanonicalData,
-  ExtractionEnvelope,
+  ExtractedPage,
   HeadingsData,
   JsonLdData,
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
+  TargetKey,
 } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import { GenericComparator } from './comparators/generic.js';
 import { HeadingsComparator } from './comparators/headings.js';
 import { resolveComparator } from './comparators/registry.js';
@@ -64,6 +66,43 @@ export function createComparisonPipeline(config: ComparisonPipelineConfig = {}):
 
 export function compareAll(envelopesA: ExtractionEnvelope[], envelopesB: ExtractionEnvelope[]): ComparisonResult[] {
   return createComparisonPipeline().compare(envelopesA, envelopesB);
+}
+
+export function comparePages(
+  left: ExtractedPage,
+  right: ExtractedPage,
+  options: {
+    targets?: TargetKey[];
+    ignoreFields?: Record<string, string[]>;
+    ignoreArrayOrder?: boolean;
+  } = {},
+): ComparisonReport {
+  const pipeline = createComparisonPipeline({
+    ignoreArrayOrder: options.ignoreArrayOrder,
+    ignoreFields: options.ignoreFields,
+  });
+  const comparisons = pipeline.compare(
+    filterExtractions(toEnvelopes(left), options.targets),
+    filterExtractions(toEnvelopes(right), options.targets),
+    {
+      ignoreFields: options.ignoreFields,
+    },
+  );
+
+  return {
+    urlA: left.source.url,
+    urlB: right.source.url,
+    timestamp: new Date().toISOString(),
+    fetchA: {
+      statusCode: left.source.statusCode,
+      timing: left.source.timing,
+    },
+    fetchB: {
+      statusCode: right.source.statusCode,
+      timing: right.source.timing,
+    },
+    comparisons,
+  };
 }
 
 export function compareOpenGraph(a: OpenGraphData, b: OpenGraphData) {
@@ -125,4 +164,26 @@ function getOrderedTypes(
   }
 
   return selectedTypes.filter((type) => unique.includes(type));
+}
+
+function filterExtractions(envelopes: ExtractionEnvelope[], targets?: TargetKey[]): ExtractionEnvelope[] {
+  if (!targets) {
+    return envelopes;
+  }
+
+  const allowed = new Set<string>(targets.map((target) => (target === 'robotsTxt' ? 'robots-txt' : target)));
+  return envelopes.filter((entry) => allowed.has(entry.type));
+}
+
+function toEnvelopes(page: ExtractedPage): ExtractionEnvelope[] {
+  const envelopes: Array<ExtractionEnvelope | null> = [
+    page.data.canonical === null ? null : { type: 'canonical', source: page.source.url, data: page.data.canonical },
+    page.data.headings === null ? null : { type: 'headings', source: page.source.url, data: page.data.headings },
+    page.data.jsonld === null ? null : { type: 'jsonld', source: page.source.url, data: page.data.jsonld },
+    page.data.meta === null ? null : { type: 'meta', source: page.source.url, data: page.data.meta },
+    page.data.opengraph === null ? null : { type: 'opengraph', source: page.source.url, data: page.data.opengraph },
+    page.data.robotsTxt === null ? null : { type: 'robots-txt', source: page.source.url, data: page.data.robotsTxt },
+  ];
+
+  return envelopes.filter((entry): entry is ExtractionEnvelope => entry !== null);
 }

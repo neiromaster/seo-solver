@@ -1,14 +1,10 @@
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
-import type {
-  CanonicalData,
-  ExtractionEnvelope,
-  JsonLdData,
-  JsonLdEntry,
-  OpenGraphData,
-} from '@seo-solver/types/extract';
+import type { CanonicalData, JsonLdData, JsonLdEntry, OpenGraphData } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic } from '@seo-solver/types/validate';
+import { validateJsonLdWithAdobe } from '../runtime/jsonld-adobe-adapter.js';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 const SCHEMA_CACHE_FILE = join(homedir(), '.cache', 'seo-solver', 'schema-org.jsonld');
@@ -40,6 +36,15 @@ const ADOBE_PATTERNS: ReadonlyArray<readonly [pattern: RegExp, ruleId: string]> 
 
 export class JsonLdValidator {
   readonly type = 'jsonld';
+
+  constructor(
+    private readonly runtime: {
+      enabled?: boolean;
+      cacheFile?: string | null;
+      refreshTtlMs?: number;
+      schemaUrl?: string;
+    } = {},
+  ) {}
 
   readonly rules: readonly RuleDefinition<JsonLdData>[] = [
     {
@@ -182,39 +187,7 @@ export class JsonLdValidator {
       return [];
     }
 
-    const schema = await loadSchemaOrgJson();
-    if (schema === null) {
-      return [
-        {
-          severity: 'warning',
-          rule: 'jsonld/adobe/schema-unavailable',
-          message: 'Schema.org schema is unavailable, so Adobe validation was skipped',
-        },
-      ];
-    }
-
-    try {
-      const AdobeValidator = await loadAdobeValidator();
-      const validator = new AdobeValidator(schema);
-      const issues = (await validator.validate(grouped)) as AdobeIssue[];
-      return issues.map((issue) => ({
-        severity: issue.severity === 'ERROR' ? 'error' : 'warning',
-        rule: adobeRuleId(issue.issueMessage ?? 'issue'),
-        message: issue.issueMessage ?? 'Structured data validation issue',
-        path: serializeAdobePath(issue),
-      }));
-    } catch (error) {
-      return [
-        {
-          severity: 'warning',
-          rule: 'jsonld/adobe/validation-failed',
-          message:
-            error instanceof Error
-              ? `Adobe structured data validation failed and was skipped: ${error.message}`
-              : 'Adobe structured data validation failed and was skipped',
-        },
-      ];
-    }
+    return await validateJsonLdWithAdobe(grouped, this.runtime);
   }
 }
 

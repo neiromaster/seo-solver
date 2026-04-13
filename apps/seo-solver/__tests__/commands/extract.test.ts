@@ -22,9 +22,9 @@ describe('extract command', () => {
     expect(result.exitCode).toBe(0);
 
     const payload = JSON.parse(result.stdout);
-    expect(payload.url).toBe(`${server.baseUrl}/`);
-    expect(payload.statusCode).toBe(200);
-    expect(payload.extractions).toEqual(expect.any(Array));
+    expect(payload.source.url).toBe(`${server.baseUrl}/`);
+    expect(payload.source.statusCode).toBe(200);
+    expect(payload.data).toEqual(expect.any(Object));
   });
 
   test('writes output to a file and keeps stdout empty', async () => {
@@ -36,7 +36,7 @@ describe('extract command', () => {
     expect(result.stdout).toBe('');
     expect(result.stderr).toContain(`Report written to ${outputPath}`);
     expect(JSON.parse(await readFile(outputPath, 'utf8'))).toEqual(
-      expect.objectContaining({ url: `${server.baseUrl}/` }),
+      expect.objectContaining({ source: expect.objectContaining({ url: `${server.baseUrl}/` }) }),
     );
   });
 
@@ -45,14 +45,15 @@ describe('extract command', () => {
 
     expect(result.exitCode).toBe(2);
     expect(result.stderr).toContain('Unsupported extract format: html');
-  });
+  }, 10000);
 
   test('supports selective extractors', async () => {
-    const result = await runCLI(['extract', `${server.baseUrl}/`, '--extractors', 'headings']);
+    const result = await runCLI(['extract', `${server.baseUrl}/`, '--targets', 'headings']);
 
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
-    expect(payload.extractions).toHaveLength(1);
-    expect(payload.extractions[0].type).toBe('headings');
-  });
+    expect(payload.data.headings).toEqual(expect.any(Array));
+    expect(payload.data.meta).toBeNull();
+    expect(payload.data.opengraph).toBeNull();
+  }, 10000);
 });

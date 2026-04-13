@@ -13,6 +13,9 @@
       "@seo-solver/fetch": [
         "../../packages/fetch/src/index.ts"
       ],
+      "@seo-solver/fetch/advanced": [
+        "../../packages/fetch/src/advanced.ts"
+      ],
       "@seo-solver/report": [
         "../../packages/report/src/index.ts"
       ],

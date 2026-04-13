@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { extractOpenGraph, OpenGraphExtractor } from './index.js';
-import { htmlToMinimalFetchResult } from './pipeline.js';
+import { OpenGraphExtractor } from './extractors/opengraph.js';
+import { extractOpenGraph, htmlToMinimalFetchResult } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('OpenGraphExtractor', () => {

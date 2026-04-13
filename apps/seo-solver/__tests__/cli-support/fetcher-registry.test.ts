@@ -8,25 +8,28 @@ describe('resolveFetcher', () => {
       timeout: undefined,
       userAgent: undefined,
       retry: undefined,
+      retryDelayMs: undefined,
+      retryBackoff: undefined,
+      respectRetryAfter: undefined,
     });
 
     expect(fetcher.name).toBe('native');
     await fetcher.dispose();
   });
 
-  test('throws a helpful error for missing optional fetchers', async () => {
-    await expect(
-      resolveFetcher({
-        fetcher: 'playwright',
-        timeout: undefined,
-        userAgent: undefined,
-        retry: undefined,
-      }),
-    ).rejects.toMatchObject({
-      code: 'MISSING_OPTIONAL_BACKEND',
-      backend: 'playwright',
-      installHint: 'pnpm add @seo-solver/fetch-playwright',
+  test('returns the playwright fetcher when the optional backend is installed', async () => {
+    const fetcher = await resolveFetcher({
+      fetcher: 'playwright',
+      timeout: undefined,
+      userAgent: undefined,
+      retry: undefined,
+      retryDelayMs: undefined,
+      retryBackoff: undefined,
+      respectRetryAfter: undefined,
     });
+
+    expect(fetcher.name).toBe('playwright');
+    await fetcher.dispose();
   });
 
   test('throws a helpful error for unknown fetchers', async () => {
@@ -36,6 +39,9 @@ describe('resolveFetcher', () => {
         timeout: undefined,
         userAgent: undefined,
         retry: undefined,
+        retryDelayMs: undefined,
+        retryBackoff: undefined,
+        respectRetryAfter: undefined,
       }),
     ).rejects.toMatchObject({
       code: 'UNKNOWN_BACKEND',

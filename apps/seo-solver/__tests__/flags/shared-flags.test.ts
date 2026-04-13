@@ -1,6 +1,6 @@
+import { parseSeverityOverrides } from '@seo-solver/validate';
 import { describe, expect, test } from 'vitest';
-import { parseExtractors } from '../../src/flags/extractor.js';
-import { parseSeverityOverrides } from '../../src/flags/rules.js';
+import { parseTargets } from '../../src/flags/extractor.js';
 import { resolveVerbosity } from '../../src/flags/verbosity.js';
 
 describe('shared flags', () => {
@@ -11,15 +11,14 @@ describe('shared flags', () => {
     expect(resolveVerbosity(true, true)).toBe('quiet');
   });
 
-  test('parseExtractors returns trimmed extractor names', () => {
-    expect(parseExtractors(undefined)).toBeUndefined();
-    expect(parseExtractors('opengraph, jsonld ,, meta')).toEqual(['opengraph', 'jsonld', 'meta']);
+  test('parseTargets returns trimmed target names', () => {
+    expect(parseTargets(undefined)).toBeUndefined();
+    expect(parseTargets('opengraph, jsonld ,, meta')).toEqual(['opengraph', 'jsonld', 'meta']);
   });
 
-  test('parseSeverityOverrides skips invalid entries', () => {
-    expect(parseSeverityOverrides(['og/title=error', 'broken', 'meta/description=warning', 'x=y'])).toEqual({
-      'meta/description': 'warning',
-      'og/title': 'error',
-    });
+  test('parseSeverityOverrides fails on malformed entries', () => {
+    expect(() => parseSeverityOverrides(['opengraph/title=error', 'broken'])).toThrow(
+      'Invalid severity override: opengraph/title=error',
+    );
   });
 });

@@ -21,7 +21,8 @@ vi.mock('node:fs/promises', () => ({
   mkdir: mkdirMock,
 }));
 
-import { createValidationPipeline, validateJsonLd } from './index.js';
+import { createValidationPipeline } from './advanced.js';
+import { validateJsonLd } from './pipeline.js';
 
 describe('JsonLdValidator', () => {
   beforeEach(() => {
@@ -33,7 +34,7 @@ describe('JsonLdValidator', () => {
     vi.unstubAllGlobals();
   });
 
-  test('uses Adobe default export and returns structural paths', async () => {
+  test('uses Adobe runtime when explicitly enabled and returns structural paths', async () => {
     readFileMock.mockRejectedValue(new Error('cache miss'));
     statMock.mockRejectedValue(new Error('cache miss'));
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ '@graph': [] }) }));
@@ -46,10 +47,13 @@ describe('JsonLdValidator', () => {
       },
     ]);
 
-    const result = await validateJsonLd([
-      { '@context': 'https://schema.org', name: 'Missing type' },
-      { '@context': 'https://schema.org', '@type': 'Product', name: 'Product without price' },
-    ]);
+    const result = await validateJsonLd(
+      [
+        { '@context': 'https://schema.org', name: 'Missing type' },
+        { '@context': 'https://schema.org', '@type': 'Product', name: 'Product without price' },
+      ],
+      { enabled: true },
+    );
 
     expect(result).toEqual([
       {
@@ -68,20 +72,14 @@ describe('JsonLdValidator', () => {
     expect(validateSpy).toHaveBeenCalledTimes(1);
   });
 
-  test('skips Adobe validation with warning when schema is unavailable', async () => {
+  test('pure validation is the default and skips Adobe runtime work', async () => {
     readFileMock.mockRejectedValue(new Error('cache miss'));
     statMock.mockRejectedValue(new Error('cache miss'));
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
 
     const result = await validateJsonLd([{ '@context': 'https://schema.org', '@type': 'Article' }]);
 
-    expect(result).toEqual([
-      {
-        severity: 'warning',
-        rule: 'jsonld/adobe/schema-unavailable',
-        message: 'Schema.org schema is unavailable, so Adobe validation was skipped',
-      },
-    ]);
+    expect(result).toEqual([]);
     expect(validateSpy).not.toHaveBeenCalled();
   });
 
@@ -113,19 +111,21 @@ describe('JsonLdValidator', () => {
     expect(validateSpy).not.toHaveBeenCalled();
   });
 
-  test('returns warning diagnostic when Adobe validation throws', async () => {
+  test('returns runtime warning diagnostic when Adobe validation throws', async () => {
     readFileMock.mockRejectedValue(new Error('cache miss'));
     statMock.mockRejectedValue(new Error('cache miss'));
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ '@graph': [] }) }));
     validateSpy.mockRejectedValue(new Error('boom'));
 
-    const result = await validateJsonLd([{ '@context': 'https://schema.org', '@type': 'Article', name: 'Hello' }]);
+    const result = await validateJsonLd([{ '@context': 'https://schema.org', '@type': 'Article', name: 'Hello' }], {
+      enabled: true,
+    });
 
     expect(result).toEqual([
       {
-        severity: 'warning',
-        rule: 'jsonld/adobe/validation-failed',
-        message: 'Adobe structured data validation failed and was skipped: boom',
+        severity: 'info',
+        rule: 'jsonld/runtime-unavailable',
+        message: 'JSON-LD runtime validation was unavailable and skipped: boom',
       },
     ]);
   });
@@ -149,6 +149,7 @@ describe('JsonLdValidator', () => {
 
     const result = await createValidationPipeline({
       disableRules: ['jsonld/adobe/required-missing'],
+      runtime: { jsonldAdobe: { enabled: true } },
     }).validate([{ type: 'jsonld', source: '', data: [{ '@context': 'https://schema.org', '@type': 'Product' }] }]);
 
     expect(validateSpy).toHaveBeenCalledTimes(1);

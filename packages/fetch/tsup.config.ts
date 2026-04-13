@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  clean: true,
+  clean: false,
   entry: ['src/index.ts', 'src/advanced.ts'],
   format: ['esm'],
   sourcemap: true,

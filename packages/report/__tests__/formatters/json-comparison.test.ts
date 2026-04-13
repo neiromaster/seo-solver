@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparison } from '../../src/index.js';
+import { formatComparisonReport } from '../../src/index.js';
 import { comparisonReportFixture } from '../fixtures/comparison-report.js';
 
 describe('json comparison formatter', () => {
   test('returns machine-readable comparison summary and hasDiffs', () => {
-    const output = formatComparison(comparisonReportFixture, { format: 'json' });
+    const output = formatComparisonReport(comparisonReportFixture, { format: 'json' });
     const parsed = JSON.parse(output) as {
       comparisons: unknown[];
       hasDiffs: boolean;

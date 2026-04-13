@@ -1,4 +1,5 @@
-import type { CanonicalData, ExtractionEnvelope, MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
+import type { CanonicalData, MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 import { isAbsoluteUrl } from '../utils/url.js';
 
@@ -28,13 +29,13 @@ export class OpenGraphValidator {
 
   readonly rules: readonly RuleDefinition<OpenGraphData>[] = [
     {
-      id: 'og/title-missing',
+      id: 'opengraph/title-missing',
       severity: 'error',
       message: 'og:title is required for social sharing',
       check: (data) => (isMissingValue(data['og:title']) ? {} : null),
     },
     {
-      id: 'og/title-too-long',
+      id: 'opengraph/title-too-long',
       severity: 'warning',
       message: `og:title exceeds ${TITLE_LIMIT} characters`,
       check: (data) =>
@@ -46,7 +47,7 @@ export class OpenGraphValidator {
         ),
     },
     {
-      id: 'og/title-mismatch-meta',
+      id: 'opengraph/title-mismatch-meta',
       severity: 'info',
       message: 'og:title differs substantially from the document title',
       check: (data, context) => {
@@ -76,13 +77,13 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/description-missing',
+      id: 'opengraph/description-missing',
       severity: 'warning',
       message: 'og:description is recommended for social sharing',
       check: (data) => (isMissingValue(data['og:description']) ? {} : null),
     },
     {
-      id: 'og/description-too-long',
+      id: 'opengraph/description-too-long',
       severity: 'warning',
       message: `og:description exceeds ${DESCRIPTION_LIMIT} characters`,
       check: (data) =>
@@ -94,7 +95,7 @@ export class OpenGraphValidator {
         ),
     },
     {
-      id: 'og/description-fallback-missing',
+      id: 'opengraph/description-fallback-missing',
       severity: 'warning',
       message: 'Neither og:description nor meta description is present',
       check: (data, context) => {
@@ -107,19 +108,19 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/image-missing',
+      id: 'opengraph/image-missing',
       severity: 'warning',
       message: 'og:image is recommended for social sharing',
       check: (data) => (isMissingValue(data['og:image']) ? {} : null),
     },
     {
-      id: 'og/image-not-absolute',
+      id: 'opengraph/image-not-absolute',
       severity: 'warning',
       message: 'og:image should be an absolute URL',
       check: (data) => absoluteUrlResults(data['og:image'], 'og:image', 'og:image should be an absolute URL'),
     },
     {
-      id: 'og/image-http',
+      id: 'opengraph/image-http',
       severity: 'warning',
       message: 'og:image uses HTTP; Telegram and WhatsApp may not load it',
       check: (data) =>
@@ -131,7 +132,7 @@ export class OpenGraphValidator {
         ),
     },
     {
-      id: 'og/image-missing-dimensions',
+      id: 'opengraph/image-missing-dimensions',
       severity: 'info',
       message: 'og:image is missing width or height metadata',
       check: (data) =>
@@ -140,20 +141,20 @@ export class OpenGraphValidator {
           : null,
     },
     {
-      id: 'og/image-missing-alt',
+      id: 'opengraph/image-missing-alt',
       severity: 'info',
       message: 'og:image:alt is missing',
       check: (data) => (hasAnyValue(data['og:image']) && !hasAnyValue(data['og:image:alt']) ? {} : null),
     },
     {
-      id: 'og/image-avif',
+      id: 'opengraph/image-avif',
       severity: 'warning',
       message: 'og:image:type is image/avif, which Facebook does not reliably support',
       check: (data) =>
         getValues(data['og:image:type']).some((entry) => entry.toLowerCase() === 'image/avif') ? {} : null,
     },
     {
-      id: 'og/image-whatsapp-minimum',
+      id: 'opengraph/image-whatsapp-minimum',
       severity: 'info',
       message: 'og:image dimensions are below WhatsApp minimum recommendations',
       check: (data) => {
@@ -172,19 +173,19 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/url-missing',
+      id: 'opengraph/url-missing',
       severity: 'warning',
       message: 'og:url is recommended',
       check: (data) => (isMissingValue(data['og:url']) ? {} : null),
     },
     {
-      id: 'og/url-not-absolute',
+      id: 'opengraph/url-not-absolute',
       severity: 'warning',
       message: 'og:url should be an absolute URL',
       check: (data) => absoluteUrlResults(data['og:url'], 'og:url', 'og:url should be an absolute URL'),
     },
     {
-      id: 'og/url-mismatch-canonical',
+      id: 'opengraph/url-mismatch-canonical',
       severity: 'warning',
       message: 'og:url does not match the canonical URL',
       check: (data, context) => {
@@ -202,13 +203,13 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/type-missing',
+      id: 'opengraph/type-missing',
       severity: 'info',
       message: "og:type defaults to 'website' when missing",
       check: (data) => (isMissingValue(data['og:type']) ? {} : null),
     },
     {
-      id: 'og/type-invalid',
+      id: 'opengraph/type-invalid',
       severity: 'warning',
       message: 'og:type is not a recognized Open Graph type',
       check: (data) => {
@@ -217,7 +218,7 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/locale-invalid-format',
+      id: 'opengraph/locale-invalid-format',
       severity: 'warning',
       message: 'og:locale should use the xx_XX format',
       check: (data) => {
@@ -226,7 +227,7 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/locale-mismatch-lang',
+      id: 'opengraph/locale-mismatch-lang',
       severity: 'warning',
       message: 'og:locale does not match the page language',
       check: (data, context) => {
@@ -244,7 +245,7 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/locale-alternate-mismatch-hreflang',
+      id: 'opengraph/locale-alternate-mismatch-hreflang',
       severity: 'info',
       message: 'og:locale alternate values do not cover all hreflang languages',
       check: (data, context) => {
@@ -277,14 +278,14 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/article-missing-published-time',
+      id: 'opengraph/article-missing-published-time',
       severity: 'info',
       message: 'article:published_time is recommended for article pages',
       check: (data) =>
         getFirstValue(data['og:type']) === 'article' && !hasAnyValue(data['article:published_time']) ? {} : null,
     },
     {
-      id: 'og/article-invalid-time-format',
+      id: 'opengraph/article-invalid-time-format',
       severity: 'warning',
       message: 'Article timestamps should use ISO 8601 format',
       check: (data) => {
@@ -301,7 +302,7 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/article-modified-before-published',
+      id: 'opengraph/article-modified-before-published',
       severity: 'warning',
       message: 'article:modified_time is earlier than article:published_time',
       check: (data) => {
@@ -322,13 +323,13 @@ export class OpenGraphValidator {
       },
     },
     {
-      id: 'og/video-missing-url',
+      id: 'opengraph/video-missing-url',
       severity: 'warning',
       message: 'og:video:url is required for video Open Graph objects',
       check: (data) => (isVideoType(getFirstValue(data['og:type'])) && !hasAnyValue(data['og:video:url']) ? {} : null),
     },
     {
-      id: 'og/video-missing-dimensions',
+      id: 'opengraph/video-missing-dimensions',
       severity: 'info',
       message: 'og:video is missing width or height metadata',
       check: (data) =>

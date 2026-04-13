@@ -19,13 +19,25 @@
       "types": "./dist/extract.d.ts",
       "import": "./dist/extract.js"
     },
+    "./extract-advanced": {
+      "types": "./dist/extract-advanced.d.ts",
+      "import": "./dist/extract-advanced.js"
+    },
     "./compare": {
       "types": "./dist/compare.d.ts",
       "import": "./dist/compare.js"
     },
+    "./compare-advanced": {
+      "types": "./dist/compare-advanced.d.ts",
+      "import": "./dist/compare-advanced.js"
+    },
     "./validate": {
       "types": "./dist/validate.d.ts",
       "import": "./dist/validate.js"
+    },
+    "./validate-advanced": {
+      "types": "./dist/validate-advanced.d.ts",
+      "import": "./dist/validate-advanced.js"
     },
     "./report": {
       "types": "./dist/report.d.ts",

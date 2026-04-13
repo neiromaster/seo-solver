@@ -1,18 +1,15 @@
 import type {
   CanonicalData,
-  ExtractionEnvelope,
+  ExtractedPage,
   HeadingsData,
   JsonLdData,
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
 } from '@seo-solver/types/extract';
-import type {
-  Diagnostic,
-  ValidationPipeline,
-  ValidationPipelineConfig,
-  ValidationResult,
-} from '@seo-solver/types/validate';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
+import type { Diagnostic, ValidationResult } from '@seo-solver/types/validate';
+import type { ValidationPipeline, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
 import { createRuleFilter } from './rule-filter.js';
 import { CanonicalValidator } from './validators/canonical.js';
 import { HeadingsValidator } from './validators/headings.js';
@@ -27,13 +24,10 @@ export function createValidationPipeline(config: ValidationPipelineConfig = {}):
   const configuredValidators = resolveValidators(config, config.validators);
 
   return {
-    async validate(envelopes, options) {
-      const selectedValidators = resolveValidators(
-        config,
-        options?.disableRules ? configuredValidators : configuredValidators,
-      );
+    async validate(envelopes) {
+      const selectedValidators = resolveValidators(config, configuredValidators);
       const ruleFilter = createRuleFilter({
-        disableRules: [...(config.disableRules ?? []), ...(options?.disableRules ?? [])],
+        disableRules: config.disableRules ?? [],
         severityOverrides: config.severityOverrides ?? {},
       });
 
@@ -115,12 +109,38 @@ export async function validateAll(envelopes: ExtractionEnvelope[]): Promise<Vali
   return createValidationPipeline().validate(envelopes);
 }
 
+export async function validatePage(
+  input: ExtractedPage,
+  options: Pick<ValidationPipelineConfig, 'validators' | 'disableRules' | 'severityOverrides' | 'runtime'> = {},
+) {
+  const validations = await createValidationPipeline(options).validate(toEnvelopes(input));
+
+  return {
+    url: input.source.url,
+    timestamp: new Date().toISOString(),
+    fetch: {
+      statusCode: input.source.statusCode,
+      timing: input.source.timing,
+      redirects: input.source.redirects,
+    },
+    validations,
+  };
+}
+
 export async function validateOpenGraph(data: OpenGraphData): Promise<Diagnostic[]> {
   return new OpenGraphValidator().validate(toEnvelope('opengraph', data));
 }
 
-export async function validateJsonLd(data: JsonLdData): Promise<Diagnostic[]> {
-  return new JsonLdValidator().validate(toEnvelope('jsonld', data));
+export async function validateJsonLd(
+  data: JsonLdData,
+  runtime?: {
+    enabled?: boolean;
+    cacheFile?: string | null;
+    refreshTtlMs?: number;
+    schemaUrl?: string;
+  },
+): Promise<Diagnostic[]> {
+  return new JsonLdValidator(runtime).validate(toEnvelope('jsonld', data));
 }
 
 export async function validateMetaTags(data: MetaTagsData): Promise<Diagnostic[]> {
@@ -149,4 +169,17 @@ function toEnvelope<T>(type: string, data: T): ExtractionEnvelope<T> {
     source: '',
     data,
   };
+}
+
+function toEnvelopes(page: ExtractedPage): ExtractionEnvelope[] {
+  const envelopes: Array<ExtractionEnvelope | null> = [
+    page.data.canonical === null ? null : { type: 'canonical', source: page.source.url, data: page.data.canonical },
+    page.data.headings === null ? null : { type: 'headings', source: page.source.url, data: page.data.headings },
+    page.data.jsonld === null ? null : { type: 'jsonld', source: page.source.url, data: page.data.jsonld },
+    page.data.meta === null ? null : { type: 'meta', source: page.source.url, data: page.data.meta },
+    page.data.opengraph === null ? null : { type: 'opengraph', source: page.source.url, data: page.data.opengraph },
+    page.data.robotsTxt === null ? null : { type: 'robots-txt', source: page.source.url, data: page.data.robotsTxt },
+  ];
+
+  return envelopes.filter((entry): entry is ExtractionEnvelope => entry !== null);
 }

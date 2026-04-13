@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { ExtractionError, extractJsonLd, JsonLdExtractor } from './index.js';
-import { htmlToMinimalFetchResult } from './pipeline.js';
+import { ExtractionError } from './errors.js';
+import { JsonLdExtractor } from './extractors/jsonld.js';
+import { extractJsonLd, htmlToMinimalFetchResult } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('JsonLdExtractor', () => {

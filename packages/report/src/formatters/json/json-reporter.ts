@@ -4,10 +4,10 @@ import { formatJsonValidation } from './validation.js';
 
 export function createJsonReporter(config: ReporterConfig): Reporter {
   return {
-    formatComparison(report) {
+    formatComparisonReport(report) {
       return formatJsonComparison(report, config);
     },
-    formatValidation(report) {
+    formatValidationReport(report) {
       return formatJsonValidation(report, config);
     },
   };

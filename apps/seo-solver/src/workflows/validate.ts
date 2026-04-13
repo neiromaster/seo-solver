@@ -1,11 +1,21 @@
+import type { TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
 import type { Severity, ValidationReport } from '@seo-solver/types/validate';
-import { createValidationPipeline } from '@seo-solver/validate';
+import { validatePage } from '@seo-solver/validate';
 import { type ExtractOptions, runExtract } from './extract.js';
 
 export type ValidateOptions = ExtractOptions & {
   disableRules?: string[];
   severityOverrides?: Record<string, Severity>;
+  targets?: TargetKey[];
+  runtime?: {
+    jsonldAdobe?: {
+      enabled?: boolean;
+      cacheFile?: string | null;
+      refreshTtlMs?: number;
+      schemaUrl?: string;
+    };
+  };
 };
 
 export async function runValidate(
@@ -13,25 +23,11 @@ export async function runValidate(
   url: string,
   options: ValidateOptions = {},
 ): Promise<ValidationReport> {
-  const { fetchResult, envelopes } = await runExtract(fetcher, url, options);
+  const { page } = await runExtract(fetcher, url, options);
 
-  const pipeline = createValidationPipeline({
+  return await validatePage(page, {
     disableRules: options.disableRules,
     severityOverrides: options.severityOverrides,
+    runtime: options.runtime,
   });
-
-  const validations = await pipeline.validate(envelopes, {
-    disableRules: options.disableRules,
-  });
-
-  return {
-    url: fetchResult.url,
-    timestamp: new Date().toISOString(),
-    fetch: {
-      statusCode: fetchResult.statusCode,
-      timing: fetchResult.timing,
-      redirects: fetchResult.redirects,
-    },
-    validations,
-  };
 }

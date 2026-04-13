@@ -1,120 +1,143 @@
 # seo-solver
 
-CLI tool for comparing and validating SEO metadata from web pages.
+`seo-solver` is a pnpm workspace that builds a publishable CLI and a set of smaller packages around fetching, extraction, comparison, validation, reporting, and shared contracts for SEO metadata analysis.
 
-## Workspace
+If you only care about using the CLI, jump to the install and usage sections below. If you want to use the building blocks separately, each publishable package under `packages/` now has its own README with both a simple API and the more advanced package-level API used by the application.
 
-This repository is a pnpm workspace monorepo. The publishable CLI lives in `apps/seo-solver`, and shared workspace configuration lives under `packages/*`.
+## What is in this repository?
+
+- `apps/seo-solver` — the publishable CLI package
+- `packages/fetch` — normalized fetching and backend registry
+- `packages/fetch-playwright` — optional Playwright-backed fetch backend
+- `packages/extract` — page-level extraction and target catalog
+- `packages/compare` — page-to-page SEO comparison
+- `packages/validate` — validation, rule catalog, and severity overrides
+- `packages/report` — formatting and status helpers
+- `packages/types` — shared type contracts and advanced type subpaths
 
 ## Development
 
 ```bash
 pnpm install
-pnpm build
-pnpm test
 pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-## Features
-
-- Compare extracted SEO data between two URLs
-- Validate extracted SEO and social metadata on a single URL
-- Extract raw SEO data without running validation
-- List available validation rules from the CLI
-- Fetch via `native` (default) or `playwright` via `--fetcher`
-
-## Installation
+## Install the CLI
 
 ```bash
 pnpm add -g seo-solver
 ```
 
-## Usage
-
-The CLI uses subcommands:
+If you want browser-backed fetching, install the optional Playwright backend and browser binaries too:
 
 ```bash
-seo-solver compare <url1> <url2> [flags]
+pnpm add -g @seo-solver/fetch-playwright playwright
+pnpm exec playwright install
+```
+
+## CLI overview
+
+The CLI exposes four commands:
+
+```bash
+seo-solver compare <url-a> <url-b> [flags]
 seo-solver validate <url> [flags]
 seo-solver extract <url> [flags]
 seo-solver list-rules [flags]
 ```
 
-## Examples
+The default fetcher is `native`. When you pass `--fetcher playwright`, the CLI will use the optional Playwright backend instead.
+
+## Common examples
 
 ```bash
-# Compare the default extractor set between two pages
+# Compare two pages using the default target set
 seo-solver compare https://example.com https://example.com/new
 
-# Compare only OpenGraph data
-seo-solver compare https://example.com https://example.com/new --extractors opengraph
+# Compare only selected targets
+seo-solver compare https://example.com https://example.com/new --targets opengraph,meta
 
-# Validate a page with the default extractor set
-seo-solver validate https://example.com
+# Validate one page with pure JSON-LD validation (the default)
+seo-solver validate https://example.com --jsonld-runtime off
 
-# Use the native fetcher explicitly
-seo-solver validate https://example.com --fetcher native
-
-# Use the Playwright fetcher for browser-based comparison
-seo-solver compare https://example.com https://example.com/new --fetcher playwright
-
-# Use the Playwright fetcher for validation
+# Validate one page with browser-backed fetching
 seo-solver validate https://example.com --fetcher playwright
 
-# Extract raw metadata without validation
-seo-solver extract https://example.com --extractors opengraph,meta
+# Extract only selected targets as JSON
+seo-solver extract https://example.com --targets meta,opengraph --format json
 
-# Validate only OpenGraph-derived metadata
-seo-solver validate https://example.com --extractors opengraph
-
-# Limit validation to OpenGraph and meta tags
-seo-solver validate https://example.com --extractors opengraph,meta
-
-# Show the available validation rules as JSON
+# Print the current validation rule catalog as JSON
 seo-solver list-rules --format json
 ```
 
-## Options
+## Final CLI vocabulary
+
+### Shared fetch flags
+
+These flags are available on `compare`, `validate`, and `extract`.
+
+| Flag | Meaning |
+|---|---|
+| `--fetcher <native\|playwright>` | choose the fetch backend |
+| `--timeout-ms <ms>` | request timeout in milliseconds |
+| `--user-agent <string>` | override the HTTP user agent |
+| `--retry-attempts <n>` | number of retry attempts |
+| `--retry-delay-ms <ms>` | delay between retries |
+| `--retry-backoff <fixed\|exponential>` | retry backoff strategy |
+| `--respect-retry-after <true\|false>` | honor `Retry-After` headers |
 
 ### `compare`
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
-| `--extractors <list>` | `-e` | Limit comparison to selected extractors, e.g. `opengraph`, `meta`, `jsonld` |
-| `--output <path>` | `-o` | Write comparison output to a file |
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | compare only selected targets such as `meta`, `opengraph`, `jsonld`, `robotsTxt` |
+| `--output <path>` / `-o` | write comparison output to a file |
 
 ### `validate`
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
-| `--extractors <list>` | `-e` | Limit validation to selected extractors, e.g. `opengraph`, `meta`, `jsonld` |
-| `--format <terminal\|json\|markdown\|html>` | `-f` | Choose the report output format |
-| `--min-severity <level>` | — | Show diagnostics at or above the selected severity |
-| `--disable-rule <rule>` | — | Disable one or more validation rules |
-| `--severity-override <rule=severity>` | — | Override severity for a specific rule |
-| `--output <path>` | `-o` | Write validation output to a file |
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | validate only selected targets |
+| `--format <terminal\|json\|markdown\|html>` / `-f` | choose output format |
+| `--min-severity <level>` | filter displayed diagnostics |
+| `--disable-rules <selector>` | disable exact rule ids or wildcard selectors like `opengraph/*` |
+| `--severity-override <rule=severity>` | override rule severity with strict selector validation |
+| `--jsonld-runtime <adobe\|off>` | opt into runtime JSON-LD validation or keep it pure |
+| `--jsonld-cache-file <path>` | optional schema cache file |
+| `--jsonld-schema-url <url>` | override the schema URL |
+| `--jsonld-schema-ttl-ms <ms>` | schema cache TTL in milliseconds |
+| `--output <path>` / `-o` | write validation output to a file |
 
 ### `extract`
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--fetcher <value>` | — | Select fetcher backend: `native` or `playwright` |
-| `--extractors <list>` | `-e` | Limit extraction to selected extractors |
-| `--format <json>` | `-f` | Choose the extract output format |
-| `--output <path>` | `-o` | Write extracted JSON output to a file |
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | extract only selected targets |
+| `--format <json>` / `-f` | choose output format |
+| `--output <path>` / `-o` | write extraction output to a file |
 
 ### `list-rules`
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--format <terminal\|json>` | `-f` | Choose human-readable or JSON rule output |
-| `--output <path>` | `-o` | Write rule output to a file |
+| Flag | Meaning |
+|---|---|
+| `--format <terminal\|json>` / `-f` | choose human-readable or JSON output |
+| `--output <path>` / `-o` | write the rule catalog to a file |
 
-> Default fetcher is `native` when no fetcher flag is provided.
->
-> `validate` runs the configured extractor set and validates the extracted metadata. Use `--extractors` to focus on specific sources such as OpenGraph, meta tags, or JSON-LD.
+## Package-level usage
+
+If you want to build on the pieces instead of only using the CLI, start here:
+
+- `packages/fetch/README.md`
+- `packages/fetch-playwright/README.md`
+- `packages/extract/README.md`
+- `packages/compare/README.md`
+- `packages/validate/README.md`
+- `packages/report/README.md`
+- `packages/types/README.md`
+
+Those README files explain both the simple, human-friendly API and the more advanced API used inside the application.
 
 ## License
 

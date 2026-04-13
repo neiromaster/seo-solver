@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { CanonicalExtractor, extractCanonical } from './index.js';
-import { htmlToMinimalFetchResult } from './pipeline.js';
+import { CanonicalExtractor } from './extractors/canonical.js';
+import { extractCanonical, htmlToMinimalFetchResult } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('CanonicalExtractor', () => {

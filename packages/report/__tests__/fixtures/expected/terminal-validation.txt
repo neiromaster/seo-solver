@@ -1,11 +1,11 @@
 ✗ https://example.com/page  200 OK  (342ms)
 
 ── OpenGraph ───────────────────────────────────────────
-  ✗ error    og/title-missing
+  ✗ error    opengraph/title-missing
              og:title is required for social sharing
              og:title
 
-  ⚠ warning  og/description-too-long
+  ⚠ warning  opengraph/description-too-long
              og:description exceeds 200 characters (actual: 121)
              og:description
 

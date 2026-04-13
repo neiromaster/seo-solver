@@ -7,10 +7,14 @@ export type ValidationPipelineConfig = {
   validators?: Array<string | Validator>;
   disableRules?: string[];
   severityOverrides?: Record<string, Severity>;
-};
-
-export type ValidatePipelineCallOptions = {
-  disableRules?: string[];
+  runtime?: {
+    jsonldAdobe?: {
+      enabled?: boolean;
+      cacheFile?: string | null;
+      refreshTtlMs?: number;
+      schemaUrl?: string;
+    };
+  };
 };
 
 export type ValidationPipelineRule = {
@@ -20,6 +24,6 @@ export type ValidationPipelineRule = {
 };
 
 export type ValidationPipeline = {
-  validate(envelopes: ExtractionEnvelope[], options?: ValidatePipelineCallOptions): Promise<ValidationResult[]>;
+  validate(envelopes: ExtractionEnvelope[]): Promise<ValidationResult[]>;
   readonly rules: readonly ValidationPipelineRule[];
 };

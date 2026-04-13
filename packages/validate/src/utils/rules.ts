@@ -1,4 +1,4 @@
-import type { ExtractionEnvelope } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic, Severity } from '@seo-solver/types/validate';
 
 export type RuleResult = {

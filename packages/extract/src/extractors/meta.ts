@@ -1,5 +1,6 @@
 import type { ResourceType } from '@seo-solver/types';
-import type { ExtractionEnvelope, MetaTagsData } from '@seo-solver/types/extract';
+import type { MetaTagsData } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
 import { type ParsedDocument, parseHtml } from '../parse-html.js';
 import { normalizeWhitespace } from '../utils/normalize.js';

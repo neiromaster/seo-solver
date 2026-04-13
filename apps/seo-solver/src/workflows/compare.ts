@@ -1,10 +1,12 @@
-import { createComparisonPipeline } from '@seo-solver/compare';
+import { comparePages } from '@seo-solver/compare';
 import type { ComparisonReport } from '@seo-solver/types/compare';
+import type { TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
 import { type ExtractOptions, runExtract } from './extract.js';
 
 export interface CompareOptions extends ExtractOptions {
   ignoreFields?: Record<string, string[]>;
+  targets?: TargetKey[];
 }
 
 export async function runCompare(
@@ -18,26 +20,8 @@ export async function runCompare(
     runExtract(fetcher, urlB, options),
   ]);
 
-  const pipeline = createComparisonPipeline({
+  return comparePages(resultA.page, resultB.page, {
+    targets: options.targets,
     ignoreFields: options.ignoreFields,
   });
-
-  const comparisons = pipeline.compare(resultA.envelopes, resultB.envelopes, {
-    ignoreFields: options.ignoreFields,
-  });
-
-  return {
-    urlA: resultA.fetchResult.url,
-    urlB: resultB.fetchResult.url,
-    timestamp: new Date().toISOString(),
-    fetchA: {
-      statusCode: resultA.fetchResult.statusCode,
-      timing: resultA.fetchResult.timing,
-    },
-    fetchB: {
-      statusCode: resultB.fetchResult.statusCode,
-      timing: resultB.fetchResult.timing,
-    },
-    comparisons,
-  };
 }

@@ -10,9 +10,8 @@ import {
   RobotsTxtValidator,
   TwitterCardValidator,
   VKValidator,
-  validateHeadings,
-  validateOpenGraph,
-} from './index.js';
+} from './advanced.js';
+import { validateHeadings, validateOpenGraph } from './pipeline.js';
 
 describe('validators', () => {
   test('validates meta tags', async () => {
@@ -39,10 +38,10 @@ describe('validators', () => {
 
     expect(diagnostics).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ rule: 'og/description-missing' }),
-        expect.objectContaining({ rule: 'og/image-not-absolute', path: 'og:image[1]' }),
-        expect.objectContaining({ rule: 'og/url-not-absolute', path: 'og:url' }),
-        expect.objectContaining({ rule: 'og/type-missing' }),
+        expect.objectContaining({ rule: 'opengraph/description-missing' }),
+        expect.objectContaining({ rule: 'opengraph/image-not-absolute', path: 'og:image[1]' }),
+        expect.objectContaining({ rule: 'opengraph/url-not-absolute', path: 'og:url' }),
+        expect.objectContaining({ rule: 'opengraph/type-missing' }),
       ]),
     );
   });
@@ -141,18 +140,18 @@ describe('validators', () => {
 
     expect(diagnostics.map((entry) => entry.rule)).toEqual(
       expect.arrayContaining([
-        'og/description-missing',
-        'og/description-fallback-missing',
-        'og/title-mismatch-meta',
-        'og/type-invalid',
-        'og/url-mismatch-canonical',
-        'og/image-http',
-        'og/image-missing-dimensions',
-        'og/image-missing-alt',
-        'og/image-avif',
-        'og/locale-invalid-format',
-        'og/locale-mismatch-lang',
-        'og/locale-alternate-mismatch-hreflang',
+        'opengraph/description-missing',
+        'opengraph/description-fallback-missing',
+        'opengraph/title-mismatch-meta',
+        'opengraph/type-invalid',
+        'opengraph/url-mismatch-canonical',
+        'opengraph/image-http',
+        'opengraph/image-missing-dimensions',
+        'opengraph/image-missing-alt',
+        'opengraph/image-avif',
+        'opengraph/locale-invalid-format',
+        'opengraph/locale-mismatch-lang',
+        'opengraph/locale-alternate-mismatch-hreflang',
       ]),
     );
   });

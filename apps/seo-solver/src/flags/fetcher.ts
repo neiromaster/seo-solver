@@ -7,7 +7,7 @@ export const fetcherFlag = option({
 });
 
 export const timeoutFlag = option({
-  long: 'timeout',
+  long: 'timeout-ms',
   type: optional(number),
   description: 'Request timeout in ms (default: 30000)',
 });
@@ -19,9 +19,27 @@ export const userAgentFlag = option({
 });
 
 export const retryFlag = option({
-  long: 'retry',
+  long: 'retry-attempts',
   type: optional(number),
   description: 'Number of retry attempts (default: 1, no retry)',
+});
+
+export const retryDelayFlag = option({
+  long: 'retry-delay-ms',
+  type: optional(number),
+  description: 'Delay between retry attempts in milliseconds',
+});
+
+export const retryBackoffFlag = option({
+  long: 'retry-backoff',
+  type: optional(string),
+  description: 'Retry backoff strategy: fixed or exponential',
+});
+
+export const respectRetryAfterFlag = option({
+  long: 'respect-retry-after',
+  type: optional(string),
+  description: 'Whether to respect Retry-After headers: true or false',
 });
 
 export type FetcherFlags = {
@@ -29,6 +47,9 @@ export type FetcherFlags = {
   timeout: number | undefined;
   userAgent: string | undefined;
   retry: number | undefined;
+  retryDelayMs: number | undefined;
+  retryBackoff: string | undefined;
+  respectRetryAfter: string | undefined;
 };
 
 export const fetcherFlags = {
@@ -36,4 +57,7 @@ export const fetcherFlags = {
   timeout: timeoutFlag,
   userAgent: userAgentFlag,
   retry: retryFlag,
+  retryDelayMs: retryDelayFlag,
+  retryBackoff: retryBackoffFlag,
+  respectRetryAfter: respectRetryAfterFlag,
 };

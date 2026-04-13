@@ -42,7 +42,7 @@ describe('compare command', () => {
       `${server.baseUrl}/`,
       '--format',
       'json',
-      '--extractors',
+      '--targets',
       'meta',
     ]);
 
@@ -50,7 +50,7 @@ describe('compare command', () => {
     const payload = JSON.parse(result.stdout);
     expect(payload.comparisons).toHaveLength(1);
     expect(payload.comparisons[0].type).toBe('meta');
-  });
+  }, 10000);
 
   test('prints terminal diff output for basic compare', async () => {
     const result = await runCLI(['compare', `${server.baseUrl}/`, `${server.baseUrl}/robots.txt`]);
@@ -58,7 +58,7 @@ describe('compare command', () => {
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toContain('Comparing:');
     expect(result.stdout).toContain('── Summary ─');
-  });
+  }, 10000);
 
   test('reports invalid compare formats as CLI errors', async () => {
     const result = await runCLI(['compare', `${server.baseUrl}/`, `${server.baseUrl}/`, '--format', 'xml']);

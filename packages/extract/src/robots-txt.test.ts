@@ -1,17 +1,19 @@
+import type { RobotsTxtData } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
-import { extractRobotsTxt, RobotsTxtExtractor } from './index.js';
-import { htmlToMinimalFetchResult } from './pipeline.js';
+import { RobotsTxtExtractor } from './extractors/robots-txt.js';
+import { extractRobotsText, htmlToMinimalFetchResult } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('RobotsTxtExtractor', () => {
   test('parses groups, sitemap, and crawl delay', () => {
-    const result = extractRobotsTxt(readFixture('robots.txt'));
-    expect(result?.groups).toEqual([
+    const result = extractRobotsText(readFixture('robots.txt'));
+    const robotsData = result.data.robotsTxt as RobotsTxtData | undefined;
+    expect(robotsData?.groups).toEqual([
       { userAgents: ['*'], allow: ['/'], disallow: ['/admin'] },
       { userAgents: ['Googlebot'], allow: [], disallow: ['/private'] },
     ]);
-    expect(result?.sitemaps).toEqual(['https://example.com/sitemap.xml']);
-    expect(result?.crawlDelay).toBe(10);
+    expect(robotsData?.sitemaps).toEqual(['https://example.com/sitemap.xml']);
+    expect(robotsData?.crawlDelay).toBe(10);
   });
 
   test('handles bom and inline comments', () => {

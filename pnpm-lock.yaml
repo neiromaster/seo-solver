@@ -52,6 +52,9 @@ importers:
       "@seo-solver/fetch":
         specifier: workspace:*
         version: link:../../packages/fetch
+      "@seo-solver/fetch-playwright":
+        specifier: workspace:*
+        version: link:../../packages/fetch-playwright
       "@seo-solver/report":
         specifier: workspace:*
         version: link:../../packages/report
@@ -88,13 +91,13 @@ importers:
 
   packages/fetch-playwright:
     dependencies:
+      "@seo-solver/fetch":
+        specifier: workspace:*
+        version: link:../fetch
       "@seo-solver/types":
         specifier: workspace:*
         version: link:../types
     devDependencies:
-      "@seo-solver/fetch":
-        specifier: workspace:*
-        version: link:../fetch
       playwright:
         specifier: ^1.58.2
         version: 1.59.1
@@ -120,6 +123,10 @@ importers:
       "@seo-solver/types":
         specifier: workspace:*
         version: link:../types
+    devDependencies:
+      "@seo-solver/extract":
+        specifier: workspace:*
+        version: link:../extract
 
 packages:
   "@adobe/structured-data-validator@1.7.0":

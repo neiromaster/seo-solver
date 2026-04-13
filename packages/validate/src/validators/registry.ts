@@ -1,4 +1,4 @@
-import type { Validator as PublicValidator, ValidationPipelineConfig } from '@seo-solver/types/validate';
+import type { Validator as PublicValidator, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
 import type { RuleAwareValidator } from '../utils/rules.js';
 import { AppLinksValidator } from './applinks.js';
 import { CanonicalValidator } from './canonical.js';
@@ -26,13 +26,13 @@ export type BuiltInValidatorId =
   | 'cross';
 
 export function createBuiltInValidators(
-  _config: ValidationPipelineConfig = {},
+  config: ValidationPipelineConfig = {},
 ): Record<BuiltInValidatorId, RuleAwareValidator> {
   return {
     applinks: new AppLinksValidator(),
     cross: new CrossValidator(),
     opengraph: new OpenGraphValidator(),
-    jsonld: new JsonLdValidator(),
+    jsonld: new JsonLdValidator(config.runtime?.jsonldAdobe),
     meta: new MetaTagsValidator(),
     headings: new HeadingsValidator(),
     canonical: new CanonicalValidator(),

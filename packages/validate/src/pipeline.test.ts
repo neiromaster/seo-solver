@@ -1,6 +1,7 @@
+import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/extract/advanced';
 import { describe, expect, test } from 'vitest';
-import { createExtractorPipeline, htmlToMinimalFetchResult } from '../../extract/src/index.js';
-import { createValidationPipeline, validateAll } from './index.js';
+import { createValidationPipeline } from './advanced.js';
+import { validateAll } from './pipeline.js';
 
 describe('createValidationPipeline', () => {
   test('validates envelopes in order', async () => {
@@ -85,18 +86,17 @@ describe('createValidationPipeline', () => {
     ]);
   });
 
-  test('supports per-call disabled rule union', async () => {
-    const pipeline = createValidationPipeline({ disableRules: ['meta/charset-missing'] });
-    const result = await pipeline.validate(
-      [
-        {
-          type: 'meta',
-          source: '',
-          data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
-        },
-      ],
-      { disableRules: ['meta/viewport-missing'] },
-    );
+  test('uses factory-owned disabled rules configuration', async () => {
+    const pipeline = createValidationPipeline({
+      disableRules: ['meta/charset-missing', 'meta/viewport-missing'],
+    });
+    const result = await pipeline.validate([
+      {
+        type: 'meta',
+        source: '',
+        data: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+      },
+    ]);
 
     expect(result[0]?.diagnostics.map((entry) => entry.rule)).toEqual([
       'meta/title-missing',
@@ -116,7 +116,7 @@ describe('createValidationPipeline', () => {
   });
 
   test('exposes built-in rule catalog', () => {
-    expect(createValidationPipeline().rules.some((entry) => entry.rule === 'og/title-missing')).toBe(true);
+    expect(createValidationPipeline().rules.some((entry) => entry.rule === 'opengraph/title-missing')).toBe(true);
   });
 
   test('forwards context for cross-validation', async () => {

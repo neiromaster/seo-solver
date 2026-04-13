@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { formatValidation } from '../../src/index.js';
+import { formatValidationReport } from '../../src/index.js';
 import { validationReportFixture } from '../fixtures/validation-report.js';
 
 describe('html validation formatter', () => {
   test('renders self-contained html with escaped values and dark mode css', () => {
-    const output = formatValidation(validationReportFixture, { format: 'html' });
+    const output = formatValidationReport(validationReportFixture, { format: 'html' });
 
     expect(output).toContain('<!DOCTYPE html>');
     expect(output).toContain('<title>SEO Audit — example.com</title>');
@@ -14,7 +14,7 @@ describe('html validation formatter', () => {
   });
 
   test('does not mark hidden diagnostics as passed when filtered out', () => {
-    const output = formatValidation(validationReportFixture, { format: 'html', minSeverity: 'error' });
+    const output = formatValidationReport(validationReportFixture, { format: 'html', minSeverity: 'error' });
 
     expect(output).toContain('Hidden by filter');
     expect(output).toContain('No visible diagnostics at current minSeverity.');

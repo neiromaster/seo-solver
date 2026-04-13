@@ -19,8 +19,8 @@
 
 | Severity | Rule | Message |
 |----------|------|---------|
-| ✗ Error | `og/title-missing` | og:title is required for social sharing<br />- og:title |
-| ⚠ Warning | `og/description-too-long` | og:description exceeds 200 characters (actual: 121)<br />- og:description |
+| ✗ Error | `opengraph/title-missing` | og:title is required for social sharing<br />- og:title |
+| ⚠ Warning | `opengraph/description-too-long` | og:description exceeds 200 characters (actual: 121)<br />- og:description |
 
 </details>
 

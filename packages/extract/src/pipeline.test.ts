@@ -1,8 +1,8 @@
-import type { Extractor } from '@seo-solver/types/extract';
+import type { Extractor } from '@seo-solver/types/extract-advanced';
 import { describe, expect, test, vi } from 'vitest';
 import { ExtractionError } from './errors.js';
 import * as parseHtmlModule from './parse-html.js';
-import { createExtractorPipeline, extractAll, htmlToMinimalFetchResult } from './pipeline.js';
+import { createExtractorPipeline, extractAll, extractPage, htmlToMinimalFetchResult } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('createExtractorPipeline', () => {
@@ -12,7 +12,7 @@ describe('createExtractorPipeline', () => {
   });
 
   test('filters selected extractors', () => {
-    const result = createExtractorPipeline({ extractors: ['opengraph', 'jsonld'] }).extract(
+    const result = createExtractorPipeline({ targets: ['opengraph', 'jsonld'] }).extract(
       htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'),
     );
     expect(result.map((entry) => entry.type)).toEqual(['opengraph', 'jsonld']);
@@ -25,7 +25,7 @@ describe('createExtractorPipeline', () => {
       extract: () => ({ type: 'custom', source: '', data: { key: 'value' } }),
     };
 
-    const result = createExtractorPipeline({ extractors: [customExtractor] }).extract(
+    const result = createExtractorPipeline({ targets: [customExtractor] }).extract(
       htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'),
     );
 
@@ -52,10 +52,10 @@ describe('createExtractorPipeline', () => {
       },
     };
 
-    const result = createExtractorPipeline({ extractors: [badExtractor], onError: 'include' }).extract(
+    const result = createExtractorPipeline({ targets: [badExtractor], onError: 'report' }).extract(
       htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'),
     );
-    expect(result).toEqual([{ type: 'bad', source: '', data: null, warnings: [{ message: 'boom' }] }]);
+    expect(result).toEqual([{ type: 'bad', source: 'about:blank', data: null, warnings: [{ message: 'boom' }] }]);
   });
 
   test('skips extractor failures by default', () => {
@@ -67,7 +67,7 @@ describe('createExtractorPipeline', () => {
       },
     };
 
-    const result = createExtractorPipeline({ extractors: [badExtractor] }).extract(
+    const result = createExtractorPipeline({ targets: [badExtractor] }).extract(
       htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'),
     );
 
@@ -84,7 +84,7 @@ describe('createExtractorPipeline', () => {
     };
 
     expect(() =>
-      createExtractorPipeline({ extractors: [badExtractor], onError: 'throw' }).extract(
+      createExtractorPipeline({ targets: [badExtractor], onError: 'throw' }).extract(
         htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'),
       ),
     ).toThrow(ExtractionError);
@@ -93,7 +93,7 @@ describe('createExtractorPipeline', () => {
   test('supports per-call extractor overrides', () => {
     const pipeline = createExtractorPipeline();
     const result = pipeline.extract(htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'), {
-      extractors: ['meta'],
+      targets: ['meta'],
     });
 
     expect(result.map((entry) => entry.type)).toEqual(['meta']);
@@ -110,5 +110,16 @@ describe('createExtractorPipeline', () => {
 
   test('extractAll returns flattened envelopes', () => {
     expect(extractAll(readFixture('full-seo.html')).length).toBe(5);
+  });
+
+  test('extractPage returns structured package-owned result', () => {
+    const result = extractPage(htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'));
+
+    expect(result.source.resourceType).toBe('html');
+    expect(result.data.canonical).not.toBeNull();
+    expect(result.data.headings).not.toBeNull();
+    expect(result.data.jsonld).not.toBeNull();
+    expect(result.data.meta).not.toBeNull();
+    expect(result.data.opengraph).not.toBeNull();
   });
 });

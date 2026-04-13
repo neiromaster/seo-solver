@@ -18,6 +18,10 @@ export function hasFailed(report: ValidationReport): boolean {
   );
 }
 
+export function hasDiffs(report: ComparisonReport): boolean {
+  return report.comparisons.some((comparison) => comparison.diffs.length > 0);
+}
+
 export function summarizeValidation(report: ValidationReport): ValidationSummary {
   const summary: ValidationSummary = {
     errors: 0,

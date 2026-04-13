@@ -66,10 +66,6 @@ export function resolveSeverity(value: string | undefined, fallback: Severity): 
   return value;
 }
 
-export function hasDiffs(diffs: readonly { diffs: readonly unknown[] }[]): boolean {
-  return diffs.some((entry) => entry.diffs.length > 0);
-}
-
 export function resolveVerbosityLevel(verbose: boolean, quiet: boolean): Verbosity {
   if (quiet) {
     return 'quiet';

@@ -1,4 +1,4 @@
-import type { Comparator } from '@seo-solver/types/compare';
+import type { Comparator } from '@seo-solver/types/compare-advanced';
 import { describe, expect, test } from 'vitest';
 import {
   compareAll,
@@ -9,7 +9,7 @@ import {
   compareOpenGraph,
   compareRobotsTxt,
   createComparisonPipeline,
-} from './index.js';
+} from './pipeline.js';
 
 describe('createComparisonPipeline', () => {
   test('compares matching types in order and preserves identical results', () => {

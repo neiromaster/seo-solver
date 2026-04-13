@@ -1,11 +1,11 @@
 import type { ValidationReport } from '@seo-solver/types/validate';
 import { describe, expect, test } from 'vitest';
-import { formatValidation } from '../../src/index.js';
+import { formatValidationReport } from '../../src/index.js';
 import { validationReportFixture } from '../fixtures/validation-report.js';
 
 describe('markdown validation formatter', () => {
   test('renders summary table and collapsible sections by default', () => {
-    const output = formatValidation(validationReportFixture, { format: 'markdown' });
+    const output = formatValidationReport(validationReportFixture, { format: 'markdown' });
 
     expect(output).toContain('# SEO Audit: example.com');
     expect(output).toContain('| Severity | Count |');
@@ -14,7 +14,7 @@ describe('markdown validation formatter', () => {
   });
 
   test('can disable collapsible sections', () => {
-    const output = formatValidation(validationReportFixture, {
+    const output = formatValidationReport(validationReportFixture, {
       format: 'markdown',
       markdownCollapsible: false,
       minSeverity: 'warning',
@@ -25,7 +25,7 @@ describe('markdown validation formatter', () => {
   });
 
   test('does not mark hidden diagnostics as passing', () => {
-    const output = formatValidation(validationReportFixture, {
+    const output = formatValidationReport(validationReportFixture, {
       format: 'markdown',
       minSeverity: 'error',
     });
@@ -61,7 +61,7 @@ describe('markdown validation formatter', () => {
       ],
     };
 
-    const output = formatValidation(groupedReport, { format: 'markdown', markdownCollapsible: false });
+    const output = formatValidationReport(groupedReport, { format: 'markdown', markdownCollapsible: false });
 
     expect(output).toContain('`jsonld/adobe/unsupported-property ×2`');
     expect(output).toContain(

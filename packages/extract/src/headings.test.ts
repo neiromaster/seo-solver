@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { extractHeadings } from './index.js';
+import { extractHeadings } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('HeadingsExtractor', () => {

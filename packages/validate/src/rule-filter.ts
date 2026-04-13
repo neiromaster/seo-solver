@@ -1,9 +1,13 @@
 import type { Diagnostic, Severity } from '@seo-solver/types/validate';
+import { listRules } from './rule-catalog.js';
 
 export type RuleFilterConfig = {
   disableRules: string[];
   severityOverrides: Record<string, Severity>;
 };
+
+const KNOWN_RULE_IDS = new Set(listRules().map((entry) => entry.id));
+const KNOWN_PREFIXES = new Set(listRules().map((entry) => entry.id.split('/')[0]));
 
 export function createRuleFilter(config: RuleFilterConfig) {
   return {
@@ -33,4 +37,16 @@ export function matchesDisablePattern(ruleId: string, pattern: string): boolean 
   }
 
   return ruleId === pattern;
+}
+
+export function isKnownRuleSelector(pattern: string): boolean {
+  if (KNOWN_RULE_IDS.has(pattern)) {
+    return true;
+  }
+
+  if (pattern.endsWith('/*')) {
+    return KNOWN_PREFIXES.has(pattern.slice(0, -2));
+  }
+
+  return false;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { extractMetaTags } from './index.js';
+import { extractMetaTags } from './pipeline.js';
 import { readFixture } from './test-support/fixtures.js';
 
 describe('MetaTagsExtractor', () => {

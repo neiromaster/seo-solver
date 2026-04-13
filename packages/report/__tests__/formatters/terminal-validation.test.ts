@@ -1,17 +1,17 @@
 import type { ValidationReport } from '@seo-solver/types/validate';
 import { describe, expect, test } from 'vitest';
-import { formatValidation } from '../../src/index.js';
+import { formatValidationReport } from '../../src/index.js';
 import { validationReportFixture } from '../fixtures/validation-report.js';
 
 describe('terminal validation formatter', () => {
   test('renders quiet output as a single summary line', () => {
-    expect(formatValidation(validationReportFixture, { color: false, verbosity: 'quiet' })).toBe(
+    expect(formatValidationReport(validationReportFixture, { color: false, verbosity: 'quiet' })).toBe(
       '✗ https://example.com/page  1 errors · 3 warnings · 0 info',
     );
   });
 
   test('applies minSeverity to details but keeps full summary counts', () => {
-    const output = formatValidation(validationReportFixture, {
+    const output = formatValidationReport(validationReportFixture, {
       color: false,
       minSeverity: 'warning',
       verbosity: 'normal',
@@ -23,7 +23,7 @@ describe('terminal validation formatter', () => {
   });
 
   test('does not mark hidden diagnostics as passing', () => {
-    const output = formatValidation(validationReportFixture, {
+    const output = formatValidationReport(validationReportFixture, {
       color: false,
       minSeverity: 'error',
       verbosity: 'normal',
@@ -35,7 +35,7 @@ describe('terminal validation formatter', () => {
   });
 
   test('renders verbose details with redirect chain and full values', () => {
-    const output = formatValidation(validationReportFixture, { color: false, verbosity: 'verbose' });
+    const output = formatValidationReport(validationReportFixture, { color: false, verbosity: 'verbose' });
 
     expect(output).toContain('1 redirect: 301 → http://example.com/page');
     expect(output).toContain('path:     og:description');
@@ -70,7 +70,7 @@ describe('terminal validation formatter', () => {
       ],
     };
 
-    const output = formatValidation(groupedReport, { color: false, verbosity: 'normal' });
+    const output = formatValidationReport(groupedReport, { color: false, verbosity: 'normal' });
 
     expect(output).toContain('jsonld/adobe/unsupported-property');
     expect(output).toContain('×2');

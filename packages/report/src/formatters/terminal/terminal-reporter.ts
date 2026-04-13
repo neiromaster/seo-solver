@@ -11,10 +11,10 @@ export function createTerminalReporter(config: ReporterConfig): Reporter {
   } as const;
 
   return {
-    formatComparison(report) {
+    formatComparisonReport(report) {
       return formatTerminalComparison(report, resolved);
     },
-    formatValidation(report) {
+    formatValidationReport(report) {
       return formatTerminalValidation(report, resolved);
     },
   };

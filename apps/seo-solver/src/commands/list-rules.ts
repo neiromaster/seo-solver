@@ -1,4 +1,4 @@
-import { createValidationPipeline } from '@seo-solver/validate';
+import { listRules } from '@seo-solver/validate';
 import { command } from 'cmd-ts';
 import { handleError } from '../cli-support/error-handler.js';
 import { writeOutput } from '../cli-support/output.js';
@@ -18,8 +18,7 @@ export const listRulesCommand = command({
   },
   handler: async (args) => {
     try {
-      const pipeline = createValidationPipeline();
-      const rules = pipeline.rules;
+      const rules = listRules();
       const format = resolveListRulesFormat(args.format);
 
       if (format === 'json') {
@@ -31,17 +30,17 @@ export const listRulesCommand = command({
       const grouped = new Map<string, (typeof rules)[number][]>();
 
       for (const rule of rules) {
-        const group = grouped.get(rule.validator) ?? [];
+        const group = grouped.get(rule.validatorId) ?? [];
         group.push(rule);
-        grouped.set(rule.validator, group);
+        grouped.set(rule.validatorId, group);
       }
 
-      for (const [validator, group] of grouped) {
-        lines.push(`── ${validator} ──`);
+      for (const [validatorId, group] of grouped) {
+        lines.push(`── ${validatorId} ──`);
 
         for (const rule of group) {
           const severity = rule.severity.padEnd(7);
-          lines.push(`  ${severity}  ${rule.rule}`);
+          lines.push(`  ${severity}  ${rule.id}`);
         }
 
         lines.push('');

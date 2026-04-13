@@ -19,6 +19,8 @@ describe('filterDiagnosticsBySeverity', () => {
   });
 
   test('keeps only errors for error threshold', () => {
-    expect(filterDiagnosticsBySeverity(diagnostics, 'error').map((entry) => entry.rule)).toEqual(['og/title-missing']);
+    expect(filterDiagnosticsBySeverity(diagnostics, 'error').map((entry) => entry.rule)).toEqual([
+      'opengraph/title-missing',
+    ]);
   });
 });
