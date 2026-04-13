@@ -1,7 +1,7 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { Diagnostic, ValidationReport } from '@seo-solver/types/validate';
-import { filterDiagnosticsBySeverity } from '../../filter.js';
-import { summarizeValidation } from '../../summary.js';
+import { filterDiagnosticsBySeverity } from '../../filter';
+import { summarizeValidation } from '../../summary';
 import {
   escapeHtml,
   formatSeverityLabel,
@@ -9,8 +9,8 @@ import {
   formatTimestamp,
   formatTypeLabel,
   getReportTitle,
-} from '../../utils/text.js';
-import { renderHtml } from './template.js';
+} from '../../utils/text';
+import { renderHtml } from './template';
 
 function renderValidationRows(diagnostics: Diagnostic[]): string {
   return `<table>

@@ -1,16 +1,16 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { filterDiagnosticsBySeverity } from '../../filter.js';
-import { type DiagnosticGroup, groupDiagnostics, hasFailed, summarizeValidation } from '../../summary.js';
+import { filterDiagnosticsBySeverity } from '../../filter';
+import { type DiagnosticGroup, groupDiagnostics, hasFailed, summarizeValidation } from '../../summary';
 import {
   formatSeverityIcon,
   formatStatus,
   formatTypeLabel,
   formatValidationSummaryLine,
   renderSectionHeading,
-} from '../../utils/text.js';
-import { formatFullValue } from '../../utils/truncate.js';
-import { createTerminalColors, type TerminalColors } from './colors.js';
+} from '../../utils/text';
+import { formatFullValue } from '../../utils/truncate';
+import { createTerminalColors, type TerminalColors } from './colors';
 
 type ResolvedTerminalConfig = Required<Pick<ReporterConfig, 'color' | 'minSeverity' | 'verbosity'>>;
 

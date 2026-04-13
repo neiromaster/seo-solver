@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { inspectPackedPackage } from '../../../../test-support/tarball.js';
+import { inspectPackedPackage } from '../../../../test-support/tarball';
 
 describe('playwright optional packaging', () => {
   test('packs the CLI with optional playwright peer metadata and no hard dependency', async () => {

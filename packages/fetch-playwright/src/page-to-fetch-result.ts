@@ -1,6 +1,6 @@
 import type { FetchResult } from '@seo-solver/types/fetch';
 import type { Page, Response } from 'playwright';
-import { detectResourceType } from './detect-resource-type.js';
+import { detectResourceType } from './detect-resource-type';
 
 export async function pageToFetchResult(
   page: Page,

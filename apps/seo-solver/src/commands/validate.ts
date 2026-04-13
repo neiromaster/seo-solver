@@ -1,20 +1,20 @@
 import { hasFailed } from '@seo-solver/report';
 import { isKnownRuleSelector, parseSeverityOverrides } from '@seo-solver/validate';
 import { command } from 'cmd-ts';
-import { CLIError, handleError } from '../cli-support/error-handler.js';
-import { resolveFetcher } from '../cli-support/fetcher-registry.js';
-import { writeOutput } from '../cli-support/output.js';
-import { buildReporter } from '../cli-support/reporter-config.js';
-import { parseTargets, targetsFlag } from '../flags/extractor.js';
-import { fetcherFlags } from '../flags/fetcher.js';
-import { formatFlag } from '../flags/format.js';
-import { jsonldRuntimeFlags } from '../flags/jsonld-runtime.js';
-import { outputFlag } from '../flags/output.js';
-import { disableRulesFlag, severityOverrideFlag } from '../flags/rules.js';
-import { minSeverityFlag } from '../flags/severity.js';
-import { urlArg } from '../flags/url.js';
-import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { runValidate } from '../workflows/validate.js';
+import { CLIError, handleError } from '../cli-support/error-handler';
+import { resolveFetcher } from '../cli-support/fetcher-registry';
+import { writeOutput } from '../cli-support/output';
+import { buildReporter } from '../cli-support/reporter-config';
+import { parseTargets, targetsFlag } from '../flags/extractor';
+import { fetcherFlags } from '../flags/fetcher';
+import { formatFlag } from '../flags/format';
+import { jsonldRuntimeFlags } from '../flags/jsonld-runtime';
+import { outputFlag } from '../flags/output';
+import { disableRulesFlag, severityOverrideFlag } from '../flags/rules';
+import { minSeverityFlag } from '../flags/severity';
+import { urlArg } from '../flags/url';
+import { quietFlag, verboseFlag } from '../flags/verbosity';
+import { runValidate } from '../workflows/validate';
 
 export const validateCommand = command({
   name: 'validate',

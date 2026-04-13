@@ -12,11 +12,11 @@ export type FetchErrorCode =
   | 'DUPLICATE_BACKEND'
   | 'UNKNOWN_BACKEND';
 
-export type { FetchOptions } from './fetch-options.js';
-export type { FetchResult } from './fetch-result.js';
-export type { Fetcher } from './fetcher.js';
-export type { FetcherConfig } from './fetcher-config.js';
-export type { RetryOptions } from './retry.js';
+export type { FetchOptions } from './fetch-options';
+export type { FetchResult } from './fetch-result';
+export type { Fetcher } from './fetcher';
+export type { FetcherConfig } from './fetcher-config';
+export type { RetryOptions } from './retry';
 
 export type FetchErrorLike = {
   message: string;

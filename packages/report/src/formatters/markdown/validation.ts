@@ -1,7 +1,7 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { filterDiagnosticsBySeverity } from '../../filter.js';
-import { groupDiagnostics, summarizeValidation } from '../../summary.js';
+import { filterDiagnosticsBySeverity } from '../../filter';
+import { groupDiagnostics, summarizeValidation } from '../../summary';
 import {
   escapeMarkdownTableCell,
   formatSeverityIcon,
@@ -10,7 +10,7 @@ import {
   formatTimestamp,
   formatTypeLabel,
   getReportTitle,
-} from '../../utils/text.js';
+} from '../../utils/text';
 
 function formatDetailsSummary(count: number): string {
   return `${count} ${count === 1 ? 'issue' : 'issues'} found`;

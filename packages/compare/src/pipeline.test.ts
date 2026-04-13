@@ -9,7 +9,7 @@ import {
   compareOpenGraph,
   compareRobotsTxt,
   createComparisonPipeline,
-} from './pipeline.js';
+} from './pipeline';
 
 describe('createComparisonPipeline', () => {
   test('compares matching types in order and preserves identical results', () => {

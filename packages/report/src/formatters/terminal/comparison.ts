@@ -1,15 +1,9 @@
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
-import { summarizeComparison } from '../../summary.js';
-import {
-  formatDiffIcon,
-  formatDiffPath,
-  formatStatus,
-  formatTypeLabel,
-  renderSectionHeading,
-} from '../../utils/text.js';
-import { formatFullValue } from '../../utils/truncate.js';
-import { createTerminalColors, type TerminalColors } from './colors.js';
+import { summarizeComparison } from '../../summary';
+import { formatDiffIcon, formatDiffPath, formatStatus, formatTypeLabel, renderSectionHeading } from '../../utils/text';
+import { formatFullValue } from '../../utils/truncate';
+import { createTerminalColors, type TerminalColors } from './colors';
 
 type ResolvedTerminalConfig = Required<Pick<ReporterConfig, 'color' | 'verbosity'>>;
 

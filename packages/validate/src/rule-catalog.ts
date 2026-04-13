@@ -1,5 +1,5 @@
 import type { Severity } from '@seo-solver/types/validate';
-import { type BuiltInValidatorId, createBuiltInValidators } from './validators/registry.js';
+import { type BuiltInValidatorId, createBuiltInValidators } from './validators/registry';
 
 export type RuleCatalogEntry = {
   id: string;

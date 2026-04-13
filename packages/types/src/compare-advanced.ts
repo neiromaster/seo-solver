@@ -1,6 +1,6 @@
-export type { Comparator } from './comparator.js';
+export type { Comparator } from './comparator';
 export type {
   ComparePipelineCallOptions,
   ComparisonPipeline,
   ComparisonPipelineConfig,
-} from './comparison-pipeline.js';
+} from './comparison-pipeline';

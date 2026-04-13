@@ -2,7 +2,7 @@ import type { TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
 import type { Severity, ValidationReport } from '@seo-solver/types/validate';
 import { validatePage } from '@seo-solver/validate';
-import { type ExtractOptions, runExtract } from './extract.js';
+import { type ExtractOptions, runExtract } from './extract';
 
 export type ValidateOptions = ExtractOptions & {
   disableRules?: string[];

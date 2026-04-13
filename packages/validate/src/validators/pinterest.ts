@@ -1,6 +1,6 @@
 import type { MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
 
 export class PinterestValidator {
   readonly type = 'meta';

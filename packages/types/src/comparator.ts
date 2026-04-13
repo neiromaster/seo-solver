@@ -1,5 +1,5 @@
-import type { DiffEntry } from './diff-entry.js';
-import type { ExtractionEnvelope } from './extraction-envelope.js';
+import type { DiffEntry } from './diff-entry';
+import type { ExtractionEnvelope } from './extraction-envelope';
 
 export type Comparator = {
   readonly type: string | string[];

@@ -21,8 +21,8 @@ vi.mock('node:fs/promises', () => ({
   mkdir: mkdirMock,
 }));
 
-import { createValidationPipeline } from './advanced.js';
-import { validateJsonLd } from './pipeline.js';
+import { createValidationPipeline } from './advanced';
+import { validateJsonLd } from './pipeline';
 
 describe('JsonLdValidator', () => {
   beforeEach(() => {

@@ -1,12 +1,12 @@
 import type { TargetKey } from '@seo-solver/types/extract';
 import type { Extractor, ExtractorPipelineConfig } from '@seo-solver/types/extract-advanced';
-import { resolveTargetId } from '../catalog.js';
-import { CanonicalExtractor } from './canonical.js';
-import { HeadingsExtractor } from './headings.js';
-import { JsonLdExtractor } from './jsonld.js';
-import { MetaTagsExtractor } from './meta.js';
-import { OpenGraphExtractor } from './opengraph.js';
-import { RobotsTxtExtractor } from './robots-txt.js';
+import { resolveTargetId } from '../catalog';
+import { CanonicalExtractor } from './canonical';
+import { HeadingsExtractor } from './headings';
+import { JsonLdExtractor } from './jsonld';
+import { MetaTagsExtractor } from './meta';
+import { OpenGraphExtractor } from './opengraph';
+import { RobotsTxtExtractor } from './robots-txt';
 
 export type BuiltInExtractorId = 'opengraph' | 'jsonld' | 'meta' | 'headings' | 'canonical' | 'robots-txt';
 

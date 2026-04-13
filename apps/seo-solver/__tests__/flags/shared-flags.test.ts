@@ -1,7 +1,7 @@
 import { parseSeverityOverrides } from '@seo-solver/validate';
 import { describe, expect, test } from 'vitest';
-import { parseTargets } from '../../src/flags/extractor.js';
-import { resolveVerbosity } from '../../src/flags/verbosity.js';
+import { parseTargets } from '../../src/flags/extractor';
+import { resolveVerbosity } from '../../src/flags/verbosity';
 
 describe('shared flags', () => {
   test('resolveVerbosity prefers quiet over verbose', () => {

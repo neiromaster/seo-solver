@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { NativeFetcher } from './native-fetcher.js';
-import { createTestServer, type TestServer } from './test-support/test-server.js';
+import { NativeFetcher } from './native-fetcher';
+import { createTestServer, type TestServer } from './test-support/test-server';
 
 describe('NativeFetcher', () => {
   let server: TestServer;

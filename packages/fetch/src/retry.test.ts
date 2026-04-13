@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { FetchError } from './errors.js';
-import { withRetry } from './retry.js';
+import { FetchError } from './errors';
+import { withRetry } from './retry';
 
 describe('withRetry', () => {
   beforeEach(() => {

@@ -1,8 +1,8 @@
-import type { ExtractedPage } from './extracted-page.js';
-import type { ExtractionEnvelope } from './extraction-envelope.js';
-import type { Extractor } from './extractor.js';
-import type { FetchResult } from './fetch-result.js';
-import type { TargetKey } from './target-catalog.js';
+import type { ExtractedPage } from './extracted-page';
+import type { ExtractionEnvelope } from './extraction-envelope';
+import type { Extractor } from './extractor';
+import type { FetchResult } from './fetch-result';
+import type { TargetKey } from './target-catalog';
 
 export type ExtractorPipelineConfig = {
   targets?: Array<TargetKey | Extractor>;

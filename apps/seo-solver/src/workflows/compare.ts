@@ -2,7 +2,7 @@ import { comparePages } from '@seo-solver/compare';
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
-import { type ExtractOptions, runExtract } from './extract.js';
+import { type ExtractOptions, runExtract } from './extract';
 
 export interface CompareOptions extends ExtractOptions {
   ignoreFields?: Record<string, string[]>;

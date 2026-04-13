@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparisonReport } from '../../src/index.js';
-import { comparisonReportFixture } from '../fixtures/comparison-report.js';
+import { formatComparisonReport } from '../../src/index';
+import { comparisonReportFixture } from '../fixtures/comparison-report';
 
 describe('json comparison formatter', () => {
   test('returns machine-readable comparison summary and hasDiffs', () => {

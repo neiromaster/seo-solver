@@ -1,6 +1,6 @@
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
-import { formatMarkdownComparison } from './comparison.js';
-import { formatMarkdownValidation } from './validation.js';
+import { formatMarkdownComparison } from './comparison';
+import { formatMarkdownValidation } from './validation';
 
 export function createMarkdownReporter(config: ReporterConfig): Reporter {
   return {

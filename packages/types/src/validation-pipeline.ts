@@ -1,7 +1,7 @@
-import type { Severity } from './diagnostic.js';
-import type { ExtractionEnvelope } from './extraction-envelope.js';
-import type { ValidationResult } from './validation-result.js';
-import type { Validator } from './validator.js';
+import type { Severity } from './diagnostic';
+import type { ExtractionEnvelope } from './extraction-envelope';
+import type { ValidationResult } from './validation-result';
+import type { Validator } from './validator';
 
 export type ValidationPipelineConfig = {
   validators?: Array<string | Validator>;

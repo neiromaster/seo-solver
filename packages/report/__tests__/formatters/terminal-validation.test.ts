@@ -1,7 +1,7 @@
 import type { ValidationReport } from '@seo-solver/types/validate';
 import { describe, expect, test } from 'vitest';
-import { formatValidationReport } from '../../src/index.js';
-import { validationReportFixture } from '../fixtures/validation-report.js';
+import { formatValidationReport } from '../../src/index';
+import { validationReportFixture } from '../fixtures/validation-report';
 
 describe('terminal validation formatter', () => {
   test('renders quiet output as a single summary line', () => {

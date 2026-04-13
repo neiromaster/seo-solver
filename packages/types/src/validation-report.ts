@@ -1,4 +1,4 @@
-import type { ValidationResult } from './validation-result.js';
+import type { ValidationResult } from './validation-result';
 
 export type ValidationReport = {
   url: string;

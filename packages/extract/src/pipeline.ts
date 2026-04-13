@@ -6,17 +6,17 @@ import type {
   ExtractorPipelineConfig,
 } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
-import { listTargets } from './catalog.js';
-import { ExtractionError } from './errors.js';
-import { CanonicalExtractor } from './extractors/canonical.js';
-import { HeadingsExtractor } from './extractors/headings.js';
-import { JsonLdExtractor } from './extractors/jsonld.js';
-import { MetaTagsExtractor } from './extractors/meta.js';
-import { OpenGraphExtractor } from './extractors/opengraph.js';
-import { resolveExtractors } from './extractors/registry.js';
-import { isHtmlExtractor } from './extractors/shared.js';
-import * as parseHtmlModule from './parse-html.js';
-import { toExtractedPage } from './result.js';
+import { listTargets } from './catalog';
+import { ExtractionError } from './errors';
+import { CanonicalExtractor } from './extractors/canonical';
+import { HeadingsExtractor } from './extractors/headings';
+import { JsonLdExtractor } from './extractors/jsonld';
+import { MetaTagsExtractor } from './extractors/meta';
+import { OpenGraphExtractor } from './extractors/opengraph';
+import { resolveExtractors } from './extractors/registry';
+import { isHtmlExtractor } from './extractors/shared';
+import * as parseHtmlModule from './parse-html';
+import { toExtractedPage } from './result';
 
 export function createExtractorPipeline(config: ExtractorPipelineConfig = {}): ExtractorPipeline {
   const configuredExtractors = resolveExtractors(config, config.targets);

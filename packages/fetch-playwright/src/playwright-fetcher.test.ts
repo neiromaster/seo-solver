@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';
-import { createTestServer, type TestServer } from './test-support/test-server.js';
+import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher';
+import { createTestServer, type TestServer } from './test-support/test-server';
 
 describe('PlaywrightFetcher', () => {
   let server: TestServer;

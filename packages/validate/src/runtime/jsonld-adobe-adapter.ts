@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@seo-solver/types/validate';
-import { loadSchemaWithCache } from './schema-cache.js';
+import { loadSchemaWithCache } from './schema-cache';
 
 type AdobeIssue = {
   issueMessage?: string;

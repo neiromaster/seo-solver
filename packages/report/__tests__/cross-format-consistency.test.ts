@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparisonReport, formatValidationReport, hasFailed } from '../src/index.js';
-import { comparisonReportFixture } from './fixtures/comparison-report.js';
-import { validationReportFixture } from './fixtures/validation-report.js';
+import { formatComparisonReport, formatValidationReport, hasFailed } from '../src/index';
+import { comparisonReportFixture } from './fixtures/comparison-report';
+import { validationReportFixture } from './fixtures/validation-report';
 
 describe('cross-format consistency', () => {
   test('validation formats agree on summary counts and pass/fail', () => {

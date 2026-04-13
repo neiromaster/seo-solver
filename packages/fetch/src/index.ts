@@ -9,6 +9,6 @@ export type {
   RetryOptions,
 } from '@seo-solver/types/fetch';
 export { isFetchErrorLike } from '@seo-solver/types/fetch';
-export { detectResourceType } from './detect-resource-type.js';
-export { FetchError } from './errors.js';
-export { createFetcher, fetchUrl, NativeFetcher } from './native-fetcher.js';
+export { detectResourceType } from './detect-resource-type';
+export { FetchError } from './errors';
+export { createFetcher, fetchUrl, NativeFetcher } from './native-fetcher';

@@ -1,6 +1,6 @@
 import type { Comparator, ComparisonPipelineConfig } from '@seo-solver/types/compare-advanced';
-import { GenericComparator } from './generic.js';
-import { HeadingsComparator } from './headings.js';
+import { GenericComparator } from './generic';
+import { HeadingsComparator } from './headings';
 
 export function resolveComparator(type: string, config: ComparisonPipelineConfig): Comparator {
   const customComparator = config.comparators?.find((candidate) => matchesType(candidate.type, type));

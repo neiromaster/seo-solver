@@ -1,8 +1,8 @@
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { runCLI } from '../helpers/run-cli.js';
-import { createTestServer, type TestServer } from '../helpers/test-server.js';
+import { runCLI } from '../helpers/run-cli';
+import { createTestServer, type TestServer } from '../helpers/test-server';
 
 describe('compare command', () => {
   let server: TestServer;

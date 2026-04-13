@@ -1,10 +1,10 @@
-import type { CanonicalData } from './data/canonical.js';
-import type { HeadingsData } from './data/headings.js';
-import type { JsonLdData } from './data/jsonld.js';
-import type { MetaTagsData } from './data/meta.js';
-import type { OpenGraphData } from './data/opengraph.js';
-import type { RobotsTxtData } from './data/robots-txt.js';
-import type { ResourceType } from './resource-type.js';
+import type { CanonicalData } from './data/canonical';
+import type { HeadingsData } from './data/headings';
+import type { JsonLdData } from './data/jsonld';
+import type { MetaTagsData } from './data/meta';
+import type { OpenGraphData } from './data/opengraph';
+import type { RobotsTxtData } from './data/robots-txt';
+import type { ResourceType } from './resource-type';
 
 export type ExtractedPageError = {
   extractor: string;

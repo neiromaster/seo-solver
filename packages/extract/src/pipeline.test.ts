@@ -1,9 +1,9 @@
 import type { Extractor } from '@seo-solver/types/extract-advanced';
 import { describe, expect, test, vi } from 'vitest';
-import { ExtractionError } from './errors.js';
-import * as parseHtmlModule from './parse-html.js';
-import { createExtractorPipeline, extractAll, extractPage, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { ExtractionError } from './errors';
+import * as parseHtmlModule from './parse-html';
+import { createExtractorPipeline, extractAll, extractPage, htmlToMinimalFetchResult } from './pipeline';
+import { readFixture } from './test-support/fixtures';
 
 describe('createExtractorPipeline', () => {
   test('runs built-in html extractors by default', () => {

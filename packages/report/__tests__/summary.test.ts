@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { groupDiagnostics, hasFailed, summarizeComparison, summarizeValidation } from '../src/index.js';
-import { comparisonReportFixture } from './fixtures/comparison-report.js';
-import { validationReportFixture } from './fixtures/validation-report.js';
+import { groupDiagnostics, hasFailed, summarizeComparison, summarizeValidation } from '../src/index';
+import { comparisonReportFixture } from './fixtures/comparison-report';
+import { validationReportFixture } from './fixtures/validation-report';
 
 describe('summary helpers', () => {
   test('summarizeValidation counts full diagnostic set and hasFailed only tracks errors', () => {

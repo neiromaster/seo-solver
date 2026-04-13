@@ -2,5 +2,5 @@ export type {
   ValidationPipeline,
   ValidationPipelineConfig,
   ValidationPipelineRule,
-} from './validation-pipeline.js';
-export type { Validator } from './validator.js';
+} from './validation-pipeline';
+export type { Validator } from './validator';

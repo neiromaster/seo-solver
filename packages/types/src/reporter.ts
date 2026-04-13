@@ -1,6 +1,6 @@
-import type { ComparisonReport } from './comparison-report.js';
-import type { Severity } from './diagnostic.js';
-import type { ValidationReport } from './validation-report.js';
+import type { ComparisonReport } from './comparison-report';
+import type { Severity } from './diagnostic';
+import type { ValidationReport } from './validation-report';
 
 export type ReportFormat = 'terminal' | 'json' | 'markdown' | 'html' | (string & {});
 

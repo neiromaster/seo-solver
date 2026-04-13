@@ -1,16 +1,16 @@
 import { hasDiffs } from '@seo-solver/report';
 import { command } from 'cmd-ts';
-import { handleError } from '../cli-support/error-handler.js';
-import { resolveFetcher } from '../cli-support/fetcher-registry.js';
-import { writeOutput } from '../cli-support/output.js';
-import { buildReporter } from '../cli-support/reporter-config.js';
-import { parseTargets, targetsFlag } from '../flags/extractor.js';
-import { fetcherFlags } from '../flags/fetcher.js';
-import { formatFlag } from '../flags/format.js';
-import { outputFlag } from '../flags/output.js';
-import { urlArgA, urlArgB } from '../flags/url.js';
-import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { runCompare } from '../workflows/compare.js';
+import { handleError } from '../cli-support/error-handler';
+import { resolveFetcher } from '../cli-support/fetcher-registry';
+import { writeOutput } from '../cli-support/output';
+import { buildReporter } from '../cli-support/reporter-config';
+import { parseTargets, targetsFlag } from '../flags/extractor';
+import { fetcherFlags } from '../flags/fetcher';
+import { formatFlag } from '../flags/format';
+import { outputFlag } from '../flags/output';
+import { urlArgA, urlArgB } from '../flags/url';
+import { quietFlag, verboseFlag } from '../flags/verbosity';
+import { runCompare } from '../workflows/compare';
 
 export const compareCommand = command({
   name: 'compare',

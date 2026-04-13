@@ -2,8 +2,8 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { runCLI } from '../helpers/run-cli.js';
-import { createTestServer, type TestServer } from '../helpers/test-server.js';
+import { runCLI } from '../helpers/run-cli';
+import { createTestServer, type TestServer } from '../helpers/test-server';
 
 describe('extract command', () => {
   let server: TestServer;

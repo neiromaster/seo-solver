@@ -1,7 +1,7 @@
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
-import { shouldUseColor } from '../../utils/color-detect.js';
-import { formatTerminalComparison } from './comparison.js';
-import { formatTerminalValidation } from './validation.js';
+import { shouldUseColor } from '../../utils/color-detect';
+import { formatTerminalComparison } from './comparison';
+import { formatTerminalValidation } from './validation';
 
 export function createTerminalReporter(config: ReporterConfig): Reporter {
   const resolved = {

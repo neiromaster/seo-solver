@@ -1,15 +1,15 @@
 import { command } from 'cmd-ts';
-import { CLIError, handleError } from '../cli-support/error-handler.js';
-import { resolveFetcher } from '../cli-support/fetcher-registry.js';
-import { writeOutput } from '../cli-support/output.js';
-import { parseTargets, targetsFlag } from '../flags/extractor.js';
-import { fetcherFlags } from '../flags/fetcher.js';
-import { formatFlag } from '../flags/format.js';
-import { outputFlag } from '../flags/output.js';
-import { urlArg } from '../flags/url.js';
-import { quietFlag, verboseFlag } from '../flags/verbosity.js';
-import { resolveExtractFormat } from '../types.js';
-import { runExtract } from '../workflows/extract.js';
+import { CLIError, handleError } from '../cli-support/error-handler';
+import { resolveFetcher } from '../cli-support/fetcher-registry';
+import { writeOutput } from '../cli-support/output';
+import { parseTargets, targetsFlag } from '../flags/extractor';
+import { fetcherFlags } from '../flags/fetcher';
+import { formatFlag } from '../flags/format';
+import { outputFlag } from '../flags/output';
+import { urlArg } from '../flags/url';
+import { quietFlag, verboseFlag } from '../flags/verbosity';
+import { resolveExtractFormat } from '../types';
+import { runExtract } from '../workflows/extract';
 
 export const extractCommand = command({
   name: 'extract',

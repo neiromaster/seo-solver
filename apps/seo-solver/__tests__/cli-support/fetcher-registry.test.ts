@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { resolveFetcher } from '../../src/cli-support/fetcher-registry.js';
+import { resolveFetcher } from '../../src/cli-support/fetcher-registry';
 
 describe('resolveFetcher', () => {
   test('returns the native fetcher by default', async () => {

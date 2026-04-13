@@ -1,7 +1,7 @@
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { createReporter } from './create-reporter.js';
+import { createReporter } from './create-reporter';
 
 export function formatValidationReport(report: ValidationReport, options?: ReporterConfig): string {
   return createReporter(options).formatValidationReport(report);
@@ -21,7 +21,7 @@ export type {
   Verbosity,
 } from '@seo-solver/types/report';
 export type { ValidationReport } from '@seo-solver/types/validate';
-export { createReporter } from './create-reporter.js';
-export { filterDiagnosticsBySeverity } from './filter.js';
-export type { DiagnosticGroup } from './summary.js';
-export { groupDiagnostics, hasDiffs, hasFailed, summarizeComparison, summarizeValidation } from './summary.js';
+export { createReporter } from './create-reporter';
+export { filterDiagnosticsBySeverity } from './filter';
+export type { DiagnosticGroup } from './summary';
+export { groupDiagnostics, hasDiffs, hasFailed, summarizeComparison, summarizeValidation } from './summary';

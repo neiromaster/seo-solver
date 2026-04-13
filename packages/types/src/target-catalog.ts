@@ -1,4 +1,4 @@
-import type { ResourceType } from './resource-type.js';
+import type { ResourceType } from './resource-type';
 
 export type TargetKey = 'opengraph' | 'jsonld' | 'meta' | 'headings' | 'canonical' | 'robotsTxt';
 

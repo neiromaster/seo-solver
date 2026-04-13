@@ -1,4 +1,4 @@
-import type { ComparisonResult } from './comparison-result.js';
+import type { ComparisonResult } from './comparison-result';
 
 export type ComparisonReport = {
   urlA: string;

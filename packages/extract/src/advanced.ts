@@ -1,9 +1,9 @@
-export { CanonicalExtractor } from './extractors/canonical.js';
-export { HeadingsExtractor } from './extractors/headings.js';
-export { JsonLdExtractor } from './extractors/jsonld.js';
-export { MetaTagsExtractor } from './extractors/meta.js';
-export { OpenGraphExtractor } from './extractors/opengraph.js';
-export { RobotsTxtExtractor } from './extractors/robots-txt.js';
+export { CanonicalExtractor } from './extractors/canonical';
+export { HeadingsExtractor } from './extractors/headings';
+export { JsonLdExtractor } from './extractors/jsonld';
+export { MetaTagsExtractor } from './extractors/meta';
+export { OpenGraphExtractor } from './extractors/opengraph';
+export { RobotsTxtExtractor } from './extractors/robots-txt';
 export {
   createExtractorPipeline,
   extractAll,
@@ -13,4 +13,4 @@ export {
   extractMetaTags,
   extractOpenGraph,
   htmlToMinimalFetchResult,
-} from './pipeline.js';
+} from './pipeline';

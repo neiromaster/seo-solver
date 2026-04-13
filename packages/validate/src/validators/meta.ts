@@ -1,6 +1,6 @@
 import type { MetaTagsData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
 
 const TITLE_LIMIT = 60;
 const TITLE_MIN = 10;

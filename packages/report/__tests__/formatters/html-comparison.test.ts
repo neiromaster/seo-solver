@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparisonReport } from '../../src/index.js';
-import { comparisonReportFixture } from '../fixtures/comparison-report.js';
+import { formatComparisonReport } from '../../src/index';
+import { comparisonReportFixture } from '../fixtures/comparison-report';
 
 describe('html comparison formatter', () => {
   test('renders 3-column table with rowspan for changed diffs', () => {

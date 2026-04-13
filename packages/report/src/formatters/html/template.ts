@@ -1,4 +1,4 @@
-import { escapeHtml } from '../../utils/text.js';
+import { escapeHtml } from '../../utils/text';
 
 export type HtmlSection = {
   body: string;

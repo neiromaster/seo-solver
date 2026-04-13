@@ -1,11 +1,5 @@
 import type { FetcherConfig, FetchOptions, RetryOptions } from '@seo-solver/types/fetch';
-import {
-  DEFAULT_HEADERS,
-  DEFAULT_MAX_REDIRECTS,
-  DEFAULT_RETRY,
-  DEFAULT_TIMEOUT,
-  DEFAULT_USER_AGENT,
-} from './defaults.js';
+import { DEFAULT_HEADERS, DEFAULT_MAX_REDIRECTS, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_USER_AGENT } from './defaults';
 
 export type ResolvedFetchOptions = {
   headers: Record<string, string>;

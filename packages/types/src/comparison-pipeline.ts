@@ -1,6 +1,6 @@
-import type { Comparator } from './comparator.js';
-import type { ComparisonResult } from './comparison-result.js';
-import type { ExtractionEnvelope } from './extraction-envelope.js';
+import type { Comparator } from './comparator';
+import type { ComparisonResult } from './comparison-result';
+import type { ExtractionEnvelope } from './extraction-envelope';
 
 export type ComparisonPipelineConfig = {
   types?: string[];

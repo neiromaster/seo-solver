@@ -1,6 +1,6 @@
 import { createReporter } from '@seo-solver/report';
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
-import { resolveReportFormat, resolveSeverity, resolveVerbosityLevel } from '../types.js';
+import { resolveReportFormat, resolveSeverity, resolveVerbosityLevel } from '../types';
 
 export type ReporterFlags = {
   format: string | undefined;

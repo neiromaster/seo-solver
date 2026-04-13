@@ -1,7 +1,7 @@
 import type { CanonicalData, MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
-import { isAbsoluteUrl } from '../utils/url.js';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
+import { isAbsoluteUrl } from '../utils/url';
 
 const TITLE_LIMIT = 90;
 const DESCRIPTION_LIMIT = 200;

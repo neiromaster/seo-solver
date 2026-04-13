@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { ExtractionError } from './errors.js';
-import { JsonLdExtractor } from './extractors/jsonld.js';
-import { extractJsonLd, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { ExtractionError } from './errors';
+import { JsonLdExtractor } from './extractors/jsonld';
+import { extractJsonLd, htmlToMinimalFetchResult } from './pipeline';
+import { readFixture } from './test-support/fixtures';
 
 describe('JsonLdExtractor', () => {
   test('extracts valid blocks', () => {

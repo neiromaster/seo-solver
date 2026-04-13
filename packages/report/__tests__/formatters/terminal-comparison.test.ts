@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { formatComparisonReport } from '../../src/index.js';
-import { comparisonReportFixture } from '../fixtures/comparison-report.js';
+import { formatComparisonReport } from '../../src/index';
+import { comparisonReportFixture } from '../fixtures/comparison-report';
 
 describe('terminal comparison formatter', () => {
   test('renders normal output with identical and entire type markers', () => {

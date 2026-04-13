@@ -1,5 +1,5 @@
-import type { FetchOptions } from './fetch-options.js';
-import type { FetchResult } from './fetch-result.js';
+import type { FetchOptions } from './fetch-options';
+import type { FetchResult } from './fetch-result';
 
 export type Fetcher = {
   readonly name: string;

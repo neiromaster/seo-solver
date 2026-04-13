@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { inspectPackedPackage } from '../../../test-support/tarball.js';
+import { inspectPackedPackage } from '../../../test-support/tarball';
 
 describe('validate packaging contract', () => {
   test('publishes root and advanced exports in the packed tarball', async () => {

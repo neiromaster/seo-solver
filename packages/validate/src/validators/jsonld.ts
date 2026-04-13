@@ -4,8 +4,8 @@ import { dirname, join } from 'node:path';
 import type { CanonicalData, JsonLdData, JsonLdEntry, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic } from '@seo-solver/types/validate';
-import { validateJsonLdWithAdobe } from '../runtime/jsonld-adobe-adapter.js';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
+import { validateJsonLdWithAdobe } from '../runtime/jsonld-adobe-adapter';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
 
 const SCHEMA_CACHE_FILE = join(homedir(), '.cache', 'seo-solver', 'schema-org.jsonld');
 const SCHEMA_URL = 'https://schema.org/version/latest/schemaorg-all-https.jsonld';

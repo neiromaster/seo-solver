@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { formatComparisonReport, formatValidationReport } from '../src/index.js';
-import { comparisonReportFixture } from './fixtures/comparison-report.js';
-import { validationReportFixture } from './fixtures/validation-report.js';
+import { formatComparisonReport, formatValidationReport } from '../src/index';
+import { comparisonReportFixture } from './fixtures/comparison-report';
+import { validationReportFixture } from './fixtures/validation-report';
 
 function readExpected(fileName: string): string {
   return normalizeOutput(readFileSync(resolve(import.meta.dirname, 'fixtures/expected', fileName), 'utf8'));

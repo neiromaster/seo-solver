@@ -1,7 +1,7 @@
 import { FetchError } from '@seo-solver/fetch';
 import { ValidationError } from '@seo-solver/validate';
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { CLIError, handleError } from '../../src/cli-support/error-handler.js';
+import { CLIError, handleError } from '../../src/cli-support/error-handler';
 
 describe('handleError', () => {
   const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);

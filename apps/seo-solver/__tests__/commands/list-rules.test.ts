@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildCLI, runBuiltCLI, runCLI } from '../helpers/run-cli.js';
+import { buildCLI, runBuiltCLI, runCLI } from '../helpers/run-cli';
 
 describe('list-rules command', () => {
   test('prints grouped terminal output', async () => {

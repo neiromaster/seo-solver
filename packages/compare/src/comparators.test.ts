@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { GenericComparator } from './comparators/generic.js';
-import { HeadingsComparator } from './comparators/headings.js';
+import { GenericComparator } from './comparators/generic';
+import { HeadingsComparator } from './comparators/headings';
 
 describe('GenericComparator', () => {
   test('compares opengraph envelopes with deep diff', () => {
