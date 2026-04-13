@@ -1,7 +1,7 @@
 import type { ComparisonSummary, DiffEntry, DiffKind } from '@seo-solver/types/compare';
 import type { ValidationSummary } from '@seo-solver/types/report';
 import type { Diagnostic, Severity } from '@seo-solver/types/validate';
-import { formatFullValue, truncateValue } from './truncate.js';
+import { formatFullValue } from './truncate.js';
 
 const TYPE_LABELS: Record<string, string> = {
   canonical: 'Canonical',
@@ -157,60 +157,4 @@ export function formatDiagnosticDetails(diagnostic: Diagnostic, verbose: boolean
 
 export function formatDiffPath(entry: DiffEntry): string {
   return entry.path === '' ? '(entire type)' : entry.path;
-}
-
-export function formatDiffInline(entry: DiffEntry, verbose: boolean): string {
-  const format = verbose ? formatFullValue : truncateValue;
-
-  if (entry.path === '') {
-    if (entry.kind === 'added') {
-      return 'Not present in A';
-    }
-
-    if (entry.kind === 'removed') {
-      return 'Not present in B';
-    }
-  }
-
-  if (entry.kind === 'changed') {
-    return `${format(entry.before)} → ${format(entry.after)}`;
-  }
-
-  if (entry.kind === 'added') {
-    return format(entry.after);
-  }
-
-  return format(entry.before);
-}
-
-export function formatDiffMarkdownBefore(entry: DiffEntry, verbose: boolean): string {
-  if (entry.path === '' && entry.kind === 'added') {
-    return 'Not present in A';
-  }
-
-  if (entry.path === '' && entry.kind === 'removed') {
-    return 'Present';
-  }
-
-  if (entry.kind === 'added') {
-    return '—';
-  }
-
-  return verbose ? formatFullValue(entry.before) : truncateValue(entry.before);
-}
-
-export function formatDiffMarkdownAfter(entry: DiffEntry, verbose: boolean): string {
-  if (entry.path === '' && entry.kind === 'added') {
-    return 'Present';
-  }
-
-  if (entry.path === '' && entry.kind === 'removed') {
-    return 'Not present in B';
-  }
-
-  if (entry.kind === 'removed') {
-    return '—';
-  }
-
-  return verbose ? formatFullValue(entry.after) : truncateValue(entry.after);
 }

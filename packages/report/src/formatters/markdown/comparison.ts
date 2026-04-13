@@ -2,19 +2,16 @@ import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../summary.js';
 import {
-  escapeMarkdownTableCell,
   formatComparisonSummaryLine,
   formatDiffIcon,
   formatDiffLabel,
-  formatDiffMarkdownAfter,
-  formatDiffMarkdownBefore,
   formatDiffPath,
   formatStatus,
   formatTypeLabel,
 } from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
 
-export function formatMarkdownComparison(report: ComparisonReport, config: ReporterConfig): string {
-  const verbose = config.verbosity === 'verbose';
+export function formatMarkdownComparison(report: ComparisonReport, _config: ReporterConfig): string {
   const summary = summarizeComparison(report);
   const lines = [
     '# SEO Comparison',
@@ -37,17 +34,30 @@ export function formatMarkdownComparison(report: ComparisonReport, config: Repor
       continue;
     }
 
-    lines.push('| Change | Path | Before | After |');
-    lines.push('|--------|------|--------|-------|');
-
     for (const diff of comparison.diffs) {
-      lines.push(
-        `| ${formatDiffIcon(diff.kind)} ${formatDiffLabel(diff.kind)} | ${escapeMarkdownTableCell(
-          diff.path === '' ? '*(entire type)*' : `\`${formatDiffPath(diff)}\``,
-        )} | ${escapeMarkdownTableCell(formatDiffMarkdownBefore(diff, verbose))} | ${escapeMarkdownTableCell(
-          formatDiffMarkdownAfter(diff, verbose),
-        )} |`,
-      );
+      const icon = formatDiffIcon(diff.kind);
+      const label = formatDiffLabel(diff.kind);
+      const path = diff.path === '' ? '*(entire type)*' : `\`${formatDiffPath(diff)}\``;
+
+      lines.push(`- **${icon} ${label}** ${path}`);
+
+      if (diff.kind === 'changed') {
+        lines.push(`  - **–** \`${formatFullValue(diff.before)}\``);
+        lines.push(`  - **+** \`${formatFullValue(diff.after)}\``);
+      } else if (diff.kind === 'added') {
+        if (diff.path === '') {
+          lines.push('  Present');
+        } else {
+          lines.push(`  - **+** \`${formatFullValue(diff.after)}\``);
+        }
+      } else {
+        // removed
+        if (diff.path === '') {
+          lines.push('  Present');
+        } else {
+          lines.push(`  - **–** \`${formatFullValue(diff.before)}\``);
+        }
+      }
     }
   }
 

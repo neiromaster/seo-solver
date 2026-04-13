@@ -1,35 +1,55 @@
 import type { ComparisonReport, DiffEntry } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../summary.js';
-import {
-  escapeHtml,
-  formatDiffLabel,
-  formatDiffMarkdownAfter,
-  formatDiffMarkdownBefore,
-  formatDiffPath,
-  formatStatus,
-  formatTypeLabel,
-} from '../../utils/text.js';
+import { escapeHtml, formatDiffLabel, formatDiffPath, formatStatus, formatTypeLabel } from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
 import { renderHtml } from './template.js';
 
 function renderComparisonRows(diffs: DiffEntry[]): string {
+  const rows = diffs.map((diff) => {
+    const label = escapeHtml(formatDiffLabel(diff.kind));
+    const path = diff.path === '' ? '(entire type)' : formatDiffPath(diff);
+    const badge = `<span class="kind-badge ${diff.kind}">${label}</span>`;
+
+    if (diff.kind === 'changed') {
+      const beforeVal = escapeHtml(formatFullValue(diff.before));
+      const afterVal = escapeHtml(formatFullValue(diff.after));
+      return `<tr class="diff-start">
+  <td rowspan="2">${badge}</td>
+  <td rowspan="2"><code>${escapeHtml(path)}</code></td>
+  <td class="cell-before"><code>${beforeVal}</code></td>
+</tr>
+<tr class="diff-after">
+  <td class="cell-after"><code>${afterVal}</code></td>
+</tr>`;
+    }
+
+    if (diff.kind === 'added') {
+      const afterVal = escapeHtml(formatFullValue(diff.after));
+      return `<tr class="diff-start">
+  <td>${badge}</td>
+  <td><code>${escapeHtml(path)}</code></td>
+  <td class="cell-after"><code>${afterVal}</code></td>
+</tr>`;
+    }
+
+    // removed
+    const beforeVal = escapeHtml(formatFullValue(diff.before));
+    return `<tr class="diff-start">
+  <td>${badge}</td>
+  <td><code>${escapeHtml(path)}</code></td>
+  <td class="cell-before"><code>${beforeVal}</code></td>
+</tr>`;
+  });
+
   return `<table>
-    <thead>
-      <tr><th>Change</th><th>Path</th><th>Before</th><th>After</th></tr>
-    </thead>
-    <tbody>
-      ${diffs
-        .map(
-          (diff) => `<tr>
-        <td class="${diff.kind}">${escapeHtml(formatDiffLabel(diff.kind))}</td>
-        <td><code>${escapeHtml(formatDiffPath(diff))}</code></td>
-        <td>${escapeHtml(formatDiffMarkdownBefore(diff, false))}</td>
-        <td>${escapeHtml(formatDiffMarkdownAfter(diff, false))}</td>
-      </tr>`,
-        )
-        .join('')}
-    </tbody>
-  </table>`;
+  <thead>
+    <tr><th>Change</th><th>Path</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+${rows.join('\n')}
+  </tbody>
+</table>`;
 }
 
 export function formatHtmlComparison(report: ComparisonReport, _config: ReporterConfig): string {

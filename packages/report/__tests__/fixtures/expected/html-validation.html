@@ -97,6 +97,35 @@ details > summary {
   cursor: pointer;
 }
 
+.kind-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.kind-badge.changed { background: var(--surface); color: var(--changed); }
+.kind-badge.added { background: var(--surface); color: var(--added); }
+.kind-badge.removed { background: var(--surface); color: var(--removed); }
+
+tr.diff-start td {
+  border-top: 1px solid var(--border);
+}
+
+tr.diff-after td {
+  border-top: 1px dashed var(--border);
+}
+
+.cell-before {
+  color: var(--removed);
+}
+
+.cell-after {
+  color: var(--added);
+}
+
 @media print {
   body {
     background: #fff;

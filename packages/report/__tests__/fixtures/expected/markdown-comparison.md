@@ -11,11 +11,14 @@
 
 ## OpenGraph
 
-| Change | Path | Before | After |
-|--------|------|--------|-------|
-| ~ Changed | `og:title` | "Draft Title That Was Used During Development P... | "Final Title For Production Release" |
-| ~ Changed | `og:description` | "Line 1\\nLine 2 with <draft>" | "Updated line with <final> and a much longer de... |
-| + Added | `og:type` | — | "article" |
+- **~ Changed** `og:title`
+  - **–** `"Draft Title That Was Used During Development Phase"`
+  - **+** `"Final Title For Production Release"`
+- **~ Changed** `og:description`
+  - **–** `"Line 1\nLine 2 with <draft>"`
+  - **+** `"Updated line with <final> and a much longer description to exercise truncation in normal mode"`
+- **+ Added** `og:type`
+  - **+** `"article"`
 
 ## Meta
 
@@ -23,12 +26,10 @@
 
 ## Headings
 
-| Change | Path | Before | After |
-|--------|------|--------|-------|
-| + Added | `[2]` | — | "h3 \\"Enterprise \| Pro\\"" |
+- **+ Added** `[2]`
+  - **+** `"h3 \"Enterprise | Pro\""`
 
 ## JSON-LD
 
-| Change | Path | Before | After |
-|--------|------|--------|-------|
-| - Removed | *(entire type)* | Present | Not present in B |
+- **- Removed** *(entire type)*
+  Present
