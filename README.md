@@ -6,14 +6,14 @@ If you only care about using the CLI, jump to the install and usage sections bel
 
 ## What is in this repository?
 
-- `apps/seo-solver` — the publishable CLI package
-- `packages/fetch` — normalized fetching and backend registry
-- `packages/fetch-playwright` — optional Playwright-backed fetch backend
-- `packages/extract` — page-level extraction and target catalog
-- `packages/compare` — page-to-page SEO comparison
-- `packages/validate` — validation, rule catalog, and severity overrides
-- `packages/report` — formatting and status helpers
-- `packages/types` — shared type contracts and advanced type subpaths
+- [`apps/seo-solver`](apps/seo-solver/README.md) — the publishable CLI package
+- [`packages/fetch`](packages/fetch/README.md) — normalized fetching and backend registry
+- [`packages/fetch-playwright`](packages/fetch-playwright/README.md) — optional Playwright-backed fetch backend
+- [`packages/extract`](packages/extract/README.md) — page-level extraction and target catalog
+- [`packages/compare`](packages/compare/README.md) — page-to-page SEO comparison
+- [`packages/validate`](packages/validate/README.md) — validation, rule catalog, and severity overrides
+- [`packages/report`](packages/report/README.md) — formatting and status helpers
+- [`packages/types`](packages/types/README.md) — shared type contracts and advanced type subpaths
 
 ## Development
 
@@ -129,13 +129,13 @@ These flags are available on `compare`, `validate`, and `extract`.
 
 If you want to build on the pieces instead of only using the CLI, start here:
 
-- `packages/fetch/README.md`
-- `packages/fetch-playwright/README.md`
-- `packages/extract/README.md`
-- `packages/compare/README.md`
-- `packages/validate/README.md`
-- `packages/report/README.md`
-- `packages/types/README.md`
+- [packages/fetch/README.md](packages/fetch/README.md)
+- [packages/fetch-playwright/README.md](packages/fetch-playwright/README.md)
+- [packages/extract/README.md](packages/extract/README.md)
+- [packages/compare/README.md](packages/compare/README.md)
+- [packages/validate/README.md](packages/validate/README.md)
+- [packages/report/README.md](packages/report/README.md)
+- [packages/types/README.md](packages/types/README.md)
 
 Those README files explain both the simple, human-friendly API and the more advanced API used inside the application.
 

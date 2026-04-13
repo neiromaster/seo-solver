@@ -45,5 +45,5 @@ Those advanced subpaths are where envelopes, pipelines, validators, comparators,
 
 ## Related docs and examples
 
-- `docs/advanced.md` — domain and advanced subpath examples
-- `examples/subpath-imports.ts` — minimal import examples
+- [docs/advanced.md](docs/advanced.md) — domain and advanced subpath examples
+- [examples/subpath-imports.ts](examples/subpath-imports.ts) — minimal import examples

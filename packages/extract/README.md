@@ -67,6 +67,6 @@ Use `@seo-solver/extract/advanced` when you intentionally want low-level extract
 
 ## Related docs and examples
 
-- `docs/advanced.md` — pipeline and custom extractor usage
-- `examples/basic-extract.ts` — simple extraction example
-- `examples/advanced-pipeline.ts` — low-level pipeline example
+- [docs/advanced.md](docs/advanced.md) — pipeline and custom extractor usage
+- [examples/basic-extract.ts](examples/basic-extract.ts) — simple extraction example
+- [examples/advanced-pipeline.ts](examples/advanced-pipeline.ts) — low-level pipeline example

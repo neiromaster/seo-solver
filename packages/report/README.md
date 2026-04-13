@@ -47,5 +47,5 @@ Use the reusable reporter form when you want one configured formatter for many c
 
 ## Related docs and examples
 
-- `docs/advanced.md` — reusable reporter configuration
-- `examples/basic-reporting.ts` — root helper usage
+- [docs/advanced.md](docs/advanced.md) — reusable reporter configuration
+- [examples/basic-reporting.ts](examples/basic-reporting.ts) — root helper usage

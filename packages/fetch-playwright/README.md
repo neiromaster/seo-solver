@@ -54,5 +54,5 @@ This package assumes Playwright is installed and browser binaries are available.
 
 ## Related docs and examples
 
-- `docs/advanced.md` — reusable fetcher usage
-- `examples/basic-fetch.ts` — minimal browser-backed fetch example
+- [docs/advanced.md](docs/advanced.md) — reusable fetcher usage
+- [examples/basic-fetch.ts](examples/basic-fetch.ts) — minimal browser-backed fetch example

@@ -59,6 +59,6 @@ Rule selectors are strict. If you pass an unknown rule id or wildcard prefix, th
 
 ## Related docs and examples
 
-- `docs/advanced.md` — pipeline and runtime validation notes
-- `examples/basic-validate.ts` — root API example
-- `examples/advanced-pipeline.ts` — advanced pipeline example
+- [docs/advanced.md](docs/advanced.md) — pipeline and runtime validation notes
+- [examples/basic-validate.ts](examples/basic-validate.ts) — root API example
+- [examples/advanced-pipeline.ts](examples/advanced-pipeline.ts) — advanced pipeline example

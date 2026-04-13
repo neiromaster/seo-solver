@@ -111,13 +111,13 @@ These flags are available on `compare`, `validate`, and `extract`:
 
 This package is mostly orchestration. For the real domain APIs, see:
 
-- `../../packages/fetch/README.md`
-- `../../packages/fetch-playwright/README.md`
-- `../../packages/extract/README.md`
-- `../../packages/compare/README.md`
-- `../../packages/validate/README.md`
-- `../../packages/report/README.md`
-- `../../packages/types/README.md`
+- [packages/fetch](../../packages/fetch/README.md)
+- [packages/fetch-playwright](../../packages/fetch-playwright/README.md)
+- [packages/extract](../../packages/extract/README.md)
+- [packages/compare](../../packages/compare/README.md)
+- [packages/validate](../../packages/validate/README.md)
+- [packages/report](../../packages/report/README.md)
+- [packages/types](../../packages/types/README.md)
 
 ## Package notes
 

@@ -48,6 +48,6 @@ Use `@seo-solver/compare/advanced` when you are intentionally building around co
 
 ## Related docs and examples
 
-- `docs/advanced.md` — comparator and pipeline usage
-- `examples/basic-compare.ts` — root API example
-- `examples/advanced-pipeline.ts` — low-level comparator pipeline example
+- [docs/advanced.md](docs/advanced.md) — comparator and pipeline usage
+- [examples/basic-compare.ts](examples/basic-compare.ts) — root API example
+- [examples/advanced-pipeline.ts](examples/advanced-pipeline.ts) — low-level comparator pipeline example

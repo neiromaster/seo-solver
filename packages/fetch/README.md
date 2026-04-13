@@ -62,5 +62,5 @@ Fetch failures use a structured contract with stable `code` values and retryabil
 
 ## Related docs and examples
 
-- `docs/advanced.md` — backend registry and shared retry notes
-- `examples/basic-fetch.ts` — minimal fetch example
+- [docs/advanced.md](docs/advanced.md) — backend registry and shared retry notes
+- [examples/basic-fetch.ts](examples/basic-fetch.ts) — minimal fetch example
