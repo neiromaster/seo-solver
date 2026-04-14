@@ -9,24 +9,25 @@ export type CLIResult = {
   exitCode: number;
 };
 
-export async function runCLI(args: string[]): Promise<CLIResult> {
-  return await runCommand('pnpm', ['exec', 'tsx', 'src/index.ts', ...args]);
+export async function runCLI(args: string[], options: { env?: NodeJS.ProcessEnv } = {}): Promise<CLIResult> {
+  return await runCommand('pnpm', ['exec', 'tsx', 'src/index.ts', ...args], options.env);
 }
 
-export async function buildCLI(): Promise<CLIResult> {
-  return await runCommand('pnpm', ['build']);
+export async function buildCLI(options: { env?: NodeJS.ProcessEnv } = {}): Promise<CLIResult> {
+  return await runCommand('pnpm', ['build'], options.env);
 }
 
-export async function runBuiltCLI(args: string[]): Promise<CLIResult> {
-  return await runCommand('node', ['dist/index.js', ...args]);
+export async function runBuiltCLI(args: string[], options: { env?: NodeJS.ProcessEnv } = {}): Promise<CLIResult> {
+  return await runCommand('node', ['dist/index.js', ...args], options.env);
 }
 
-async function runCommand(command: string, args: string[]): Promise<CLIResult> {
+async function runCommand(command: string, args: string[], envOverrides: NodeJS.ProcessEnv = {}): Promise<CLIResult> {
   return await new Promise<CLIResult>((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: packageRoot,
       env: {
         ...process.env,
+        ...envOverrides,
         NO_COLOR: '1',
       },
       stdio: ['ignore', 'pipe', 'pipe'],

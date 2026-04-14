@@ -1,5 +1,6 @@
 import type { ReportFormat, Verbosity } from '@seo-solver/types/report';
 import type { Severity } from '@seo-solver/types/validate';
+import { type EditorId, getSupportedEditorIds } from './cli-support/editors';
 import { CLIError } from './cli-support/error-handler';
 
 export const supportedReportFormats = ['terminal', 'json', 'markdown', 'html'] as const;
@@ -8,9 +9,13 @@ export const supportedSeverities = ['error', 'warning', 'info'] as const;
 
 export const supportedFetchers = ['native', 'playwright'] as const;
 
+export const supportedEditors = getSupportedEditorIds();
+
 export type SupportedReportFormat = (typeof supportedReportFormats)[number];
 
 export type SupportedExtractFormat = 'json';
+
+export type SupportedEditor = EditorId;
 
 export type SupportedListRulesFormat = 'terminal' | 'json';
 
@@ -42,6 +47,18 @@ export function resolveExtractFormat(value: string | undefined): SupportedExtrac
   }
 
   return 'json';
+}
+
+export function resolveEditor(value: string | undefined): SupportedEditor | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  if (!supportedEditors.includes(value as SupportedEditor)) {
+    throw new CLIError(`Unsupported editor: ${value}. Expected one of: ${supportedEditors.join(', ')}`);
+  }
+
+  return value as SupportedEditor;
 }
 
 export function resolveListRulesFormat(value: string | undefined): SupportedListRulesFormat {

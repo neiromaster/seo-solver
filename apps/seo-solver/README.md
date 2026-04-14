@@ -78,6 +78,12 @@ seo-solver validate https://example.com --fetcher playwright
 # Extract a focused subset of targets as JSON
 seo-solver extract https://example.com --targets meta,opengraph --format json
 
+# Open extraction output directly in VS Code
+seo-solver extract https://example.com --editor code
+
+# Keep normal compare JSON output and also open diff artifacts in VS Code
+seo-solver compare https://example.com https://example.com/new --format json --editor code
+
 # Print the full rule catalog as JSON
 seo-solver list-rules --format json
 ```
@@ -99,6 +105,11 @@ These flags are available on `compare`, `validate`, and `extract`:
 ### Comparison and extraction
 
 - `--targets <list>` / `-e` selects a subset of package-owned targets such as `meta`, `opengraph`, `jsonld`, or `robotsTxt`
+- `--editor <code|cursor|surf|zed>` opens generated artifacts in a supported editor
+
+For `compare`, `--editor` is independent from normal reporting. That means `--format` and `--output` still control the standard compare report, while editor mode separately opens two normalized JSON artifacts for visual diff.
+
+Current built-in editor entries are `code`, `cursor`, `surf`, and `zed`. Support is registry-driven, so adding another editor should stay localized to one adapter entry plus tests.
 
 ### Validation-specific
 

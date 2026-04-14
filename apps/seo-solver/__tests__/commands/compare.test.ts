@@ -1,6 +1,10 @@
+import { mkdtemp, readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { createFakeEditor, readFakeEditorLog } from '../helpers/fake-editor';
 import { runCLI } from '../helpers/run-cli';
 import { createTestServer, type TestServer } from '../helpers/test-server';
 
@@ -85,7 +89,115 @@ describe('compare command', () => {
       await parallelServer.close();
     }
   });
+
+  test('opens compare artifacts in editor diff mode while preserving json output', async () => {
+    const { editorPath, logPath } = await createFakeEditor();
+    const result = await runCLI(
+      ['compare', `${server.baseUrl}/`, `${server.baseUrl}/robots.txt`, '--format', 'json', '--editor', 'code'],
+      {
+        env: {
+          SEO_SOLVER_EDITOR_CODE_BIN: editorPath,
+          FAKE_EDITOR_LOG_PATH: logPath,
+        },
+      },
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).comparisons).toEqual(expect.any(Array));
+
+    const entries = await readFakeEditorLog(logPath);
+    expect(entries).toHaveLength(1);
+    const firstEntry = entries[0];
+    expect(firstEntry).toBeDefined();
+    if (!firstEntry) {
+      throw new Error('Expected fake editor invocation');
+    }
+
+    expect(firstEntry.args[0]).toBe('--diff');
+
+    const leftPath = firstEntry.args[1];
+    const rightPath = firstEntry.args[2];
+    expect(leftPath).toBeDefined();
+    expect(rightPath).toBeDefined();
+    if (!leftPath || !rightPath) {
+      throw new Error('Expected compare diff artifact paths');
+    }
+
+    const leftArtifact = JSON.parse(await readFile(leftPath, 'utf8'));
+    const rightArtifact = JSON.parse(await readFile(rightPath, 'utf8'));
+    expect(leftArtifact.source.url).toBe(`${server.baseUrl}/`);
+    expect(rightArtifact.source.url).toBe(`${server.baseUrl}/robots.txt`);
+  });
+
+  test('keeps output file behavior independent from editor diff mode', async () => {
+    const { editorPath, logPath } = await createFakeEditor();
+    const outputDirectory = await createOutputDirectory();
+    const outputPath = join(outputDirectory, 'compare.json');
+    const result = await runCLI(
+      [
+        'compare',
+        `${server.baseUrl}/`,
+        `${server.baseUrl}/robots.txt`,
+        '--format',
+        'json',
+        '--output',
+        outputPath,
+        '--editor',
+        'code',
+      ],
+      {
+        env: {
+          SEO_SOLVER_EDITOR_CODE_BIN: editorPath,
+          FAKE_EDITOR_LOG_PATH: logPath,
+        },
+      },
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(JSON.parse(await readFile(outputPath, 'utf8')).comparisons).toEqual(expect.any(Array));
+
+    const entries = await readFakeEditorLog(logPath);
+    expect(entries).toHaveLength(1);
+    const firstEntry = entries[0];
+    expect(firstEntry).toBeDefined();
+    if (!firstEntry) {
+      throw new Error('Expected fake editor invocation');
+    }
+
+    expect(firstEntry.args[0]).toBe('--diff');
+  });
+
+  test('opens compare artifacts in cursor diff mode while preserving json output', async () => {
+    const { editorPath, logPath } = await createFakeEditor();
+    const result = await runCLI(
+      ['compare', `${server.baseUrl}/`, `${server.baseUrl}/robots.txt`, '--format', 'json', '--editor', 'cursor'],
+      {
+        env: {
+          SEO_SOLVER_EDITOR_CURSOR_BIN: editorPath,
+          FAKE_EDITOR_LOG_PATH: logPath,
+        },
+      },
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).comparisons).toEqual(expect.any(Array));
+
+    const entries = await readFakeEditorLog(logPath);
+    expect(entries).toHaveLength(1);
+    const firstEntry = entries[0];
+    expect(firstEntry).toBeDefined();
+    if (!firstEntry) {
+      throw new Error('Expected fake editor invocation');
+    }
+
+    expect(firstEntry.args[0]).toBe('--diff');
+  });
 });
+
+async function createOutputDirectory() {
+  return await mkdtemp(join(tmpdir(), 'seo-solver-compare-output-'));
+}
 
 async function createParallelCompareServer() {
   let inFlight = 0;

@@ -1,14 +1,18 @@
 import { command } from 'cmd-ts';
+import { openFileInEditor } from '../cli-support/editor';
+import { buildExtractEditorArtifact } from '../cli-support/editor-artifacts';
 import { CLIError, handleError } from '../cli-support/error-handler';
 import { resolveFetcher } from '../cli-support/fetcher-registry';
 import { writeOutput } from '../cli-support/output';
+import { createEditorArtifactDirectory, writeEditorArtifactFile } from '../cli-support/temp-artifacts';
+import { editorFlag } from '../flags/editor';
 import { parseTargets, targetsFlag } from '../flags/extractor';
 import { fetcherFlags } from '../flags/fetcher';
 import { formatFlag } from '../flags/format';
 import { outputFlag } from '../flags/output';
 import { urlArg } from '../flags/url';
 import { quietFlag, verboseFlag } from '../flags/verbosity';
-import { resolveExtractFormat } from '../types';
+import { resolveEditor, resolveExtractFormat } from '../types';
 import { runExtract } from '../workflows/extract';
 
 export const extractCommand = command({
@@ -22,6 +26,7 @@ export const extractCommand = command({
     ...fetcherFlags,
     targets: targetsFlag,
     output: outputFlag,
+    editor: editorFlag,
   },
   handler: async (args) => {
     let fetcher: Awaited<ReturnType<typeof resolveFetcher>> | undefined;
@@ -37,18 +42,23 @@ export const extractCommand = command({
         throw new CLIError(`Unsupported extract format: ${format}. Expected: json`);
       }
 
-      await writeOutput(
-        JSON.stringify(
-          {
-            source: page.source,
-            data: page.data,
-            errors: page.errors,
-          },
-          null,
-          2,
-        ),
-        args.output,
-      );
+      const editor = resolveEditor(args.editor);
+      const content = buildExtractEditorArtifact(page);
+
+      if (editor) {
+        if (args.output) {
+          await writeOutput(content, args.output);
+          await openFileInEditor(editor, args.output);
+          return;
+        }
+
+        const artifactDirectory = await createEditorArtifactDirectory();
+        const artifactPath = await writeEditorArtifactFile(artifactDirectory, 'extract.json', content);
+        await openFileInEditor(editor, artifactPath);
+        return;
+      }
+
+      await writeOutput(content, args.output);
     } catch (error) {
       handleError(error);
     } finally {

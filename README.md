@@ -93,6 +93,7 @@ These flags are available on `compare`, `validate`, and `extract`.
 | Flag | Meaning |
 |---|---|
 | `--targets <list>` / `-e` | compare only selected targets such as `meta`, `opengraph`, `jsonld`, `robotsTxt` |
+| `--editor <code\|cursor\|surf\|zed>` | open two normalized extraction JSON artifacts in a supported editor diff view while keeping normal compare output behavior |
 | `--output <path>` / `-o` | write comparison output to a file |
 
 ### `validate`
@@ -116,7 +117,35 @@ These flags are available on `compare`, `validate`, and `extract`.
 |---|---|
 | `--targets <list>` / `-e` | extract only selected targets |
 | `--format <json>` / `-f` | choose output format |
+| `--editor <code\|cursor\|surf\|zed>` | open the generated extraction JSON in a supported editor |
 | `--output <path>` / `-o` | write extraction output to a file |
+
+## Editor mode
+
+The CLI can optionally open generated JSON artifacts in an editor:
+
+```bash
+# Open extraction output in VS Code
+seo-solver extract https://example.com --editor code
+
+# Write extraction output to a file and open that file in Cursor
+seo-solver extract https://example.com --output extract.json --editor cursor
+
+# Keep normal compare JSON output and also open normalized diff artifacts in VS Code
+seo-solver compare https://example.com https://example.com/new --format json --editor code
+
+# Keep file output and also open normalized diff artifacts in VS Code
+seo-solver compare https://example.com https://example.com/new --format json --output compare.json --editor code
+```
+
+Editor support is registry-driven. Current built-in editor entries are:
+
+- `code` — single-file open and diff mode via `--diff`
+- `cursor` — single-file open and diff mode via `--diff`
+- `surf` — single-file open and diff mode via `--diff`
+- `zed` — single-file open and diff mode via `diff`
+
+Adding another editor is intended to stay low-friction: append a new registry entry with its command and diff arguments, then add focused tests for that adapter.
 
 ### `list-rules`
 

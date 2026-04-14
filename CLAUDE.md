@@ -25,6 +25,10 @@ Short description of what changed and why.
 
 Skip changesets for internal-only changes (tests, tooling, CI, docs, refactors that don't affect public API or behaviour).
 
+## Code Style
+
+- Omit `.js` extensions from TypeScript imports — `moduleResolution: "bundler"` resolves extensionless imports natively
+
 ## Testing
 
 Use Vitest through pnpm.
