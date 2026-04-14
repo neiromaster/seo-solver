@@ -15,7 +15,8 @@
   "include": [
     "../types/src/**/*.ts",
     "src/**/*.ts",
-    "__tests__/**/*.ts",
+    "test/**/*.ts",
+    "../../test-support/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": [

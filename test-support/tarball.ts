@@ -1,20 +1,33 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
+import { withSerializedBuild } from './build-lock';
+
+function createPackEnv(): NodeJS.ProcessEnv {
+  return Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([key]) => !key.startsWith('npm_') && !key.startsWith('PNPM_') && !key.startsWith('pnpm_'),
+    ),
+  );
+}
 
 export async function inspectPackedPackage(packageDir: string) {
   const tempDir = await mkdtemp(join(tmpdir(), 'seo-solver-pack-'));
 
   try {
-    execFileSync('pnpm', ['run', 'build'], {
-      cwd: packageDir,
-      encoding: 'utf8',
+    await withSerializedBuild(async () => {
+      execFileSync('pnpm', ['run', 'build'], {
+        cwd: packageDir,
+        encoding: 'utf8',
+        env: createPackEnv(),
+      });
     });
 
     const packedOutput = execFileSync('npm', ['pack', '--ignore-scripts', '--pack-destination', tempDir], {
       cwd: packageDir,
       encoding: 'utf8',
+      env: createPackEnv(),
     }).trim();
     const tarballName = packedOutput.split('\n').at(-1) ?? packedOutput;
     const tarballPath = isAbsolute(tarballName) ? tarballName : join(tempDir, tarballName);

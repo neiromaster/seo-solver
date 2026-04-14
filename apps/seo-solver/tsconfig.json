@@ -37,8 +37,10 @@
     "../../packages/validate/src/**/*.ts",
     "../../packages/compare/src/**/*.ts",
     "../../packages/report/src/**/*.ts",
+    "../../packages/report/test/**/*.ts",
+    "../../test-support/**/*.ts",
     "src/**/*.ts",
-    "__tests__/**/*.ts",
+    "test/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": [
