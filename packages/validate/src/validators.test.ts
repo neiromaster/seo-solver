@@ -10,8 +10,8 @@ import {
   RobotsTxtValidator,
   TwitterCardValidator,
   VKValidator,
-} from './advanced';
-import { validateHeadings, validateOpenGraph } from './pipeline';
+} from './advanced.js';
+import { validateHeadings, validateOpenGraph } from './pipeline.js';
 
 describe('validators', () => {
   test('validates meta tags', async () => {

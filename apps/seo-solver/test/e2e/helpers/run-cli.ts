@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { withSerializedBuild } from '../../../../../test-support/build-lock';
+import { withSerializedBuild } from '../../../../../test-support/build-lock.js';
 
 const packageRoot = fileURLToPath(new URL('../../..', import.meta.url));
 
@@ -11,7 +11,11 @@ export type CLIResult = {
 };
 
 export async function runCLI(args: string[], options: { env?: NodeJS.ProcessEnv } = {}): Promise<CLIResult> {
-  return await runCommand('pnpm', ['exec', 'tsx', 'src/index.ts', ...args], options.env);
+  return await runCommand(
+    'pnpm',
+    ['exec', 'tsx', '--conditions=@seo-solver/source', 'src/index.ts', ...args],
+    options.env,
+  );
 }
 
 export async function buildCLI(options: { env?: NodeJS.ProcessEnv } = {}): Promise<CLIResult> {

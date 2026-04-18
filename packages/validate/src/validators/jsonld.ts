@@ -1,22 +1,8 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
 import type { CanonicalData, JsonLdData, JsonLdEntry, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic } from '@seo-solver/types/validate';
-import { validateJsonLdWithAdobe } from '../runtime/jsonld-adobe-adapter';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
-
-const SCHEMA_CACHE_FILE = join(homedir(), '.cache', 'seo-solver', 'schema-org.jsonld');
-const SCHEMA_URL = 'https://schema.org/version/latest/schemaorg-all-https.jsonld';
-const SCHEMA_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-
-type AdobeIssue = {
-  issueMessage?: string;
-  severity?: 'ERROR' | 'WARNING';
-  path?: Array<{ type?: string; index?: number; property?: string }>;
-  fieldNames?: string[];
-};
+import { validateJsonLdWithAdobe } from '../runtime/jsonld-adobe-adapter.js';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 type WaeData = {
   jsonld: Record<string, Record<string, unknown>[]>;
@@ -25,24 +11,15 @@ type WaeData = {
   errors: unknown[];
 };
 
-const ADOBE_PATTERNS: ReadonlyArray<readonly [pattern: RegExp, ruleId: string]> = [
-  [/Property ".*?" for type ".*?" is not supported/i, 'unsupported-property'],
-  [/Required attribute ".*?" is missing/i, 'required-missing'],
-  [/Recommended attribute ".*?" is missing/i, 'recommended-missing'],
-  [/Invalid value .* for property/i, 'invalid-value'],
-  [/expects type ".*?" but got/i, 'type-mismatch'],
-  [/Unknown type/i, 'unknown-type'],
-];
-
 export class JsonLdValidator {
   readonly type = 'jsonld';
 
   constructor(
     private readonly runtime: {
-      enabled?: boolean;
-      cacheFile?: string | null;
-      refreshTtlMs?: number;
-      schemaUrl?: string;
+      enabled?: boolean | undefined;
+      cacheFile?: string | null | undefined;
+      refreshTtlMs?: number | undefined;
+      schemaUrl?: string | undefined;
     } = {},
   ) {}
 
@@ -297,96 +274,6 @@ function toWaeData(data: JsonLdData): WaeData {
     rdfa: {},
     errors: [],
   };
-}
-
-function serializeAdobePath(issue: AdobeIssue): string | undefined {
-  if (issue.path && issue.path.length > 0) {
-    return issue.path
-      .map((segment) => {
-        const parts = [segment.type, segment.index !== undefined ? `[${segment.index}]` : undefined, segment.property];
-        return parts.filter(Boolean).join('.').replace('.[', '[');
-      })
-      .join('.');
-  }
-
-  return issue.fieldNames && issue.fieldNames.length > 0 ? issue.fieldNames[0] : undefined;
-}
-
-function adobeRuleId(issueMessage: string): string {
-  for (const [pattern, id] of ADOBE_PATTERNS) {
-    if (pattern.test(issueMessage)) {
-      return `jsonld/adobe/${id}`;
-    }
-  }
-
-  return `jsonld/adobe/${shortHash(issueMessage)}`;
-}
-
-function shortHash(value: string): string {
-  let hash = 0;
-
-  for (const char of value) {
-    hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
-  }
-
-  return Math.abs(hash).toString(36).slice(0, 8) || 'issue';
-}
-
-async function loadSchemaOrgJson(): Promise<unknown | null> {
-  const cached = await readCachedSchema();
-  if (cached.fresh) {
-    return cached.value;
-  }
-
-  try {
-    const response = await fetch(SCHEMA_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch schema.org schema: ${response.status}`);
-    }
-
-    const json = await response.json();
-    await mkdir(dirname(SCHEMA_CACHE_FILE), { recursive: true });
-    await writeFile(SCHEMA_CACHE_FILE, JSON.stringify(json), 'utf8');
-    return json;
-  } catch {
-    return cached.value;
-  }
-}
-
-async function readCachedSchema(): Promise<{ value: unknown | null; fresh: boolean }> {
-  try {
-    const [contents, details] = await Promise.all([readFile(SCHEMA_CACHE_FILE, 'utf8'), stat(SCHEMA_CACHE_FILE)]);
-    return {
-      value: JSON.parse(contents) as unknown,
-      fresh: Date.now() - details.mtimeMs < SCHEMA_TTL_MS,
-    };
-  } catch {
-    return { value: null, fresh: false };
-  }
-}
-
-async function loadAdobeValidator(): Promise<
-  new (
-    schemaOrgJson?: unknown,
-  ) => { validate(waeData: unknown): Promise<unknown[]> }
-> {
-  const module = (await import('@adobe/structured-data-validator')) as {
-    default?:
-      | (new (
-          schemaOrgJson?: unknown,
-        ) => { validate(waeData: unknown): Promise<unknown[]> })
-      | { Validator?: new (schemaOrgJson?: unknown) => { validate(waeData: unknown): Promise<unknown[]> } };
-  };
-
-  if (typeof module.default === 'function') {
-    return module.default;
-  }
-
-  if (typeof module.default === 'object' && module.default?.Validator) {
-    return module.default.Validator;
-  }
-
-  throw new Error('Unable to load @adobe/structured-data-validator Validator export');
 }
 
 function findCanonicalEnvelope(

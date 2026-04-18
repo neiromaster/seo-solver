@@ -1,6 +1,6 @@
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
-import { summarizeComparison } from '../../summary';
+import { summarizeComparison } from '../../summary.js';
 import {
   formatComparisonSummaryLine,
   formatDiffIcon,
@@ -8,8 +8,8 @@ import {
   formatDiffPath,
   formatStatus,
   formatTypeLabel,
-} from '../../utils/text';
-import { formatFullValue } from '../../utils/truncate';
+} from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
 
 export function formatMarkdownComparison(report: ComparisonReport, _config: ReporterConfig): string {
   const summary = summarizeComparison(report);

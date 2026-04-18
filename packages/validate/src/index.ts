@@ -14,8 +14,8 @@ export type {
   Severity,
   ValidationResult,
 } from '@seo-solver/types/validate';
-export { ValidationError } from './errors';
-export { parseSeverityOverrides } from './parse-severity-overrides';
-export { validatePage } from './pipeline';
-export { listRules } from './rule-catalog';
-export { isKnownRuleSelector } from './rule-filter';
+export { ValidationError } from './errors.js';
+export { parseSeverityOverrides } from './parse-severity-overrides.js';
+export { validatePage } from './pipeline.js';
+export { listRules } from './rule-catalog.js';
+export { isKnownRuleSelector } from './rule-filter.js';

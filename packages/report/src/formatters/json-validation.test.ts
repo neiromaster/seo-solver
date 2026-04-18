@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { validationReportFixture } from '../../test/fixtures/validation-report';
-import { formatValidationReport, hasFailed } from '../index';
+import { validationReportFixture } from '../../test/fixtures/validation-report.js';
+import { formatValidationReport, hasFailed } from '../index.js';
 
 describe('json validation formatter', () => {
   test('keeps all diagnostics regardless of minSeverity and exposes passed state', () => {

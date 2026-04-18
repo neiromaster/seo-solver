@@ -1,26 +1,30 @@
 {
   "name": "@seo-solver/fetch-playwright",
+  "description": "Playwright-powered fetch backend for SEO Solver",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
+      "@seo-solver/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsup --config tsup.config.ts && tsc --project tsconfig.build.json",
+    "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
     "prepack": "pnpm run build",
-    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@seo-solver/fetch": "workspace:*",
-    "@seo-solver/types": "workspace:*"
+    "@seo-solver/fetch": "workspace:^",
+    "@seo-solver/types": "workspace:^"
   },
   "devDependencies": {
     "playwright": "^1.58.2"
@@ -32,5 +36,15 @@
     "playwright": {
       "optional": false
     }
-  }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "packages/fetch-playwright"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme"
 }

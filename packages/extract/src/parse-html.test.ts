@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { parseHtml } from './parse-html';
+import { parseHtml } from './parse-html.js';
 
 describe('parseHtml', () => {
   test('loads html into a queryable document', () => {

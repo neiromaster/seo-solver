@@ -10,15 +10,15 @@ import type {
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic, ValidationResult } from '@seo-solver/types/validate';
 import type { ValidationPipeline, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
-import { createRuleFilter } from './rule-filter';
-import { CanonicalValidator } from './validators/canonical';
-import { HeadingsValidator } from './validators/headings';
-import { JsonLdValidator } from './validators/jsonld';
-import { MetaTagsValidator } from './validators/meta';
-import { OpenGraphValidator } from './validators/opengraph';
-import { resolveValidators } from './validators/registry';
-import { RobotsTxtValidator } from './validators/robots-txt';
-import { TwitterCardValidator } from './validators/twitter';
+import { createRuleFilter } from './rule-filter.js';
+import { CanonicalValidator } from './validators/canonical.js';
+import { HeadingsValidator } from './validators/headings.js';
+import { JsonLdValidator } from './validators/jsonld.js';
+import { MetaTagsValidator } from './validators/meta.js';
+import { OpenGraphValidator } from './validators/opengraph.js';
+import { resolveValidators } from './validators/registry.js';
+import { RobotsTxtValidator } from './validators/robots-txt.js';
+import { TwitterCardValidator } from './validators/twitter.js';
 
 export function createValidationPipeline(config: ValidationPipelineConfig = {}): ValidationPipeline {
   const configuredValidators = resolveValidators(config, config.validators);

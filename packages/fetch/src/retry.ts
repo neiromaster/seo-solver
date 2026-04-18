@@ -1,4 +1,4 @@
-import { FetchError } from './errors';
+import { FetchError } from './errors.js';
 
 type RetryResult = {
   headers?: Record<string, string>;

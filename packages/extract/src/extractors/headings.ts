@@ -2,8 +2,8 @@ import type { ResourceType } from '@seo-solver/types';
 import type { HeadingsData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
-import { type ParsedDocument, parseHtml } from '../parse-html';
-import { normalizeWhitespace } from '../utils/normalize';
+import { type ParsedDocument, parseHtml } from '../parse-html.js';
+import { normalizeWhitespace } from '../utils/normalize.js';
 
 export class HeadingsExtractor {
   readonly type = 'headings';

@@ -1,6 +1,6 @@
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
-import { formatJsonComparison } from './comparison';
-import { formatJsonValidation } from './validation';
+import { formatJsonComparison } from './comparison.js';
+import { formatJsonValidation } from './validation.js';
 
 export function createJsonReporter(config: ReporterConfig): Reporter {
   return {

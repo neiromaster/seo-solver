@@ -1,6 +1,6 @@
 import type { JsonLdData, MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 type CrossValidationData = Record<string, never>;
 

@@ -1,7 +1,7 @@
 import type { ReportFormat, Verbosity } from '@seo-solver/types/report';
 import type { Severity } from '@seo-solver/types/validate';
-import { type EditorId, getSupportedEditorIds } from './cli-support/editors';
-import { CLIError } from './cli-support/error-handler';
+import { type EditorId, getSupportedEditorIds } from './cli-support/editors.js';
+import { CLIError } from './cli-support/error-handler.js';
 
 export const supportedReportFormats = ['terminal', 'json', 'markdown', 'html'] as const;
 

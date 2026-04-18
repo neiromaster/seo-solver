@@ -2,11 +2,11 @@ import { comparePages } from '@seo-solver/compare';
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ExtractedPage, TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
-import { type ExtractOptions, runExtract } from './extract';
+import { type ExtractOptions, runExtract } from './extract.js';
 
 export interface CompareOptions extends ExtractOptions {
-  ignoreFields?: Record<string, string[]>;
-  targets?: TargetKey[];
+  ignoreFields?: Record<string, string[]> | undefined;
+  targets?: TargetKey[] | undefined;
 }
 
 export type CompareResult = {
@@ -27,8 +27,8 @@ export async function runCompare(
   ]);
 
   const report = comparePages(resultA.page, resultB.page, {
-    targets: options.targets,
-    ignoreFields: options.ignoreFields,
+    ...(options.targets === undefined ? {} : { targets: options.targets }),
+    ...(options.ignoreFields === undefined ? {} : { ignoreFields: options.ignoreFields }),
   });
 
   return {

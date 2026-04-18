@@ -1,11 +1,11 @@
 import type { DiffEntry } from '@seo-solver/types/compare';
 import type { Comparator } from '@seo-solver/types/compare-advanced';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { diff } from '../diff';
+import { diff } from '../diff.js';
 
 export type GenericComparatorOptions = {
-  ignoreArrayOrder?: boolean;
-  pathPrefix?: string;
+  ignoreArrayOrder?: boolean | undefined;
+  pathPrefix?: string | undefined;
 };
 
 export class GenericComparator implements Comparator {

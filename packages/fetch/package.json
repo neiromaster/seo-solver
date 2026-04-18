@@ -1,28 +1,44 @@
 {
   "name": "@seo-solver/fetch",
+  "description": "HTTP and content fetch pipeline for SEO Solver",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
+      "@seo-solver/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./advanced": {
+      "@seo-solver/source": "./src/advanced.ts",
       "types": "./dist/advanced.d.ts",
-      "import": "./dist/advanced.js"
+      "import": "./dist/advanced.js",
+      "default": "./dist/advanced.js"
     }
   },
   "scripts": {
-    "build": "tsup --config tsup.config.ts && tsc --project tsconfig.build.json",
+    "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
     "prepack": "pnpm run build",
-    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@seo-solver/types": "workspace:*"
-  }
+    "@seo-solver/types": "workspace:^"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "packages/fetch"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme"
 }

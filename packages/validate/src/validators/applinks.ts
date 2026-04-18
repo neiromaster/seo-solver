@@ -1,6 +1,6 @@
 import type { OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 export class AppLinksValidator {
   readonly type = 'opengraph';

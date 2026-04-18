@@ -1,6 +1,6 @@
 import type { Severity } from '@seo-solver/types/validate';
-import { ValidationError } from './errors';
-import { listRules } from './rule-catalog';
+import { ValidationError } from './errors.js';
+import { listRules } from './rule-catalog.js';
 
 const SEVERITIES: readonly Severity[] = ['error', 'warning', 'info'];
 const KNOWN_RULE_IDS = new Set(listRules().map((entry) => entry.id));

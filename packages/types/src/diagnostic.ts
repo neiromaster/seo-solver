@@ -4,7 +4,7 @@ export type Diagnostic = {
   severity: Severity;
   rule: string;
   message: string;
-  path?: string;
-  expected?: unknown;
-  actual?: unknown;
+  path?: string | undefined;
+  expected?: unknown | undefined;
+  actual?: unknown | undefined;
 };

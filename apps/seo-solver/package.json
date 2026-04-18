@@ -7,25 +7,30 @@
     "seo-solver": "dist/index.js"
   },
   "scripts": {
-    "dev": "tsx src/index.ts",
-    "start": "tsx src/index.ts",
-    "build": "pnpm --filter seo-solver^... build && tsup --config tsup.config.ts",
+    "dev": "tsx --conditions=@seo-solver/source src/index.ts",
+    "start": "tsx --conditions=@seo-solver/source src/index.ts",
+    "build": "pnpm --filter seo-solver^... build && tsdown",
     "prepack": "pnpm run build",
-    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "pnpm run build && node scripts/strip-bundled-deps.mjs",
+    "postpublish": "node scripts/restore-package-json.mjs"
   },
   "dependencies": {
-    "@seo-solver/compare": "workspace:*",
-    "@seo-solver/extract": "workspace:*",
-    "@seo-solver/fetch": "workspace:*",
-    "@seo-solver/report": "workspace:*",
-    "@seo-solver/types": "workspace:*",
-    "@seo-solver/validate": "workspace:*",
+    "@adobe/structured-data-validator": "^1.7.0",
+    "@seo-solver/compare": "workspace:^",
+    "@seo-solver/extract": "workspace:^",
+    "@seo-solver/fetch": "workspace:^",
+    "@seo-solver/report": "workspace:^",
+    "@seo-solver/types": "workspace:^",
+    "@seo-solver/validate": "workspace:^",
+    "ansis": "^4.2.0",
+    "cheerio": "^1.1.2",
     "cmd-ts": "^0.15.0"
   },
   "peerDependencies": {
-    "@seo-solver/fetch-playwright": "workspace:*"
+    "@seo-solver/fetch-playwright": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@seo-solver/fetch-playwright": {
@@ -35,6 +40,9 @@
   "files": [
     "dist"
   ],
+  "devDependencies": {
+    "@seo-solver/fetch-playwright": "workspace:*"
+  },
   "engines": {
     "node": ">=22"
   },

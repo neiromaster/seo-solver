@@ -1,9 +1,9 @@
 import type { DiffEntry } from '@seo-solver/types/compare';
-import { appendArrayPath, appendObjectPath } from './utils/path';
+import { appendArrayPath, appendObjectPath } from './utils/path.js';
 
 export type DiffOptions = {
-  pathPrefix?: string;
-  ignoreArrayOrder?: boolean;
+  pathPrefix?: string | undefined;
+  ignoreArrayOrder?: boolean | undefined;
 };
 
 export function diff(a: unknown, b: unknown, options: DiffOptions = {}): DiffEntry[] {

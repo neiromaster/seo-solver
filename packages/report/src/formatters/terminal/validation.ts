@@ -1,16 +1,16 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { filterDiagnosticsBySeverity } from '../../filter';
-import { type DiagnosticGroup, groupDiagnostics, hasFailed, summarizeValidation } from '../../summary';
+import { filterDiagnosticsBySeverity } from '../../filter.js';
+import { type DiagnosticGroup, groupDiagnostics, hasFailed, summarizeValidation } from '../../summary.js';
 import {
   formatSeverityIcon,
   formatStatus,
   formatTypeLabel,
   formatValidationSummaryLine,
   renderSectionHeading,
-} from '../../utils/text';
-import { formatFullValue } from '../../utils/truncate';
-import { createTerminalColors, type TerminalColors } from './colors';
+} from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
+import { createTerminalColors, type TerminalColors } from './colors.js';
 
 type ResolvedTerminalConfig = Required<Pick<ReporterConfig, 'color' | 'minSeverity' | 'verbosity'>>;
 
@@ -114,7 +114,7 @@ function renderGroupedDiagnostic(
 }
 
 export function formatTerminalValidation(report: ValidationReport, config: ResolvedTerminalConfig): string {
-  const colors = createTerminalColors(config.color);
+  const colors = createTerminalColors(config.color ?? false);
   const summary = summarizeValidation(report);
   const failed = hasFailed(report);
   const headerIcon = failed ? colors.error('✗') : colors.pass('✓');

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { createEditorArtifactDirectory } from './temp-artifacts';
+import { createEditorArtifactDirectory } from './temp-artifacts.js';
 
 describe('temp editor artifacts', () => {
   test('creates editor artifact directories under temp storage', async () => {

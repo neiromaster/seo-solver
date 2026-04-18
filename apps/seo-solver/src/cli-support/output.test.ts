@@ -2,7 +2,7 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { writeOutput } from './output';
+import { writeOutput } from './output.js';
 
 describe('writeOutput', () => {
   const stderrSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);

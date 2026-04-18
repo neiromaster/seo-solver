@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { diff } from './diff';
+import { diff } from './diff.js';
 
 describe('diff', () => {
   test('returns empty array for identical primitives', () => {

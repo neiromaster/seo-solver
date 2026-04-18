@@ -1,18 +1,18 @@
 import type { FetchErrorCode, FetchErrorLike } from '@seo-solver/types/fetch';
 
 type FetchErrorDetails = {
-  backend?: string;
-  installHint?: string;
-  retryable?: boolean;
-  url?: string;
+  backend?: string | undefined;
+  installHint?: string | undefined;
+  retryable?: boolean | undefined;
+  url?: string | undefined;
 };
 
 export class FetchError extends Error implements FetchErrorLike {
   readonly code: FetchErrorCode;
-  readonly url?: string;
+  readonly url?: string | undefined;
   readonly retryable: boolean;
-  readonly backend?: string;
-  readonly installHint?: string;
+  readonly backend?: string | undefined;
+  readonly installHint?: string | undefined;
 
   constructor(
     message: string,

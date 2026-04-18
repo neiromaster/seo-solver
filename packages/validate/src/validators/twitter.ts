@@ -1,6 +1,6 @@
 import type { MetaTagsData, OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
 
 const VALID_CARDS = new Set(['summary', 'summary_large_image', 'app', 'player']);
 

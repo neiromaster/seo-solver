@@ -1,43 +1,11 @@
 {
-  "extends": "../../packages/typescript-config/cli.json",
+  "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@seo-solver/compare": [
-        "../../packages/compare/src/index.ts"
-      ],
-      "@seo-solver/extract": [
-        "../../packages/extract/src/index.ts"
-      ],
-      "@seo-solver/fetch": [
-        "../../packages/fetch/src/index.ts"
-      ],
-      "@seo-solver/fetch/advanced": [
-        "../../packages/fetch/src/advanced.ts"
-      ],
-      "@seo-solver/report": [
-        "../../packages/report/src/index.ts"
-      ],
-      "@seo-solver/types": [
-        "../../packages/types/src/index.ts"
-      ],
-      "@seo-solver/types/*": [
-        "../../packages/types/src/*.ts"
-      ],
-      "@seo-solver/validate": [
-        "../../packages/validate/src/index.ts"
-      ]
-    }
+    "noEmit": true,
+    "incremental": true
   },
   "include": [
-    "../../packages/types/src/**/*.ts",
-    "../../packages/fetch/src/**/*.ts",
-    "../../packages/extract/src/**/*.ts",
-    "../../packages/validate/src/**/*.ts",
-    "../../packages/compare/src/**/*.ts",
-    "../../packages/report/src/**/*.ts",
-    "../../packages/report/test/**/*.ts",
     "../../test-support/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts",
@@ -45,5 +13,28 @@
   ],
   "exclude": [
     "dist"
+  ],
+  "references": [
+    {
+      "path": "../../packages/types"
+    },
+    {
+      "path": "../../packages/fetch"
+    },
+    {
+      "path": "../../packages/extract"
+    },
+    {
+      "path": "../../packages/compare"
+    },
+    {
+      "path": "../../packages/report"
+    },
+    {
+      "path": "../../packages/validate"
+    },
+    {
+      "path": "../../packages/fetch-playwright"
+    }
   ]
 }

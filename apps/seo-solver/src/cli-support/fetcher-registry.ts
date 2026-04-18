@@ -1,7 +1,7 @@
 import { FetchError } from '@seo-solver/fetch';
 import { registerBackend, resolveBackend } from '@seo-solver/fetch/advanced';
 import type { Fetcher, FetcherConfig } from '@seo-solver/types/fetch';
-import type { FetcherFlags } from '../flags/fetcher';
+import type { FetcherFlags } from '../flags/fetcher.js';
 
 let backendsRegistered = false;
 
@@ -9,17 +9,18 @@ export async function resolveFetcher(flags: FetcherFlags): Promise<Fetcher> {
   ensureOptionalBackendsRegistered();
 
   const config: FetcherConfig = {
-    timeout: flags.timeout,
-    userAgent: flags.userAgent,
-    retry:
-      flags.retry || flags.retryDelayMs || flags.retryBackoff || flags.respectRetryAfter
-        ? {
-            attempts: flags.retry,
-            delay: flags.retryDelayMs,
+    ...(flags.timeout === undefined ? {} : { timeout: flags.timeout }),
+    ...(flags.userAgent === undefined ? {} : { userAgent: flags.userAgent }),
+    ...(!flags.retry && !flags.retryDelayMs && !flags.retryBackoff && flags.respectRetryAfter === undefined
+      ? {}
+      : {
+          retry: {
+            ...(flags.retry === undefined ? {} : { attempts: flags.retry }),
+            ...(flags.retryDelayMs === undefined ? {} : { delay: flags.retryDelayMs }),
             backoff: flags.retryBackoff === 'exponential' ? 'exponential' : 'fixed',
-            respectRetryAfter: flags.respectRetryAfter === undefined ? undefined : flags.respectRetryAfter === 'true',
-          }
-        : undefined,
+            ...(flags.respectRetryAfter === undefined ? {} : { respectRetryAfter: flags.respectRetryAfter === 'true' }),
+          },
+        }),
   };
   const name = flags.fetcher ?? 'native';
 
@@ -65,8 +66,7 @@ function ensureOptionalBackendsRegistered(): void {
   }
 
   registerBackend('playwright', async () => {
-    const moduleName = '@seo-solver/fetch-playwright';
-    const mod = (await import(moduleName)) as {
+    const mod = (await import('@seo-solver/fetch-playwright')) as {
       createFetcher?: (config?: FetcherConfig) => Fetcher;
     };
 

@@ -4,9 +4,9 @@ import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { createFakeEditor, readFakeEditorLog } from '../helpers/fake-editor';
-import { runCLI } from '../helpers/run-cli';
-import { createTestServer, type TestServer } from '../helpers/test-server';
+import { createFakeEditor, readFakeEditorLog } from '../helpers/fake-editor.js';
+import { runCLI } from '../helpers/run-cli.js';
+import { createTestServer, type TestServer } from '../helpers/test-server.js';
 
 describe('compare command', () => {
   let server: TestServer;

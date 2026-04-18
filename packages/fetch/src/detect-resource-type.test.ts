@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { detectResourceType } from './detect-resource-type';
+import { detectResourceType } from './detect-resource-type.js';
 
 describe('detectResourceType', () => {
   test.each([

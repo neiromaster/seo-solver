@@ -1,23 +1,19 @@
 {
-  "extends": "../typescript-config/node-lib.json",
+  "extends": "../typescript-config/composite.json",
   "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@seo-solver/types": [
-        "../types/src/index.ts"
-      ],
-      "@seo-solver/types/*": [
-        "../types/src/*.ts"
-      ]
-    }
+    "noEmit": true
   },
   "include": [
-    "../types/src/**/*.ts",
     "src/**/*.ts",
+    "test/**/*.ts",
     "vitest.config.ts"
   ],
   "exclude": [
     "dist"
+  ],
+  "references": [
+    {
+      "path": "../types/tsconfig.build.json"
+    }
   ]
 }

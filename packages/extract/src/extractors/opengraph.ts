@@ -2,8 +2,8 @@ import type { ResourceType } from '@seo-solver/types';
 import type { OpenGraphData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
-import { type ParsedDocument, parseHtml } from '../parse-html';
-import { ensureWarningList } from './shared';
+import { type ParsedDocument, parseHtml } from '../parse-html.js';
+import { ensureWarningList } from './shared.js';
 
 const OPEN_GRAPH_PREFIXES = ['og:', 'article:', 'book:', 'music:', 'video:', 'profile:', 'al:', 'vk:'];
 

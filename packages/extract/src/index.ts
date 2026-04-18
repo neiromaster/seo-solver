@@ -17,10 +17,10 @@ export type {
   TargetCatalogEntry,
   TargetKey,
 } from '@seo-solver/types/extract';
-export { listTargets } from './catalog';
-export { ExtractionError } from './errors';
+export { listTargets } from './catalog.js';
+export { ExtractionError } from './errors.js';
 export {
   extractHtml,
   extractPage,
   extractRobotsText,
-} from './pipeline';
+} from './pipeline.js';

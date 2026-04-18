@@ -1,0 +1,21 @@
+{
+  "extends": "./packages/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/test/**/*.ts",
+    "packages/*/vitest.config.ts",
+    "apps/*/src/**/*.ts",
+    "apps/*/test/**/*.ts",
+    "apps/*/vitest.config.ts",
+    "scripts/**/*.ts",
+    "test-support/**/*.ts"
+  ],
+  "exclude": [
+    "packages/*/dist",
+    "apps/*/dist",
+    "node_modules"
+  ]
+}

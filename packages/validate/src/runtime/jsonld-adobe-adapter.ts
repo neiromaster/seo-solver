@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@seo-solver/types/validate';
-import { loadSchemaWithCache } from './schema-cache';
+import { loadSchemaWithCache } from './schema-cache.js';
 
 type AdobeIssue = {
   issueMessage?: string;
@@ -20,10 +20,10 @@ const ADOBE_PATTERNS: ReadonlyArray<readonly [pattern: RegExp, ruleId: string]> 
 export async function validateJsonLdWithAdobe(
   grouped: unknown,
   runtime: {
-    enabled?: boolean;
-    cacheFile?: string | null;
-    refreshTtlMs?: number;
-    schemaUrl?: string;
+    enabled?: boolean | undefined;
+    cacheFile?: string | null | undefined;
+    refreshTtlMs?: number | undefined;
+    schemaUrl?: string | undefined;
   } = {},
 ): Promise<Diagnostic[]> {
   if (!runtime.enabled) {

@@ -1,7 +1,7 @@
 import type { FetcherConfig, FetchOptions, FetchResult, RetryOptions } from '@seo-solver/types/fetch';
-import { registerBackend, resolveBackend } from './backend-registry';
-import { createFetcher } from './native-fetcher';
-import { withRetry } from './retry';
+import { registerBackend, resolveBackend } from './backend-registry.js';
+import { createFetcher } from './native-fetcher.js';
+import { withRetry } from './retry.js';
 
 type SharedRetryResult = {
   headers?: Record<string, string>;

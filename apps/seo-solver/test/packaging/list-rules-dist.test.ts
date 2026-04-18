@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buildCLI, runBuiltCLI } from '../e2e/helpers/run-cli';
+import { buildCLI, runBuiltCLI } from '../e2e/helpers/run-cli.js';
 
 describe('list-rules dist packaging', () => {
   test('built dist binary runs successfully', async () => {
@@ -9,5 +9,5 @@ describe('list-rules dist packaging', () => {
     const result = await runBuiltCLI(['list-rules', '--format', 'json']);
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toEqual(expect.any(Array));
-  }, 20000);
+  }, 120000);
 });

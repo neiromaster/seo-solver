@@ -2,7 +2,7 @@ import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { buildExtractEditorArtifact, writeCompareEditorArtifacts } from './editor-artifacts';
+import { buildExtractEditorArtifact, writeCompareEditorArtifacts } from './editor-artifacts.js';
 
 describe('editor artifacts', () => {
   test('builds stable json with sorted nested keys', () => {

@@ -1,7 +1,7 @@
 import { listTargets } from '@seo-solver/extract';
 import type { TargetKey } from '@seo-solver/types/extract';
 import { option, optional, string } from 'cmd-ts';
-import { CLIError } from '../cli-support/error-handler';
+import { CLIError } from '../cli-support/error-handler.js';
 
 const targetListDescription = listTargets()
   .map((entry) => entry.key)

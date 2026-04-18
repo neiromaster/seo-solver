@@ -1,5 +1,5 @@
-import type { Diagnostic } from './diagnostic';
-import type { ExtractionEnvelope } from './extraction-envelope';
+import type { Diagnostic } from './diagnostic.js';
+import type { ExtractionEnvelope } from './extraction-envelope.js';
 
 export type Validator = {
   readonly type: string;

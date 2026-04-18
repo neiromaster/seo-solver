@@ -1,16 +1,16 @@
 import type { Validator as PublicValidator, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
-import type { RuleAwareValidator } from '../utils/rules';
-import { AppLinksValidator } from './applinks';
-import { CanonicalValidator } from './canonical';
-import { CrossValidator } from './cross';
-import { HeadingsValidator } from './headings';
-import { JsonLdValidator } from './jsonld';
-import { MetaTagsValidator } from './meta';
-import { OpenGraphValidator } from './opengraph';
-import { PinterestValidator } from './pinterest';
-import { RobotsTxtValidator } from './robots-txt';
-import { TwitterCardValidator } from './twitter';
-import { VKValidator } from './vk';
+import type { RuleAwareValidator } from '../utils/rules.js';
+import { AppLinksValidator } from './applinks.js';
+import { CanonicalValidator } from './canonical.js';
+import { CrossValidator } from './cross.js';
+import { HeadingsValidator } from './headings.js';
+import { JsonLdValidator } from './jsonld.js';
+import { MetaTagsValidator } from './meta.js';
+import { OpenGraphValidator } from './opengraph.js';
+import { PinterestValidator } from './pinterest.js';
+import { RobotsTxtValidator } from './robots-txt.js';
+import { TwitterCardValidator } from './twitter.js';
+import { VKValidator } from './vk.js';
 
 export type BuiltInValidatorId =
   | 'opengraph'

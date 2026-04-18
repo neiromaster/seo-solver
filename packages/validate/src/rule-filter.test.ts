@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { createRuleFilter, matchesDisablePattern } from './rule-filter';
+import { createRuleFilter, matchesDisablePattern } from './rule-filter.js';
 
 describe('rule-filter', () => {
   test('matches wildcard prefixes precisely', () => {

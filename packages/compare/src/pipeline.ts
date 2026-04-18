@@ -15,10 +15,10 @@ import type {
   TargetKey,
 } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { GenericComparator } from './comparators/generic';
-import { HeadingsComparator } from './comparators/headings';
-import { resolveComparator } from './comparators/registry';
-import { filterDiffs } from './field-filter';
+import { GenericComparator } from './comparators/generic.js';
+import { HeadingsComparator } from './comparators/headings.js';
+import { resolveComparator } from './comparators/registry.js';
+import { filterDiffs } from './field-filter.js';
 
 export function createComparisonPipeline(config: ComparisonPipelineConfig = {}): ComparisonPipeline {
   return {

@@ -1,11 +1,11 @@
 import { listRules } from '@seo-solver/validate';
 import { command } from 'cmd-ts';
-import { handleError } from '../cli-support/error-handler';
-import { writeOutput } from '../cli-support/output';
-import { formatFlag } from '../flags/format';
-import { outputFlag } from '../flags/output';
-import { quietFlag, verboseFlag } from '../flags/verbosity';
-import { resolveListRulesFormat } from '../types';
+import { handleError } from '../cli-support/error-handler.js';
+import { writeOutput } from '../cli-support/output.js';
+import { formatFlag } from '../flags/format.js';
+import { outputFlag } from '../flags/output.js';
+import { quietFlag, verboseFlag } from '../flags/verbosity.js';
+import { resolveListRulesFormat } from '../types.js';
 
 export const listRulesCommand = command({
   name: 'list-rules',

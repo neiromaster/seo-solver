@@ -1,9 +1,15 @@
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
-import { summarizeComparison } from '../../summary';
-import { formatDiffIcon, formatDiffPath, formatStatus, formatTypeLabel, renderSectionHeading } from '../../utils/text';
-import { formatFullValue } from '../../utils/truncate';
-import { createTerminalColors, type TerminalColors } from './colors';
+import { summarizeComparison } from '../../summary.js';
+import {
+  formatDiffIcon,
+  formatDiffPath,
+  formatStatus,
+  formatTypeLabel,
+  renderSectionHeading,
+} from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
+import { createTerminalColors, type TerminalColors } from './colors.js';
 
 type ResolvedTerminalConfig = Required<Pick<ReporterConfig, 'color' | 'verbosity'>>;
 
@@ -65,7 +71,7 @@ function formatTerminalSummaryLine(summary: ReturnType<typeof summarizeCompariso
 }
 
 export function formatTerminalComparison(report: ComparisonReport, config: ResolvedTerminalConfig): string {
-  const colors = createTerminalColors(config.color);
+  const colors = createTerminalColors(config.color ?? false);
   const summary = summarizeComparison(report);
   const hasDiffs = summary.total > 0;
   const headerIcon = hasDiffs ? colors.changed('~') : colors.pass('✓');

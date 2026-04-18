@@ -1,0 +1,11 @@
+{
+  "extends": "../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": [
+    "check-monorepo-consistency.ts"
+  ]
+}

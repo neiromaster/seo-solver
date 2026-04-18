@@ -5,7 +5,6 @@
   "type": "module",
   "exports": {
     "./base": "./base.json",
-    "./node-lib": "./node-lib.json",
-    "./cli": "./cli.json"
+    "./composite": "./composite.json"
   }
 }

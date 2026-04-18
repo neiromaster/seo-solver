@@ -1,12 +1,1 @@
-export type { ComparisonReport } from './comparison-report';
-export type { ComparisonResult } from './comparison-result';
-export type { Diagnostic, Severity } from './diagnostic';
-export type { FetchOptions } from './fetch-options';
-export type { FetchResult } from './fetch-result';
-export type { Fetcher } from './fetcher';
-export type { FetcherConfig } from './fetcher-config';
-export type { Reporter, ReporterConfig, ReportFormat, Verbosity } from './reporter';
-export type { ResourceType } from './resource-type';
-export type { ComparisonSummary, ValidationSummary } from './summary';
-export type { ValidationReport } from './validation-report';
-export type { ValidationResult } from './validation-result';
+export type { ResourceType } from './resource-type.js';

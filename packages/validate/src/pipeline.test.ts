@@ -1,7 +1,7 @@
 import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/extract/advanced';
 import { describe, expect, test } from 'vitest';
-import { createValidationPipeline } from './advanced';
-import { validateAll } from './pipeline';
+import { createValidationPipeline } from './advanced.js';
+import { validateAll } from './pipeline.js';
 
 describe('createValidationPipeline', () => {
   test('validates envelopes in order', async () => {

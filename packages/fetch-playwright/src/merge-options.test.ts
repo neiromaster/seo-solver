@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { mergeOptions } from './merge-options';
+import { mergeOptions } from './merge-options.js';
 
 describe('mergeOptions', () => {
   test('uses config when per-request options are missing', () => {

@@ -1,6 +1,6 @@
 export class ValidationError extends Error {
-  readonly code?: string;
-  readonly input?: string;
+  readonly code?: string | undefined;
+  readonly input?: string | undefined;
 
   constructor(message: string, code?: string, input?: string, options?: ErrorOptions) {
     super(message, options);

@@ -1,6 +1,6 @@
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
-import { formatHtmlComparison } from './comparison';
-import { formatHtmlValidation } from './validation';
+import { formatHtmlComparison } from './comparison.js';
+import { formatHtmlValidation } from './validation.js';
 
 export function createHtmlReporter(config: ReporterConfig): Reporter {
   return {

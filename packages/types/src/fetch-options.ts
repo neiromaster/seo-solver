@@ -1,4 +1,4 @@
-import type { RetryOptions } from './retry';
+import type { RetryOptions } from './retry.js';
 
 export type FetchOptions = {
   timeout?: number;

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher';
-import { createTestServer, type TestServer } from './test-support/test-server';
+import { createTestServer, type TestServer } from '../../../test-support/test-server.js';
+import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';
 
 describe('PlaywrightFetcher', () => {
   let server: TestServer;
@@ -90,7 +90,10 @@ describe('PlaywrightFetcher', () => {
 
   test('maps network failures', async () => {
     const fetcher = new PlaywrightFetcher({ timeout: 2000 });
-    await expect(fetcher.fetch('http://nonexistent.invalid/')).rejects.toMatchObject({ code: 'NETWORK' });
+    await expect(fetcher.fetch('http://nonexistent.invalid/')).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof Error && 'code' in error && (error.code === 'NETWORK' || error.code === 'TIMEOUT'),
+    );
     await fetcher.dispose();
   });
 

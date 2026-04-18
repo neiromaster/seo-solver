@@ -1,11 +1,23 @@
 import type { FetcherConfig, FetchOptions, RetryOptions } from '@seo-solver/types/fetch';
-import { DEFAULT_HEADERS, DEFAULT_MAX_REDIRECTS, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_USER_AGENT } from './defaults';
+import {
+  DEFAULT_HEADERS,
+  DEFAULT_MAX_REDIRECTS,
+  DEFAULT_RETRY,
+  DEFAULT_TIMEOUT,
+  DEFAULT_USER_AGENT,
+} from './defaults.js';
 
 export type ResolvedFetchOptions = {
   headers: Record<string, string>;
   maxRedirects: number;
-  retry: Required<RetryOptions>;
-  signal?: AbortSignal;
+  retry: {
+    attempts: number;
+    delay: number;
+    backoff: 'fixed' | 'exponential';
+    retryOn: number[];
+    respectRetryAfter: boolean;
+  };
+  signal?: AbortSignal | undefined;
   timeout: number;
   userAgent: string;
 };
@@ -35,12 +47,13 @@ export function mergeOptions(config: FetcherConfig = {}, perRequest?: FetchOptio
   };
 }
 
-function resolveRetryOptions(configRetry?: RetryOptions, requestRetry?: RetryOptions): Required<RetryOptions> {
+function resolveRetryOptions(configRetry?: RetryOptions, requestRetry?: RetryOptions): ResolvedFetchOptions['retry'] {
   return {
-    ...DEFAULT_RETRY,
-    ...configRetry,
-    ...requestRetry,
     attempts: Math.max(1, requestRetry?.attempts ?? configRetry?.attempts ?? DEFAULT_RETRY.attempts),
+    delay: requestRetry?.delay ?? configRetry?.delay ?? DEFAULT_RETRY.delay,
+    backoff: (requestRetry?.backoff ?? configRetry?.backoff ?? DEFAULT_RETRY.backoff) as 'fixed' | 'exponential',
+    respectRetryAfter:
+      requestRetry?.respectRetryAfter ?? configRetry?.respectRetryAfter ?? DEFAULT_RETRY.respectRetryAfter,
     retryOn: [...(requestRetry?.retryOn ?? configRetry?.retryOn ?? DEFAULT_RETRY.retryOn)],
   };
 }

@@ -1,4 +1,4 @@
-import { escapeHtml } from '../../utils/text';
+import { escapeHtml } from '../../utils/text.js';
 
 export type HtmlSection = {
   body: string;
@@ -16,7 +16,6 @@ export type HtmlTemplateData = {
 
 const STYLE = `
 :root {
-  color-scheme: light dark;
   --bg: #ffffff;
   --fg: #111827;
   --muted: #6b7280;
@@ -28,6 +27,7 @@ const STYLE = `
   --added: #15803d;
   --removed: #dc2626;
   --changed: #a16207;
+  color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,36 +43,36 @@ const STYLE = `
 body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  background: var(--bg);
   color: var(--fg);
+  background: var(--bg);
 }
 
 main {
   max-width: 1100px;
-  margin: 0 auto;
   padding: 24px;
+  margin: 0 auto;
 }
 
 header, footer, section {
+  padding: 16px;
+  margin-bottom: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
 }
 
 .summary, .badges {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
 .badge {
-  border-radius: 999px;
   padding: 4px 10px;
   font-size: 14px;
   font-weight: 600;
   border: 1px solid var(--border);
+  border-radius: 999px;
 }
 
 .error { color: var(--error); }
@@ -84,15 +84,15 @@ header, footer, section {
 
 table {
   width: 100%;
-  border-collapse: collapse;
   font-size: 14px;
+  border-collapse: collapse;
 }
 
 th, td {
-  border-top: 1px solid var(--border);
   padding: 10px;
-  text-align: left;
   vertical-align: top;
+  text-align: left;
+  border-top: 1px solid var(--border);
 }
 
 code {
@@ -109,16 +109,16 @@ details > summary {
 
 .kind-badge {
   display: inline-block;
+  padding: 1px 7px;
   font-size: 11px;
   font-weight: 600;
-  padding: 1px 7px;
-  border-radius: 4px;
   white-space: nowrap;
+  border-radius: 4px;
 }
 
-.kind-badge.changed { background: var(--surface); color: var(--changed); }
-.kind-badge.added { background: var(--surface); color: var(--added); }
-.kind-badge.removed { background: var(--surface); color: var(--removed); }
+.kind-badge.changed { color: var(--changed); background: var(--surface); }
+.kind-badge.added { color: var(--added); background: var(--surface); }
+.kind-badge.removed { color: var(--removed); background: var(--surface); }
 
 tr.diff-start td {
   border-top: 1px solid var(--border);
@@ -138,8 +138,8 @@ tr.diff-after td {
 
 @media print {
   body {
-    background: #fff;
     color: #000;
+    background: #fff;
   }
 
   header, footer, section {

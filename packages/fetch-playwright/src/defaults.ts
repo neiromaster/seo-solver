@@ -1,9 +1,7 @@
-import type { RetryOptions } from '@seo-solver/types/fetch';
-
 export const DEFAULT_TIMEOUT = 30_000;
 export const DEFAULT_MAX_REDIRECTS = 5;
 export const DEFAULT_USER_AGENT = 'seo-solver/0.1 (compatible; bot)';
-export const DEFAULT_RETRY: Required<RetryOptions> = {
+export const DEFAULT_RETRY = {
   attempts: 1,
   delay: 1000,
   backoff: 'fixed',

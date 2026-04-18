@@ -1,6 +1,6 @@
-import type { ExtractionEnvelope } from './extraction-envelope';
-import type { FetchResult } from './fetch-result';
-import type { ResourceType } from './resource-type';
+import type { ExtractionEnvelope } from './extraction-envelope.js';
+import type { FetchResult } from './fetch-result.js';
+import type { ResourceType } from './resource-type.js';
 
 export type Extractor<T = unknown> = {
   readonly type: string;

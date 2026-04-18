@@ -1,7 +1,7 @@
 import type { ValidationReport } from '@seo-solver/types/validate';
 import { describe, expect, test } from 'vitest';
-import { validationReportFixture } from '../../test/fixtures/validation-report';
-import { formatValidationReport } from '../index';
+import { validationReportFixture } from '../../test/fixtures/validation-report.js';
+import { formatValidationReport } from '../index.js';
 
 describe('markdown validation formatter', () => {
   test('renders summary table and collapsible sections by default', () => {

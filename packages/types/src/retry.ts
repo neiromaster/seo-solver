@@ -1,7 +1,7 @@
 export type RetryOptions = {
-  attempts?: number;
-  delay?: number;
-  backoff?: 'fixed' | 'exponential';
-  retryOn?: number[];
-  respectRetryAfter?: boolean;
+  attempts?: number | undefined;
+  delay?: number | undefined;
+  backoff?: 'fixed' | 'exponential' | undefined;
+  retryOn?: number[] | undefined;
+  respectRetryAfter?: boolean | undefined;
 };

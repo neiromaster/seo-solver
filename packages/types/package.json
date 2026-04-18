@@ -1,53 +1,83 @@
 {
   "name": "@seo-solver/types",
+  "description": "Shared public TypeScript contracts for SEO Solver",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
+      "@seo-solver/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./fetch": {
+      "@seo-solver/source": "./src/fetch.ts",
       "types": "./dist/fetch.d.ts",
-      "import": "./dist/fetch.js"
+      "import": "./dist/fetch.js",
+      "default": "./dist/fetch.js"
     },
     "./extract": {
+      "@seo-solver/source": "./src/extract.ts",
       "types": "./dist/extract.d.ts",
-      "import": "./dist/extract.js"
+      "import": "./dist/extract.js",
+      "default": "./dist/extract.js"
     },
     "./extract-advanced": {
+      "@seo-solver/source": "./src/extract-advanced.ts",
       "types": "./dist/extract-advanced.d.ts",
-      "import": "./dist/extract-advanced.js"
+      "import": "./dist/extract-advanced.js",
+      "default": "./dist/extract-advanced.js"
     },
     "./compare": {
+      "@seo-solver/source": "./src/compare.ts",
       "types": "./dist/compare.d.ts",
-      "import": "./dist/compare.js"
+      "import": "./dist/compare.js",
+      "default": "./dist/compare.js"
     },
     "./compare-advanced": {
+      "@seo-solver/source": "./src/compare-advanced.ts",
       "types": "./dist/compare-advanced.d.ts",
-      "import": "./dist/compare-advanced.js"
+      "import": "./dist/compare-advanced.js",
+      "default": "./dist/compare-advanced.js"
     },
     "./validate": {
+      "@seo-solver/source": "./src/validate.ts",
       "types": "./dist/validate.d.ts",
-      "import": "./dist/validate.js"
+      "import": "./dist/validate.js",
+      "default": "./dist/validate.js"
     },
     "./validate-advanced": {
+      "@seo-solver/source": "./src/validate-advanced.ts",
       "types": "./dist/validate-advanced.d.ts",
-      "import": "./dist/validate-advanced.js"
+      "import": "./dist/validate-advanced.js",
+      "default": "./dist/validate-advanced.js"
     },
     "./report": {
+      "@seo-solver/source": "./src/report.ts",
       "types": "./dist/report.d.ts",
-      "import": "./dist/report.js"
+      "import": "./dist/report.js",
+      "default": "./dist/report.js"
     }
   },
   "scripts": {
-    "build": "tsup --config tsup.config.ts && tsc --project tsconfig.build.json",
+    "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
     "prepack": "pnpm run build",
-    "typecheck": "tsc --project tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests"
-  }
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "packages/types"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme"
 }

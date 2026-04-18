@@ -3,7 +3,7 @@ import type { ExtractedPage, TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher, FetchResult } from '@seo-solver/types/fetch';
 
 export type ExtractOptions = {
-  targets?: TargetKey[];
+  targets?: TargetKey[] | undefined;
 };
 
 export type ExtractResult = {
@@ -13,9 +13,7 @@ export type ExtractResult = {
 
 export async function runExtract(fetcher: Fetcher, url: string, options: ExtractOptions = {}): Promise<ExtractResult> {
   const fetchResult = await fetcher.fetch(url);
-  const page = extractPage(fetchResult, {
-    targets: options.targets,
-  });
+  const page = extractPage(fetchResult, options.targets === undefined ? {} : { targets: options.targets });
 
   return { fetchResult, page };
 }

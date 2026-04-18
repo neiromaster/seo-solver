@@ -1,4 +1,4 @@
-import type { DiffEntry } from './diff-entry';
+import type { DiffEntry } from './diff-entry.js';
 
 export type ComparisonResult = {
   type: string;

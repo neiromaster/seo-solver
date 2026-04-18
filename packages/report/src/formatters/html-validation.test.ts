@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { validationReportFixture } from '../../test/fixtures/validation-report';
-import { formatValidationReport } from '../index';
+import { validationReportFixture } from '../../test/fixtures/validation-report.js';
+import { formatValidationReport } from '../index.js';
 
 describe('html validation formatter', () => {
   test('renders self-contained html with escaped values and dark mode css', () => {

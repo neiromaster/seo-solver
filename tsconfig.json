@@ -2,7 +2,25 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/seo-solver"
+      "path": "./packages/types/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/fetch/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/extract/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/compare/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/report/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/validate/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/fetch-playwright/tsconfig.build.json"
     }
   ]
 }

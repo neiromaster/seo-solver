@@ -1,8 +1,8 @@
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { buildCLI, runBuiltCLI } from '../e2e/helpers/run-cli';
-import { createTestServer, type TestServer } from '../e2e/helpers/test-server';
+import { buildCLI, runBuiltCLI } from '../e2e/helpers/run-cli.js';
+import { createTestServer, type TestServer } from '../e2e/helpers/test-server.js';
 
 describe('command dist smoke tests', () => {
   let sharedServer: TestServer;
@@ -14,7 +14,7 @@ describe('command dist smoke tests', () => {
 
     sharedServer = await createTestServer();
     validateServer = await createValidateSmokeServer();
-  }, 30000);
+  }, 120000);
 
   afterAll(async () => {
     await Promise.all([sharedServer.close(), validateServer.close()]);

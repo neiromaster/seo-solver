@@ -2,12 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    tsconfigPaths: true,
+    conditions: ['@seo-solver/source'],
   },
   test: {
     environment: 'node',
-    coverage: {
-      provider: 'v8',
-    },
+    fileParallelism: false,
   },
 });

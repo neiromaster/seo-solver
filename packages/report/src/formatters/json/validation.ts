@@ -1,6 +1,6 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { hasFailed, summarizeValidation } from '../../summary';
+import { hasFailed, summarizeValidation } from '../../summary.js';
 
 export function formatJsonValidation(report: ValidationReport, config: ReporterConfig): string {
   const payload = {

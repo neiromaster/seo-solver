@@ -4,4 +4,4 @@ export type {
   DiffEntry,
   DiffKind,
 } from '@seo-solver/types/compare';
-export { comparePages } from './pipeline';
+export { comparePages } from './pipeline.js';

@@ -1,17 +1,17 @@
-import type { Comparator } from './comparator';
-import type { ComparisonResult } from './comparison-result';
-import type { ExtractionEnvelope } from './extraction-envelope';
+import type { Comparator } from './comparator.js';
+import type { ComparisonResult } from './comparison-result.js';
+import type { ExtractionEnvelope } from './extraction-envelope.js';
 
 export type ComparisonPipelineConfig = {
-  types?: string[];
-  ignoreFields?: Record<string, string[]>;
-  ignoreArrayOrder?: boolean;
-  comparators?: Comparator[];
+  types?: string[] | undefined;
+  ignoreFields?: Record<string, string[]> | undefined;
+  ignoreArrayOrder?: boolean | undefined;
+  comparators?: Comparator[] | undefined;
 };
 
 export type ComparePipelineCallOptions = {
-  types?: string[];
-  ignoreFields?: Record<string, string[]>;
+  types?: string[] | undefined;
+  ignoreFields?: Record<string, string[]> | undefined;
 };
 
 export type ComparisonPipeline = {

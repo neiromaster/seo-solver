@@ -1,9 +1,9 @@
 import type { ComparisonReport, DiffEntry } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
-import { summarizeComparison } from '../../summary';
-import { escapeHtml, formatDiffLabel, formatDiffPath, formatStatus, formatTypeLabel } from '../../utils/text';
-import { formatFullValue } from '../../utils/truncate';
-import { renderHtml } from './template';
+import { summarizeComparison } from '../../summary.js';
+import { escapeHtml, formatDiffLabel, formatDiffPath, formatStatus, formatTypeLabel } from '../../utils/text.js';
+import { formatFullValue } from '../../utils/truncate.js';
+import { renderHtml } from './template.js';
 
 function renderComparisonRows(diffs: DiffEntry[]): string {
   const rows = diffs.map((diff) => {

@@ -1,8 +1,8 @@
 import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types/fetch';
-import { detectResourceType } from './detect-resource-type';
-import { FetchError } from './errors';
-import { mergeOptions, type ResolvedFetchOptions } from './merge-options';
-import { withRetry } from './retry';
+import { detectResourceType } from './detect-resource-type.js';
+import { FetchError } from './errors.js';
+import { mergeOptions, type ResolvedFetchOptions } from './merge-options.js';
+import { withRetry } from './retry.js';
 
 const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
 

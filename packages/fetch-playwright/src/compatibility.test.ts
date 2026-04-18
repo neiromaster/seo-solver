@@ -1,7 +1,7 @@
 import { NativeFetcher } from '@seo-solver/fetch';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { PlaywrightFetcher } from './playwright-fetcher';
-import { createTestServer, type TestServer } from './test-support/test-server';
+import { createTestServer, type TestServer } from '../../../test-support/test-server.js';
+import { PlaywrightFetcher } from './playwright-fetcher.js';
 
 describe('fetcher compatibility', () => {
   let server: TestServer;

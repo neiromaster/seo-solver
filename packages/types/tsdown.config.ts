@@ -1,7 +1,6 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
-  clean: true,
   entry: [
     'src/index.ts',
     'src/fetch.ts',
@@ -13,6 +12,14 @@ export default defineConfig({
     'src/validate-advanced.ts',
     'src/report.ts',
   ],
-  format: ['esm'],
+  format: 'esm',
+  platform: 'node',
+  target: 'node22',
+  dts: false,
+  clean: true,
   sourcemap: true,
+  outputOptions: {
+    entryFileNames: '[name].js',
+    chunkFileNames: '[name]-[hash].js',
+  },
 });

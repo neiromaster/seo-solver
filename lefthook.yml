@@ -8,6 +8,9 @@ pre-commit:
       glob: "*.{yml,yaml}"
       run: pnpm exec dprint fmt --staged {staged_files}
       stage_fixed: true
+    consistency:
+      glob: "**/*.{ts,tsx,js,json,yml,yaml}"
+      run: pnpm run consistency:check
     typecheck:
       glob: "*.{ts,tsx}"
-      run: pnpm -r --if-present typecheck
+      run: pnpm exec tsc -p tsconfig.test.json --noEmit && pnpm exec tsc -p scripts/tsconfig.json --noEmit

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { filterDiffs } from './field-filter';
+import { filterDiffs } from './field-filter.js';
 
 describe('filterDiffs', () => {
   test('filters exact path matches', () => {

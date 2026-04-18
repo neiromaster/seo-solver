@@ -1,4 +1,4 @@
-import type { ResourceType } from './resource-type';
+import type { ResourceType } from './resource-type.js';
 
 export type FetchResult = {
   requestUrl: string;

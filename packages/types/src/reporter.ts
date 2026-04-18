@@ -1,18 +1,18 @@
-import type { ComparisonReport } from './comparison-report';
-import type { Severity } from './diagnostic';
-import type { ValidationReport } from './validation-report';
+import type { ComparisonReport } from './comparison-report.js';
+import type { Severity } from './diagnostic.js';
+import type { ValidationReport } from './validation-report.js';
 
 export type ReportFormat = 'terminal' | 'json' | 'markdown' | 'html' | (string & {});
 
 export type Verbosity = 'quiet' | 'normal' | 'verbose';
 
 export type ReporterConfig = {
-  format?: ReportFormat;
-  verbosity?: Verbosity;
-  minSeverity?: Severity;
-  color?: boolean;
-  jsonPretty?: boolean;
-  markdownCollapsible?: boolean;
+  format?: ReportFormat | undefined;
+  verbosity?: Verbosity | undefined;
+  minSeverity?: Severity | undefined;
+  color?: boolean | undefined;
+  jsonPretty?: boolean | undefined;
+  markdownCollapsible?: boolean | undefined;
 };
 
 export type Reporter = {

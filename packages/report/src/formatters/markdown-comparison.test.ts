@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { comparisonReportFixture } from '../../test/fixtures/comparison-report';
-import { formatComparisonReport } from '../index';
+import { comparisonReportFixture } from '../../test/fixtures/comparison-report.js';
+import { formatComparisonReport } from '../index.js';
 
 describe('markdown comparison formatter', () => {
   test('renders list format with full values', () => {

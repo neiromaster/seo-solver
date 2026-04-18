@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { pageToFetchResult } from './page-to-fetch-result';
-import { createTestServer, type TestServer } from './test-support/test-server';
+import { createTestServer, type TestServer } from '../../../test-support/test-server.js';
+import { pageToFetchResult } from './page-to-fetch-result.js';
 
 describe('pageToFetchResult', () => {
   let browser: Awaited<ReturnType<typeof chromium.launch>>;

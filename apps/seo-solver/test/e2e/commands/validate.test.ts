@@ -4,7 +4,7 @@ import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { runCLI } from '../helpers/run-cli';
+import { runCLI } from '../helpers/run-cli.js';
 
 describe('validate command', () => {
   let server: Awaited<ReturnType<typeof createInvalidPageServer>>;

@@ -1,7 +1,7 @@
 import type { RobotsTxtData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules';
-import { isAbsoluteUrl } from '../utils/url';
+import { createRuleCatalog, type RuleDefinition, runRules } from '../utils/rules.js';
+import { isAbsoluteUrl } from '../utils/url.js';
 
 const SOCIAL_BOT_NAMES = ['TelegramBot', 'Twitterbot', 'facebookexternalhit', 'LinkedInBot'];
 

@@ -1,5 +1,5 @@
 import type { ExtractedPage } from '@seo-solver/types/extract';
-import { createEditorArtifactDirectory, writeEditorArtifactFile } from './temp-artifacts';
+import { createEditorArtifactDirectory, writeEditorArtifactFile } from './temp-artifacts.js';
 
 export function buildExtractEditorArtifact(page: ExtractedPage): string {
   return stringifyStableJson({

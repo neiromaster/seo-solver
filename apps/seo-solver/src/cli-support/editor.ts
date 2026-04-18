@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
-import { type EditorId, getEditorDefinition, resolveEditorCommand } from './editors';
-import { CLIError } from './error-handler';
+import { type EditorId, getEditorDefinition, resolveEditorCommand } from './editors.js';
+import { CLIError } from './error-handler.js';
 
 export async function openFileInEditor(editor: EditorId, filePath: string): Promise<void> {
   const definition = getEditorDefinition(editor);

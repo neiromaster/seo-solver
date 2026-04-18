@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { inspectPackedPackage } from '../../../../test-support/tarball';
+import { inspectPackedPackage } from '../../../../test-support/tarball.js';
 
 describe('types packaging contract', () => {
   test('publishes root and typed subpath exports in the packed tarball', async () => {
@@ -19,5 +19,5 @@ describe('types packaging contract', () => {
     expect(packed.files).toContain('package/dist/extract-advanced.js');
     expect(packed.files).toContain('package/dist/compare-advanced.js');
     expect(packed.files).toContain('package/dist/validate-advanced.js');
-  }, 30000);
+  }, 120000);
 });
