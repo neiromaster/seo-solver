@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { simulateCliPublishInstall } from '../../../../test-support/tarball.js';
 
-describe('playwright optional packaging', () => {
+describe.sequential('playwright optional packaging', () => {
   test('packs and installs the CLI with optional playwright peer metadata and no hard dependency', async () => {
     const packed = await simulateCliPublishInstall(join(import.meta.dirname, '..', '..'));
 

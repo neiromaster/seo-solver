@@ -6,7 +6,6 @@
     "incremental": true
   },
   "include": [
-    "../../test-support/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts",
     "vitest.config.ts"
@@ -16,25 +15,28 @@
   ],
   "references": [
     {
-      "path": "../../packages/types"
+      "path": "../../test-support"
     },
     {
-      "path": "../../packages/fetch"
+      "path": "../../packages/types/tsconfig.build.json"
     },
     {
-      "path": "../../packages/extract"
+      "path": "../../packages/fetch/tsconfig.build.json"
     },
     {
-      "path": "../../packages/compare"
+      "path": "../../packages/extract/tsconfig.build.json"
     },
     {
-      "path": "../../packages/report"
+      "path": "../../packages/compare/tsconfig.build.json"
     },
     {
-      "path": "../../packages/validate"
+      "path": "../../packages/report/tsconfig.build.json"
     },
     {
-      "path": "../../packages/fetch-playwright"
+      "path": "../../packages/validate/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/fetch-playwright/tsconfig.build.json"
     }
   ]
 }

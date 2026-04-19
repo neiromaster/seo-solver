@@ -10,5 +10,10 @@
   ],
   "exclude": [
     "dist"
+  ],
+  "references": [
+    {
+      "path": "../../test-support"
+    }
   ]
 }

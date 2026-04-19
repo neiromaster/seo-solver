@@ -67,6 +67,39 @@ export async function inspectPackedPackage(packageDir: string) {
   }
 }
 
+const chunkPattern = /-[A-Za-z0-9_-]{6,}\.js$/;
+
+export function getPackagedRuntimeJsFiles(files: string[]): string[] {
+  return files.filter((file) => file.startsWith('package/dist/') && file.endsWith('.js')).sort();
+}
+
+export function getPackagedPublicRuntimeJsFiles(files: string[]): string[] {
+  return getPackagedRuntimeJsFiles(files).filter((file) => !chunkPattern.test(file));
+}
+
+export function getPackagedExportedRuntimeJsFiles(packageJson: { exports?: Record<string, unknown> }): string[] {
+  if (!packageJson.exports || typeof packageJson.exports !== 'object') {
+    return [];
+  }
+
+  const runtimeFiles = new Set<string>();
+
+  for (const exportTarget of Object.values(packageJson.exports)) {
+    if (!exportTarget || typeof exportTarget !== 'object' || Array.isArray(exportTarget)) {
+      continue;
+    }
+
+    for (const key of ['import', 'default']) {
+      const value = (exportTarget as Record<string, unknown>)[key];
+      if (typeof value === 'string' && value.endsWith('.js')) {
+        runtimeFiles.add(`package/${value.replace(/^\.\//, '')}`);
+      }
+    }
+  }
+
+  return [...runtimeFiles].sort();
+}
+
 export async function simulateCliPublishInstall(
   packageDir: string,
   options: {
@@ -78,39 +111,53 @@ export async function simulateCliPublishInstall(
   } = {},
 ) {
   const tempDir = await mkdtemp(join(tmpdir(), 'seo-solver-cli-publish-'));
+  const stageDir = join(tempDir, 'cli-stage');
   const installDir = join(tempDir, 'install-root');
-  const restorePublishState = () => {
-    const packageEntries = execFileSync('ls', ['-a', packageDir], { encoding: 'utf8' }).split('\n');
-    if (packageEntries.includes('package.json.bak')) {
-      execFileSync('pnpm', ['run', 'postpublish'], {
-        cwd: packageDir,
-        encoding: 'utf8',
-        env: createPackEnv(),
-      });
-    }
-  };
 
   try {
     await mkdir(installDir, { recursive: true });
     const originalPackageJson = await readFile(join(packageDir, 'package.json'), 'utf8');
-    restorePublishState();
+
+    await withSerializedBuild(async () => {
+      execFileSync('pnpm', ['run', 'build'], {
+        cwd: packageDir,
+        encoding: 'utf8',
+        env: createPackEnv(),
+      });
+    });
+
+    await cp(packageDir, stageDir, { recursive: true });
+
+    execFileSync('node', ['scripts/strip-bundled-deps.mjs'], {
+      cwd: stageDir,
+      encoding: 'utf8',
+      env: createPackEnv(),
+    });
+
+    const mutableStagePackageJson = JSON.parse(await readFile(join(stageDir, 'package.json'), 'utf8')) as {
+      scripts?: Record<string, string>;
+    };
+    if (mutableStagePackageJson.scripts) {
+      delete mutableStagePackageJson.scripts.build;
+      delete mutableStagePackageJson.scripts.prepack;
+      delete mutableStagePackageJson.scripts.prepublishOnly;
+      delete mutableStagePackageJson.scripts.postpublish;
+    }
+    await import('node:fs/promises').then(
+      async ({ writeFile }) =>
+        await writeFile(join(stageDir, 'package.json'), `${JSON.stringify(mutableStagePackageJson, null, 2)}\n`),
+    );
 
     const packedOutput = await withSerializedBuild(async () => {
       try {
-        execFileSync('pnpm', ['run', 'prepublishOnly'], {
-          cwd: packageDir,
-          encoding: 'utf8',
-          env: createPackEnv(),
-        });
-
         return execFileSync('pnpm', ['pack', '--pack-destination', tempDir], {
-          cwd: packageDir,
+          cwd: stageDir,
           encoding: 'utf8',
           env: createPackEnv(),
         }).trim();
       } finally {
-        execFileSync('pnpm', ['run', 'postpublish'], {
-          cwd: packageDir,
+        execFileSync('node', ['scripts/restore-package-json.mjs'], {
+          cwd: stageDir,
           encoding: 'utf8',
           env: createPackEnv(),
         });
@@ -186,16 +233,17 @@ export async function simulateCliPublishInstall(
             encoding: 'utf8',
             env: createPackEnv(),
           });
-
-    restorePublishState();
-
-    const packageEntries = await readdir(packageDir);
+    const restoredStagePackageJson = await readFile(join(stageDir, 'package.json'), 'utf8');
+    const packageEntries = await readdir(stageDir);
+    const livePackageJsonAfter = await readFile(join(packageDir, 'package.json'), 'utf8');
 
     return {
       tarballPath,
       files,
       packedPackageJson,
       originalPackageJson,
+      restoredStagePackageJson,
+      livePackageJsonAfter,
       backupFileLeftBehind: packageEntries.includes('package.json.bak'),
       installedPackageJson,
       installedSeoSolverScopedPackages,
@@ -204,7 +252,6 @@ export async function simulateCliPublishInstall(
       installDir,
     };
   } finally {
-    restorePublishState();
     await rm(tempDir, { recursive: true, force: true });
   }
 }

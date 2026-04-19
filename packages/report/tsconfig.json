@@ -13,6 +13,9 @@
   ],
   "references": [
     {
+      "path": "../../test-support"
+    },
+    {
       "path": "../types/tsconfig.build.json"
     }
   ]

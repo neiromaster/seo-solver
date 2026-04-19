@@ -11,7 +11,7 @@
     "start": "tsx --conditions=@seo-solver/source src/index.ts",
     "build": "pnpm --filter seo-solver^... build && tsdown",
     "prepack": "pnpm run build",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b tsconfig.test.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepublishOnly": "pnpm run build && node scripts/strip-bundled-deps.mjs",

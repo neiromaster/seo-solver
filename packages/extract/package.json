@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
     "prepack": "pnpm run build",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b tsconfig.test.json",
     "test": "vitest run"
   },
   "dependencies": {

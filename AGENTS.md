@@ -1,96 +1,87 @@
 # AGENTS.md
 
-## Purpose
+Repository rules for coding agents working in `seo-solver`.
 
-This file defines repository-level instructions for coding agents working in `seo-solver`.
-
-Read this together with:
-
-- `CLAUDE.md`
+Read with:
 - `docs/architecture/monorepo-conventions.md`
 
-If these documents appear to conflict, prefer the stricter boundary-preserving interpretation.
+If they conflict, prefer the stricter boundary-preserving rule.
 
-## Package manager and command conventions
+## Commands
 
-- Use `pnpm` for all package management and workspace execution.
-- Use `pnpm run <script>` for root scripts.
-- Use `pnpm --filter <package> <script>` for package/app-specific scripts.
-- Use `pnpm exec <tool>` instead of `npx` or `bunx`.
+- Use `pnpm` for all package and workspace operations.
+- Root scripts: `pnpm run <script>`
+- Package/app scripts: `pnpm --filter <package> <script>`
+- Tool binaries: `pnpm exec <tool>`
 
-## Monorepo boundary rules
+## Hard boundaries
 
-These are hard rules:
-
-- Do not import or re-export another package’s `src/**` or `src/test-support/**` internals.
-- Do not recreate package-local copies of repo-owned shared helpers.
-- Shared cross-package test infrastructure belongs in root `test-support/`.
+- Do not import or re-export another package’s `src/**` or `src/test-support/**`.
+- Shared cross-package test helpers belong in root `test-support/`.
 - Prefer package entrypoints and exported contracts over sibling-source reach-through.
+- Do not duplicate repo-owned shared helpers inside packages.
 
-## `@seo-solver/types` rules
+## Types package
 
-- Prefer narrow subpath imports such as `@seo-solver/types/fetch` or `@seo-solver/types/validate`.
-- Root `@seo-solver/types` usage is reserved for `ResourceType` only.
-- Do not broaden the root surface again unless the public API decision is explicitly revisited.
+- Prefer narrow imports such as `@seo-solver/types/fetch`.
+- Root `@seo-solver/types` is reserved for `ResourceType` only.
+- Do not broaden the root surface without an explicit API decision.
 
-## Package role expectations
+## Current architecture invariants
 
-- `apps/seo-solver` is the publishable CLI app.
-- `packages/typescript-config` is a private config-only package.
-- Other packages under `packages/` are publishable runtime libraries.
-- `packages/fetch-playwright` is an optional integration package and may keep peer dependency metadata.
+- Runtime baseline is **Node 22**.
+- Cross-package source resolution uses `@seo-solver/source` via conditional exports; no shared `paths` or `baseUrl`.
+- Root build graph uses `tsconfig.json` + package `tsconfig.build.json` only.
+- Root test/editor graph uses `tsconfig.test.json` + package/app `tsconfig.test.json` nodes.
+- Package/app `tsconfig.json` files are editor-focused and `noEmit`.
+- `test-support/vitest.ts` is the canonical shared Vitest helper for source conditions.
+- Libraries build with `tsdown` + `tsc -b tsconfig.build.json --force`.
+- CLI output must stay a single runtime file: `dist/index.js`.
 
-## Config and testing standards
+## Package roles
+
+- `apps/seo-solver`: publishable CLI app
+- `packages/typescript-config`: private config-only package
+- other `packages/*`: publishable runtime libraries
+- `packages/fetch-playwright`: optional integration package with peer dependency metadata
+
+## Testing and packaging
 
 - Tested publishable packages should have a local `vitest.config.ts`.
-- Default `tsup.clean` policy is `clean: true`.
-- Any `clean: false` exception must be justified inline.
-- Keep workspace `build`, `test`, and `typecheck` scripts serialized where shared build state would otherwise race.
+- Packaging tests define the public runtime entry contract; keep them aligned with `exports`.
+- CLI publish/install tests must use the staged-copy harness, not mutate the live package directory.
+- Keep `build`, `test`, and `typecheck` serialized where shared build state would otherwise race.
 
-## Metadata standards
+## Metadata
 
-Publishable packages should define:
-
+Public packages should define:
 - `description`
 - `license`
 - `repository`
 - `bugs`
 - `homepage`
 
-Do not remove these fields from public packages without a deliberate release-surface decision.
-
 ## Changesets
 
-Before commit, check whether the change affects public package behavior.
-
 Create a changeset for:
-
-- new features
+- features
 - bug fixes
 - breaking changes
-- dependency changes that affect public package behavior
+- dependency changes that affect public behavior
 
 Skip changesets for:
-
 - docs-only changes
 - tests-only changes
 - tooling-only changes
 - internal refactors with no public behavior change
 
-## Implementation guidance for agents
+## Verification
 
-- Keep changes minimal and boundary-preserving.
-- Prefer tightening existing conventions over introducing new abstractions.
-- DRY applies to config and shared infrastructure, not forced domain abstractions.
-- KISS applies everywhere: one clear role per package, one canonical location per shared helper, one obvious path through the code.
-
-## Verification expectations
-
-For meaningful changes, run the relevant subset of:
-
+Run the relevant subset of:
 - `pnpm run consistency:check`
-- `pnpm typecheck`
-- `pnpm test`
-- `pnpm build`
+- `pnpm run typecheck`
+- `pnpm run lint`
+- `pnpm run test`
+- `pnpm run build`
 
-If a change touches only one package, still prefer verifying through that package’s real workspace script path, not just ad hoc commands.
+If touching one package, still prefer that package’s real workspace script path over ad hoc commands.

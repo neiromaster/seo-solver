@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { buildCLI, runBuiltCLI } from '../e2e/helpers/run-cli.js';
 import { createTestServer, type TestServer } from '../e2e/helpers/test-server.js';
 
-describe('command dist smoke tests', () => {
+describe.sequential('command dist smoke tests', () => {
   let sharedServer: TestServer;
   let validateServer: Awaited<ReturnType<typeof createValidateSmokeServer>>;
 

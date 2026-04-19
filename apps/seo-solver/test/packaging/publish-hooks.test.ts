@@ -27,7 +27,7 @@ async function runNode(cwd: string, scriptPath: string) {
   });
 }
 
-describe('CLI publish hooks', () => {
+describe.sequential('CLI publish hooks', () => {
   const tempDirs: string[] = [];
 
   afterEach(async () => {

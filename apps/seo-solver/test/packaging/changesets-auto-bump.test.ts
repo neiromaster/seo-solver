@@ -8,7 +8,7 @@ import { afterEach, describe, expect, test } from 'vitest';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const changesetBin = join(__dirname, '..', '..', '..', '..', 'node_modules', '.bin', 'changeset');
 
-describe('changesets dependent bump contract', () => {
+describe.sequential('changesets dependent bump contract', () => {
   const tempDirs: string[] = [];
 
   afterEach(async () => {

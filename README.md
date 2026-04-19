@@ -17,6 +17,8 @@ If you only care about using the CLI, jump to the install and usage sections bel
 
 ## Development
 
+The workspace expects **Node 22**.
+
 ```bash
 pnpm install
 pnpm typecheck
@@ -25,6 +27,8 @@ pnpm build
 ```
 
 ## Install the CLI
+
+The published CLI is packaged as a self-contained artifact. The optional Playwright backend remains separate on purpose.
 
 ```bash
 pnpm add -g seo-solver

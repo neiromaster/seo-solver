@@ -4,6 +4,8 @@
 
 ## Installation
 
+This package targets **Node 22** and is published as a self-contained CLI artifact.
+
 ```bash
 pnpm add -g seo-solver
 ```
@@ -133,5 +135,6 @@ This package is mostly orchestration. For the real domain APIs, see:
 ## Package notes
 
 - The package is published as `seo-solver`.
+- The published tarball is intentionally self-contained and ships a single runtime entry at `dist/index.js`.
 - The optional Playwright backend is declared as a peer dependency, not a hard dependency.
 - The published package ships the built CLI from `dist/index.js`.

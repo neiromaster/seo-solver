@@ -1,11 +1,11 @@
 import { defineConfig } from 'vitest/config';
+import { withSourceConditions } from '../../test-support/vitest.js';
 
-export default defineConfig({
-  resolve: {
-    conditions: ['@seo-solver/source'],
-  },
-  test: {
-    environment: 'node',
-    fileParallelism: false,
-  },
-});
+export default defineConfig(
+  withSourceConditions({
+    test: {
+      environment: 'node',
+      fileParallelism: false,
+    },
+  }),
+);

@@ -1,21 +1,38 @@
 {
-  "extends": "./packages/typescript-config/base.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "include": [
-    "packages/*/src/**/*.ts",
-    "packages/*/test/**/*.ts",
-    "packages/*/vitest.config.ts",
-    "apps/*/src/**/*.ts",
-    "apps/*/test/**/*.ts",
-    "apps/*/vitest.config.ts",
-    "scripts/**/*.ts",
-    "test-support/**/*.ts"
-  ],
-  "exclude": [
-    "packages/*/dist",
-    "apps/*/dist",
-    "node_modules"
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.vitest.json"
+    },
+    {
+      "path": "./test-support"
+    },
+    {
+      "path": "./packages/types/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/fetch/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/extract/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/compare/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/report/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/validate/tsconfig.test.json"
+    },
+    {
+      "path": "./packages/fetch-playwright/tsconfig.test.json"
+    },
+    {
+      "path": "./apps/seo-solver/tsconfig.test.json"
+    },
+    {
+      "path": "./scripts"
+    }
   ]
 }

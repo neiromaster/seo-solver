@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import { mergeOptions } from './merge-options.js';
 
+const DEFAULT_USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0';
+
 describe('mergeOptions', () => {
   test('uses config when per-request options are missing', () => {
     const signal = new AbortController().signal;
@@ -64,6 +67,6 @@ describe('mergeOptions', () => {
     expect(result.timeout).toBe(30_000);
     expect(result.maxRedirects).toBe(5);
     expect(result.retry.attempts).toBe(1);
-    expect(result.headers['user-agent']).toContain('seo-solver');
+    expect(result.headers['user-agent']).toBe(DEFAULT_USER_AGENT);
   });
 });

@@ -9,7 +9,7 @@
     "consistency:check": "pnpm exec tsx scripts/check-monorepo-consistency.ts",
     "lint": "pnpm exec biome check . && pnpm exec dprint check",
     "format": "pnpm exec biome check --write --unsafe . && pnpm exec dprint fmt",
-    "typecheck": "pnpm exec tsc -p tsconfig.test.json --noEmit && pnpm exec tsc -p scripts/tsconfig.json --noEmit",
+    "typecheck": "pnpm exec tsc -b tsconfig.test.json",
     "test": "vitest run",
     "test:coverage": "pnpm --filter seo-solver test:coverage",
     "version-packages": "changeset version",
