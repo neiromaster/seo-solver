@@ -92,7 +92,7 @@ export function extractPage(input: FetchResult, options: ExtractPageOptions = {}
     onError: options.onError,
   });
 
-  return toExtractedPage(input, pipeline.extract(input));
+  return toExtractedPage(input, pipeline.extract(input), targets);
 }
 
 export function extractHtml(html: string, options: ExtractHtmlOptions = {}): ExtractedPage {

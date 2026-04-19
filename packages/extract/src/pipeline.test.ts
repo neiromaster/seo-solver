@@ -112,14 +112,36 @@ describe('createExtractorPipeline', () => {
     expect(extractAll(readFixture('full-seo.html')).length).toBe(5);
   });
 
-  test('extractPage returns structured package-owned result', () => {
+  test('extractPage returns only default-selected targets for the resource type', () => {
     const result = extractPage(htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'));
 
     expect(result.source.resourceType).toBe('html');
+    expect(Object.keys(result.data).sort()).toEqual(['canonical', 'headings', 'jsonld', 'meta', 'opengraph']);
     expect(result.data.canonical).not.toBeNull();
     expect(result.data.headings).not.toBeNull();
     expect(result.data.jsonld).not.toBeNull();
     expect(result.data.meta).not.toBeNull();
     expect(result.data.opengraph).not.toBeNull();
+    expect(result.data).not.toHaveProperty('robotsTxt');
+  });
+
+  test('extractPage returns only explicitly requested targets', () => {
+    const result = extractPage(htmlToMinimalFetchResult(readFixture('full-seo.html'), 'html'), {
+      targets: ['headings'],
+    });
+
+    expect(result.data).toEqual({
+      headings: expect.any(Array),
+    });
+  });
+
+  test('extractPage keeps requested target keys with null when nothing is extracted', () => {
+    const result = extractPage(htmlToMinimalFetchResult(readFixture('empty.html'), 'html'), {
+      targets: ['opengraph'],
+    });
+
+    expect(result.data).toEqual({
+      opengraph: null,
+    });
   });
 });

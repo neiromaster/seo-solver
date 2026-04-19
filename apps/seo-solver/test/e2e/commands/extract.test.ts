@@ -53,9 +53,9 @@ describe('extract command', () => {
 
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
-    expect(payload.data.headings).toEqual(expect.any(Array));
-    expect(payload.data.meta).toBeNull();
-    expect(payload.data.opengraph).toBeNull();
+    expect(payload.data).toEqual({
+      headings: expect.any(Array),
+    });
   }, 10000);
 
   test('opens extraction json in configured editor', async () => {

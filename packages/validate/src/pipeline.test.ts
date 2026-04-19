@@ -1,7 +1,32 @@
 import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/extract/advanced';
+import type { ExtractedPage } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
 import { createValidationPipeline } from './advanced.js';
-import { validateAll } from './pipeline.js';
+import { validateAll, validatePage } from './pipeline.js';
+
+describe('validatePage', () => {
+  test('treats sparse extracted data as omitted targets rather than empty envelopes', async () => {
+    const page: ExtractedPage = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {
+        headings: [],
+      },
+      errors: [],
+    };
+
+    const report = await validatePage(page);
+    expect(report.validations.map((entry) => entry.type)).toEqual(['headings']);
+  });
+});
 
 describe('createValidationPipeline', () => {
   test('validates envelopes in order', async () => {

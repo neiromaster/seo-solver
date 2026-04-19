@@ -1,8 +1,12 @@
-import type { ExtractedPage, TargetKey } from '@seo-solver/types/extract';
+import type { ExtractedPage, ExtractedPageData, TargetKey } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
 
-export function toExtractedPage(fetch: FetchResult, envelopes: ExtractionEnvelope[]): ExtractedPage {
+export function toExtractedPage(
+  fetch: FetchResult,
+  envelopes: ExtractionEnvelope[],
+  targets: readonly TargetKey[],
+): ExtractedPage {
   return {
     source: {
       requestUrl: fetch.requestUrl,
@@ -14,14 +18,7 @@ export function toExtractedPage(fetch: FetchResult, envelopes: ExtractionEnvelop
       attempts: fetch.attempts,
       fetchedAt: new Date().toISOString(),
     },
-    data: {
-      canonical: findData(envelopes, 'canonical'),
-      headings: findData(envelopes, 'headings'),
-      jsonld: findData(envelopes, 'jsonld'),
-      meta: findData(envelopes, 'meta'),
-      opengraph: findData(envelopes, 'opengraph'),
-      robotsTxt: findData(envelopes, 'robots-txt'),
-    },
+    data: toExtractedPageData(envelopes, targets),
     errors: envelopes.flatMap((envelope) =>
       (envelope.warnings ?? []).map((warning) => ({
         extractor: normalizeTargetKey(envelope.type),
@@ -32,6 +29,16 @@ export function toExtractedPage(fetch: FetchResult, envelopes: ExtractionEnvelop
   };
 }
 
+function toExtractedPageData(envelopes: ExtractionEnvelope[], targets: readonly TargetKey[]): ExtractedPageData {
+  const data: ExtractedPageData = {};
+
+  for (const target of targets) {
+    data[target] = findData(envelopes, toEnvelopeType(target));
+  }
+
+  return data;
+}
+
 function findData<T>(envelopes: ExtractionEnvelope[], type: string): T | null {
   const envelope = envelopes.find((entry) => entry.type === type);
   return (envelope?.data as T | undefined) ?? null;
@@ -39,4 +46,8 @@ function findData<T>(envelopes: ExtractionEnvelope[], type: string): T | null {
 
 function normalizeTargetKey(type: string): TargetKey {
   return (type === 'robots-txt' ? 'robotsTxt' : type) as TargetKey;
+}
+
+function toEnvelopeType(target: TargetKey): string {
+  return target === 'robotsTxt' ? 'robots-txt' : target;
 }

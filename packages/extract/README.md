@@ -10,7 +10,7 @@ pnpm add @seo-solver/extract
 
 ## What this package gives you
 
-- page-level extraction results with a stable `{ source, data, errors }` shape
+- page-level extraction results with a stable `{ source, data, errors }` wrapper and target-driven sparse `data`
 - a package-owned `listTargets()` catalog
 - simple helpers for HTML pages and robots.txt
 - an advanced pipeline surface for custom extractors and low-level extraction work
@@ -28,6 +28,7 @@ const page = extractHtml('<!doctype html><html><head><title>Hello</title></head>
 
 console.log(page.source.url);
 console.log(page.data.meta);
+console.log(page.data.headings);
 console.log(page.errors);
 console.log(listTargets().map((target) => target.key));
 ```
@@ -62,7 +63,7 @@ Use `@seo-solver/extract/advanced` when you intentionally want low-level extract
 
 - **targets** are the public selection vocabulary (`meta`, `opengraph`, `jsonld`, `robotsTxt`, and so on)
 - **source** describes what was fetched and from where
-- **data** contains the extracted result per target
+- **data** contains only the selected or default-selected targets; requested targets with no extracted data remain present as `null`
 - **errors** contains extractor-level warnings in a package-owned format
 
 ## Related docs and examples

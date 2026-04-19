@@ -1,4 +1,5 @@
 import type { Comparator } from '@seo-solver/types/compare-advanced';
+import type { ExtractedPage } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
 import {
   compareAll,
@@ -7,6 +8,7 @@ import {
   compareJsonLd,
   compareMetaTags,
   compareOpenGraph,
+  comparePages,
   compareRobotsTxt,
   createComparisonPipeline,
 } from './pipeline.js';
@@ -168,6 +170,41 @@ describe('createComparisonPipeline', () => {
     );
 
     expect(result[0]?.diffs).toEqual([{ kind: 'changed', path: 'title', before: 'A', after: 'forced' }]);
+  });
+});
+
+describe('comparePages', () => {
+  test('treats sparse extracted data as omitted targets rather than envelopes', () => {
+    const left: ExtractedPage = {
+      source: {
+        requestUrl: 'https://a.example',
+        url: 'https://a.example',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {
+        headings: [{ level: 1, text: 'Welcome' }],
+      },
+      errors: [],
+    };
+
+    const right: ExtractedPage = {
+      ...left,
+      source: {
+        ...left.source,
+        requestUrl: 'https://b.example',
+        url: 'https://b.example',
+      },
+      data: {
+        headings: [{ level: 1, text: 'Changed' }],
+      },
+    };
+
+    expect(comparePages(left, right).comparisons.map((entry) => entry.type)).toEqual(['headings']);
   });
 });
 

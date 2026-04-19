@@ -1,11 +1,13 @@
 import type {
   CanonicalData,
+  ExtractedDataByTarget,
   ExtractedPage,
   HeadingsData,
   JsonLdData,
   MetaTagsData,
   OpenGraphData,
   RobotsTxtData,
+  TargetKey,
 } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic, ValidationResult } from '@seo-solver/types/validate';
@@ -172,14 +174,40 @@ function toEnvelope<T>(type: string, data: T): ExtractionEnvelope<T> {
 }
 
 function toEnvelopes(page: ExtractedPage): ExtractionEnvelope[] {
-  const envelopes: Array<ExtractionEnvelope | null> = [
-    page.data.canonical === null ? null : { type: 'canonical', source: page.source.url, data: page.data.canonical },
-    page.data.headings === null ? null : { type: 'headings', source: page.source.url, data: page.data.headings },
-    page.data.jsonld === null ? null : { type: 'jsonld', source: page.source.url, data: page.data.jsonld },
-    page.data.meta === null ? null : { type: 'meta', source: page.source.url, data: page.data.meta },
-    page.data.opengraph === null ? null : { type: 'opengraph', source: page.source.url, data: page.data.opengraph },
-    page.data.robotsTxt === null ? null : { type: 'robots-txt', source: page.source.url, data: page.data.robotsTxt },
-  ];
+  const envelopes: ExtractionEnvelope[] = [];
 
-  return envelopes.filter((entry): entry is ExtractionEnvelope => entry !== null);
+  for (const entry of [
+    toPageEnvelope(page, 'canonical'),
+    toPageEnvelope(page, 'headings'),
+    toPageEnvelope(page, 'jsonld'),
+    toPageEnvelope(page, 'meta'),
+    toPageEnvelope(page, 'opengraph'),
+    toPageEnvelope(page, 'robotsTxt'),
+  ]) {
+    if (entry !== null) {
+      envelopes.push(entry);
+    }
+  }
+
+  return envelopes;
+}
+
+function toPageEnvelope<K extends TargetKey>(
+  page: ExtractedPage,
+  target: K,
+): ExtractionEnvelope<ExtractedDataByTarget[K]> | null {
+  if (!(target in page.data)) {
+    return null;
+  }
+
+  const data = page.data[target];
+  if (data === null || data === undefined) {
+    return null;
+  }
+
+  return {
+    type: target === 'robotsTxt' ? 'robots-txt' : target,
+    source: page.source.url,
+    data,
+  };
 }

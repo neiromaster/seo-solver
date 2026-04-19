@@ -8,6 +8,7 @@ describe('RobotsTxtExtractor', () => {
   test('parses groups, sitemap, and crawl delay', () => {
     const result = extractRobotsText(readFixture('robots.txt'));
     const robotsData = result.data.robotsTxt as RobotsTxtData | undefined;
+    expect(Object.keys(result.data)).toEqual(['robotsTxt']);
     expect(robotsData?.groups).toEqual([
       { userAgents: ['*'], allow: ['/'], disallow: ['/admin'] },
       { userAgents: ['Googlebot'], allow: [], disallow: ['/private'] },
