@@ -89,4 +89,9 @@ export default defineConfig({
     ],
     neverBundle: ['@seo-solver/fetch-playwright'],
   },
+  inputOptions: {
+    resolve: {
+      conditionNames: ['@seo-solver/source', 'import', 'node', 'default'],
+    },
+  },
 });

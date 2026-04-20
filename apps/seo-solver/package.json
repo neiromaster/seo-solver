@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tsx --conditions=@seo-solver/source src/index.ts",
     "start": "tsx --conditions=@seo-solver/source src/index.ts",
-    "build": "pnpm --filter seo-solver^... build && tsdown",
+    "build": "tsdown",
     "prepack": "pnpm run build",
     "typecheck": "tsc -b tsconfig.test.json",
     "test": "vitest run",
