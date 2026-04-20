@@ -12,6 +12,8 @@ import type {
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import type { Diagnostic, ValidationResult } from '@seo-solver/types/validate';
 import type { ValidationPipeline, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
+import { toExtractErrorDiagnostics } from './extract-error-diagnostics.js';
+import { toPresenceDiagnostics } from './presence-rules.js';
 import { createRuleFilter } from './rule-filter.js';
 import { CanonicalValidator } from './validators/canonical.js';
 import { HeadingsValidator } from './validators/headings.js';
@@ -115,7 +117,22 @@ export async function validatePage(
   input: ExtractedPage,
   options: Pick<ValidationPipelineConfig, 'validators' | 'disableRules' | 'severityOverrides' | 'runtime'> = {},
 ) {
-  const validations = await createValidationPipeline(options).validate(toEnvelopes(input));
+  const ruleFilter = createRuleFilter({
+    disableRules: options.disableRules ?? [],
+    severityOverrides: options.severityOverrides ?? {},
+  });
+  const allowedValidatorTypes = getAllowedValidatorTypes(options.validators);
+  const targetStatus = resolveTargetStatus(input);
+  const validations = mergeValidationResults(
+    [
+      ...toExtractErrorDiagnostics(input.errors, input.source.url),
+      ...toPresenceDiagnostics(targetStatus, input.source.url, allowedValidatorTypes),
+    ].map((entry) => ({
+      ...entry,
+      diagnostics: ruleFilter.apply(entry.diagnostics),
+    })),
+    await createValidationPipeline(options).validate(toEnvelopes(input)),
+  );
 
   return {
     url: input.source.url,
@@ -196,7 +213,8 @@ function toPageEnvelope<K extends TargetKey>(
   page: ExtractedPage,
   target: K,
 ): ExtractionEnvelope<ExtractedDataByTarget[K]> | null {
-  if (!(target in page.data)) {
+  const targetStatus = resolveTargetStatus(page);
+  if (targetStatus[target] !== 'present') {
     return null;
   }
 
@@ -210,4 +228,53 @@ function toPageEnvelope<K extends TargetKey>(
     source: page.source.url,
     data,
   };
+}
+
+function getAllowedValidatorTypes(validators: ValidationPipelineConfig['validators']): ReadonlySet<string> | undefined {
+  if (!validators) {
+    return undefined;
+  }
+
+  return new Set(
+    validators
+      .map((validator) => (typeof validator === 'string' ? validator : validator.type))
+      .filter((validatorType) => validatorType !== '*'),
+  );
+}
+
+function resolveTargetStatus(page: ExtractedPage) {
+  if (page.targetStatus) {
+    return page.targetStatus;
+  }
+
+  const targetStatus: Partial<Record<TargetKey, 'present' | 'missing'>> = {};
+  for (const target of ['canonical', 'headings', 'jsonld', 'meta', 'opengraph', 'robotsTxt'] satisfies TargetKey[]) {
+    if (!(target in page.data)) {
+      continue;
+    }
+
+    targetStatus[target] = page.data[target] === null ? 'missing' : 'present';
+  }
+
+  return targetStatus;
+}
+
+function mergeValidationResults(base: ValidationResult[], incoming: ValidationResult[]): ValidationResult[] {
+  const merged = new Map<string, ValidationResult>();
+
+  for (const result of [...base, ...incoming]) {
+    const existing = merged.get(result.type);
+    if (!existing) {
+      merged.set(result.type, {
+        type: result.type,
+        source: result.source,
+        diagnostics: [...result.diagnostics],
+      });
+      continue;
+    }
+
+    existing.diagnostics.push(...result.diagnostics);
+  }
+
+  return [...merged.values()];
 }

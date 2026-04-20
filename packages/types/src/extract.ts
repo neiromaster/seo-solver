@@ -4,6 +4,12 @@ export type { JsonLdData, JsonLdEntry } from './data/jsonld.js';
 export type { MetaTagsData } from './data/meta.js';
 export type { OpenGraphData } from './data/opengraph.js';
 export type { RobotsTxtData, RobotsTxtGroup } from './data/robots-txt.js';
-export type { ExtractedDataByTarget, ExtractedPage, ExtractedPageData, ExtractedPageError } from './extracted-page.js';
+export type {
+  ExtractedDataByTarget,
+  ExtractedPage,
+  ExtractedPageData,
+  ExtractedPageError,
+  ExtractedTargetStatus,
+} from './extracted-page.js';
 export type { ExtractHtmlOptions, ExtractPageOptions, ExtractRobotsTextOptions } from './extractor-pipeline.js';
 export type { TargetCatalogEntry, TargetKey } from './target-catalog.js';

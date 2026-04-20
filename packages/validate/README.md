@@ -31,7 +31,7 @@ console.log(report.validations);
 console.log(listRules());
 ```
 
-This is the right API if you already have an extracted page and want a stable validation report.
+This is the right API if you already have an extracted page and want a stable validation report. At page level, validation distinguishes between targets that were not requested, targets that were requested but missing, and targets that were extracted successfully.
 
 ## Advanced API
 
@@ -56,6 +56,16 @@ Use `@seo-solver/validate/advanced` when you need validator classes, low-level p
 ## Rule selectors and overrides
 
 Rule selectors are strict. If you pass an unknown rule id or wildcard prefix, the package treats it as an error instead of silently ignoring it. That makes it safer to automate around `disableRules` and `severityOverrides`.
+
+## Presence-aware page validation
+
+When you validate an `ExtractedPage`, the package uses page-level `targetStatus` metadata to distinguish three states:
+
+- target not requested -> no diagnostics for that target
+- target requested/default-selected but missing -> emit only `<target>/section-missing`
+- target present -> run the normal target validators
+
+This keeps missing sections visible without pretending they were extracted as empty payloads.
 
 ## Related docs and examples
 

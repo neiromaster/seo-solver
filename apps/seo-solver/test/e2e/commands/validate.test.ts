@@ -123,13 +123,21 @@ describe('validate command', () => {
     );
   });
 
-  test('supports selective extractors', async () => {
-    const result = await runCLI(['validate', `${server.baseUrl}/`, '--format', 'json', '--targets', 'meta']);
+  test('emits section-missing for selected targets with no extracted section', async () => {
+    const result = await runCLI(['validate', `${server.baseUrl}/no-meta`, '--format', 'json', '--targets', 'meta']);
 
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
     expect(payload.validations).toHaveLength(1);
     expect(payload.validations[0].type).toBe('meta');
+    expect(payload.validations[0].diagnostics).toEqual([
+      expect.objectContaining({
+        rule: 'meta/section-missing',
+        severity: 'warning',
+      }),
+    ]);
+    expect(JSON.stringify(payload)).not.toContain('meta/title-missing');
+    expect(JSON.stringify(payload)).not.toContain('meta/description-missing');
   });
 
   test('supports quiet and verbose terminal output', async () => {
@@ -215,6 +223,11 @@ async function createInvalidPageServer() {
       response.end(
         '<!doctype html><html><head><title>Healthy Title Example</title><meta name="description" content="This is a sufficiently long meta description for the clean page example."><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><h1>Primary heading</h1></body></html>',
       );
+      return;
+    }
+
+    if (path === '/no-meta') {
+      response.end('<!doctype html><html><body><h1>Primary heading</h1></body></html>');
       return;
     }
 

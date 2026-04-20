@@ -189,6 +189,9 @@ describe('comparePages', () => {
       data: {
         headings: [{ level: 1, text: 'Welcome' }],
       },
+      targetStatus: {
+        headings: 'present',
+      },
       errors: [],
     };
 
@@ -201,6 +204,9 @@ describe('comparePages', () => {
       },
       data: {
         headings: [{ level: 1, text: 'Changed' }],
+      },
+      targetStatus: {
+        headings: 'present',
       },
     };
 

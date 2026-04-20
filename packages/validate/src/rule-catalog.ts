@@ -1,4 +1,5 @@
 import type { Severity } from '@seo-solver/types/validate';
+import { listPresenceRules } from './presence-rules.js';
 import { type BuiltInValidatorId, createBuiltInValidators } from './validators/registry.js';
 
 export type RuleCatalogEntry = {
@@ -46,8 +47,11 @@ export function listRules(): RuleCatalogEntry[] {
     const validator = validators[validatorId];
     const validatorKey = validatorId === 'robots-txt' ? 'robotsTxt' : validatorId;
     const rules = ((validator.rules ?? []) as Array<{ id: string; severity: Severity; message: string }>).slice();
+    const presenceRules = listPresenceRules()
+      .filter((rule) => rule.validatorType === validatorId)
+      .map((rule) => ({ id: rule.ruleId, severity: rule.severity, message: rule.message }));
 
-    return rules
+    return [...rules, ...presenceRules]
       .sort((left, right) => left.id.localeCompare(right.id))
       .map((rule) => ({
         id: rule.id,

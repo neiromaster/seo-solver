@@ -64,6 +64,7 @@ Use `@seo-solver/extract/advanced` when you intentionally want low-level extract
 - **targets** are the public selection vocabulary (`meta`, `opengraph`, `jsonld`, `robotsTxt`, and so on)
 - **source** describes what was fetched and from where
 - **data** contains only the selected or default-selected targets; requested targets with no extracted data remain present as `null`
+- **targetStatus** records whether each selected or default-selected target is `present` or `missing`
 - **errors** contains extractor-level warnings in a package-owned format
 
 ## Related docs and examples

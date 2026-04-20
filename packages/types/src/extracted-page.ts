@@ -26,6 +26,10 @@ export type ExtractedPageData = {
   [K in TargetKey]?: ExtractedDataByTarget[K] | null;
 };
 
+export type ExtractedTargetStatus = {
+  [K in TargetKey]?: 'present' | 'missing';
+};
+
 export type ExtractedPage = {
   source: {
     requestUrl: string;
@@ -38,5 +42,6 @@ export type ExtractedPage = {
     fetchedAt: string;
   };
   data: ExtractedPageData;
+  targetStatus: ExtractedTargetStatus;
   errors: ExtractedPageError[];
 };

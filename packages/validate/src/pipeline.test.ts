@@ -20,11 +20,170 @@ describe('validatePage', () => {
       data: {
         headings: [],
       },
+      targetStatus: {
+        headings: 'present',
+      },
       errors: [],
     };
 
     const report = await validatePage(page);
     expect(report.validations.map((entry) => entry.type)).toEqual(['headings']);
+  });
+
+  test('emits section-missing diagnostics for requested missing sections only', async () => {
+    const page: ExtractedPage = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {
+        meta: null,
+      },
+      targetStatus: {
+        meta: 'missing',
+      },
+      errors: [],
+    };
+
+    const report = await validatePage(page);
+    expect(report.validations).toEqual([
+      {
+        type: 'meta',
+        source: 'https://example.com',
+        diagnostics: [
+          {
+            severity: 'warning',
+            rule: 'meta/section-missing',
+            message: 'Meta section is missing',
+          },
+        ],
+      },
+    ]);
+  });
+
+  test('does not emit diagnostics for targets that were not requested', async () => {
+    const page: ExtractedPage = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {},
+      targetStatus: {},
+      errors: [],
+    };
+
+    const report = await validatePage(page);
+    expect(report.validations).toEqual([]);
+  });
+
+  test('falls back to sparse page data when targetStatus is absent', async () => {
+    const page = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html' as const,
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {
+        meta: null,
+      },
+      errors: [],
+    } as ExtractedPage;
+
+    const report = await validatePage(page);
+    expect(report.validations).toEqual([
+      {
+        type: 'meta',
+        source: 'https://example.com',
+        diagnostics: [
+          {
+            severity: 'warning',
+            rule: 'meta/section-missing',
+            message: 'Meta section is missing',
+          },
+        ],
+      },
+    ]);
+  });
+
+  test('surfaces extractor warnings as validation errors', async () => {
+    const page: ExtractedPage = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-20T00:00:00.000Z',
+      },
+      data: {
+        jsonld: [],
+      },
+      targetStatus: {
+        jsonld: 'present',
+      },
+      errors: [
+        {
+          extractor: 'jsonld',
+          message: 'Invalid JSON-LD block',
+          path: 'script[0]',
+        },
+      ],
+    };
+
+    const report = await validatePage(page);
+    expect(report.validations).toEqual([
+      {
+        type: 'jsonld',
+        source: 'https://example.com',
+        diagnostics: [
+          {
+            severity: 'error',
+            rule: 'extract/jsonld-warning',
+            message: 'Invalid JSON-LD block',
+            path: 'script[0]',
+          },
+        ],
+      },
+    ]);
+  });
+
+  test('includes section-missing rules in listRules with expected severities', async () => {
+    const { listRules } = await import('./rule-catalog.js');
+    const sectionMissingRules = listRules().filter((entry) => entry.id.endsWith('/section-missing'));
+
+    expect(sectionMissingRules.map((entry) => entry.id).sort()).toEqual([
+      'canonical/section-missing',
+      'headings/section-missing',
+      'jsonld/section-missing',
+      'meta/section-missing',
+      'opengraph/section-missing',
+      'robots/section-missing',
+    ]);
+    expect(sectionMissingRules.find((entry) => entry.id === 'robots/section-missing')?.severity).toBe('info');
+    expect(
+      sectionMissingRules
+        .filter((entry) => entry.id !== 'robots/section-missing')
+        .every((entry) => entry.severity === 'warning'),
+    ).toBe(true);
   });
 });
 

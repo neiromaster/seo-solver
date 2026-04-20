@@ -117,6 +117,13 @@ describe('createExtractorPipeline', () => {
 
     expect(result.source.resourceType).toBe('html');
     expect(Object.keys(result.data).sort()).toEqual(['canonical', 'headings', 'jsonld', 'meta', 'opengraph']);
+    expect(result.targetStatus).toEqual({
+      canonical: 'present',
+      headings: 'present',
+      jsonld: 'present',
+      meta: 'present',
+      opengraph: 'present',
+    });
     expect(result.data.canonical).not.toBeNull();
     expect(result.data.headings).not.toBeNull();
     expect(result.data.jsonld).not.toBeNull();
@@ -133,6 +140,9 @@ describe('createExtractorPipeline', () => {
     expect(result.data).toEqual({
       headings: expect.any(Array),
     });
+    expect(result.targetStatus).toEqual({
+      headings: 'present',
+    });
   });
 
   test('extractPage keeps requested target keys with null when nothing is extracted', () => {
@@ -142,6 +152,9 @@ describe('createExtractorPipeline', () => {
 
     expect(result.data).toEqual({
       opengraph: null,
+    });
+    expect(result.targetStatus).toEqual({
+      opengraph: 'missing',
     });
   });
 });
