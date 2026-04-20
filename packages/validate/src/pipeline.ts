@@ -10,7 +10,7 @@ import type {
   TargetKey,
 } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import type { Diagnostic, ValidationResult } from '@seo-solver/types/validate';
+import type { Diagnostic, Severity, ValidationResult } from '@seo-solver/types/validate';
 import type { ValidationPipeline, ValidationPipelineConfig } from '@seo-solver/types/validate-advanced';
 import { toExtractErrorDiagnostics } from './extract-error-diagnostics.js';
 import { toPresenceDiagnostics } from './presence-rules.js';
@@ -146,40 +146,84 @@ export async function validatePage(
   };
 }
 
-export async function validateOpenGraph(data: OpenGraphData): Promise<Diagnostic[]> {
-  return new OpenGraphValidator().validate(toEnvelope('opengraph', data));
-}
+export type ValidateRuleOptions = {
+  disableRules?: string[];
+  severityOverrides?: Record<string, Severity>;
+};
 
-export async function validateJsonLd(
-  data: JsonLdData,
+export type ValidateJsonLdOptions = ValidateRuleOptions & {
   runtime?: {
-    enabled?: boolean;
-    cacheFile?: string | null;
-    refreshTtlMs?: number;
-    schemaUrl?: string;
-  },
+    jsonldAdobe?: {
+      enabled?: boolean;
+      cacheFile?: string | null;
+      refreshTtlMs?: number;
+      schemaUrl?: string;
+    };
+  };
+};
+
+export type ValidateDataOptions = ValidateRuleOptions;
+
+export async function validateOpenGraph(data: OpenGraphData, options: ValidateDataOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new OpenGraphValidator(), toEnvelope('opengraph', data), options);
+}
+
+export async function validateJsonLd(data: JsonLdData, options: ValidateJsonLdOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new JsonLdValidator(options.runtime?.jsonldAdobe), toEnvelope('jsonld', data), options);
+}
+
+export async function validateMetaTags(data: MetaTagsData, options: ValidateDataOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new MetaTagsValidator(), toEnvelope('meta', data), options);
+}
+
+export async function validateTwitterCards(
+  data: MetaTagsData,
+  options: ValidateDataOptions = {},
 ): Promise<Diagnostic[]> {
-  return new JsonLdValidator(runtime).validate(toEnvelope('jsonld', data));
+  return validateData(new TwitterCardValidator(), toEnvelope('meta', data), options);
 }
 
-export async function validateMetaTags(data: MetaTagsData): Promise<Diagnostic[]> {
-  return new MetaTagsValidator().validate(toEnvelope('meta', data));
+export async function validateHeadings(data: HeadingsData, options: ValidateDataOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new HeadingsValidator(), toEnvelope('headings', data), options);
 }
 
-export async function validateTwitterCards(data: MetaTagsData): Promise<Diagnostic[]> {
-  return new TwitterCardValidator().validate(toEnvelope('meta', data));
+export async function validateCanonical(data: CanonicalData, options: ValidateDataOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new CanonicalValidator(), toEnvelope('canonical', data), options);
 }
 
-export async function validateHeadings(data: HeadingsData): Promise<Diagnostic[]> {
-  return new HeadingsValidator().validate(toEnvelope('headings', data));
+export async function validateRobotsTxt(data: RobotsTxtData, options: ValidateDataOptions = {}): Promise<Diagnostic[]> {
+  return validateData(new RobotsTxtValidator(), toEnvelope('robots-txt', data), options);
 }
 
-export async function validateCanonical(data: CanonicalData): Promise<Diagnostic[]> {
-  return new CanonicalValidator().validate(toEnvelope('canonical', data));
-}
+async function validateData<T>(
+  validator: {
+    type: string;
+    validate: (
+      envelope: ExtractionEnvelope<T>,
+      context?: ExtractionEnvelope[],
+      options?: { disableAdobeValidation?: boolean; isRuleEnabled?: (ruleId: string) => boolean },
+    ) => Promise<Diagnostic[]>;
+  },
+  envelope: ExtractionEnvelope<T>,
+  options: ValidateRuleOptions,
+): Promise<Diagnostic[]> {
+  const ruleFilter = createRuleFilter({
+    disableRules: options.disableRules ?? [],
+    severityOverrides: options.severityOverrides ?? {},
+  });
 
-export async function validateRobotsTxt(data: RobotsTxtData): Promise<Diagnostic[]> {
-  return new RobotsTxtValidator().validate(toEnvelope('robots-txt', data));
+  if (ruleFilter.hasWildcardDisabled(validator.type)) {
+    return [];
+  }
+
+  const diagnostics = await validator.validate(envelope, [envelope], {
+    disableAdobeValidation:
+      validator.type === 'jsonld' &&
+      (ruleFilter.hasWildcardDisabled('jsonld') || ruleFilter.hasWildcardDisabled('jsonld/adobe')),
+    isRuleEnabled: (ruleId) => !ruleFilter.isDisabled(ruleId),
+  });
+
+  return ruleFilter.apply(diagnostics);
 }
 
 function toEnvelope<T>(type: string, data: T): ExtractionEnvelope<T> {

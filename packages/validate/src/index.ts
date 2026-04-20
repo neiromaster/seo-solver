@@ -16,6 +16,18 @@ export type {
 } from '@seo-solver/types/validate';
 export { ValidationError } from './errors.js';
 export { parseSeverityOverrides } from './parse-severity-overrides.js';
-export { validatePage } from './pipeline.js';
+export {
+  type ValidateDataOptions,
+  type ValidateJsonLdOptions,
+  type ValidateRuleOptions,
+  validateCanonical,
+  validateHeadings,
+  validateJsonLd,
+  validateMetaTags,
+  validateOpenGraph,
+  validatePage,
+  validateRobotsTxt,
+  validateTwitterCards,
+} from './pipeline.js';
 export { listRules } from './rule-catalog.js';
 export { isKnownRuleSelector } from './rule-filter.js';

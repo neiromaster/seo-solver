@@ -2,7 +2,15 @@ import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/e
 import type { ExtractedPage } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
 import { createValidationPipeline } from './advanced.js';
-import { validateAll, validatePage } from './pipeline.js';
+import {
+  type ValidateDataOptions,
+  type ValidateJsonLdOptions,
+  validateAll,
+  validateJsonLd,
+  validateMetaTags,
+  validateOpenGraph,
+  validatePage,
+} from './pipeline.js';
 
 describe('validatePage', () => {
   test('treats sparse extracted data as omitted targets rather than empty envelopes', async () => {
@@ -184,6 +192,96 @@ describe('validatePage', () => {
         .filter((entry) => entry.id !== 'robots/section-missing')
         .every((entry) => entry.severity === 'warning'),
     ).toBe(true);
+  });
+});
+
+describe('direct validation helpers', () => {
+  test('validateMetaTags returns diagnostics directly', async () => {
+    const diagnostics = await validateMetaTags({
+      title: null,
+      charset: null,
+      name: {},
+      httpEquiv: {},
+      lang: null,
+      itemprop: {},
+    });
+
+    expect(Array.isArray(diagnostics)).toBe(true);
+    expect(diagnostics.map((entry) => entry.rule)).toEqual([
+      'meta/title-missing',
+      'meta/description-missing',
+      'meta/viewport-missing',
+      'meta/charset-missing',
+    ]);
+  });
+
+  test('validateMetaTags supports disabled rules', async () => {
+    const diagnostics = await validateMetaTags(
+      {
+        title: null,
+        charset: null,
+        name: {},
+        httpEquiv: {},
+        lang: null,
+        itemprop: {},
+      },
+      { disableRules: ['meta/viewport-missing'] },
+    );
+
+    expect(diagnostics.map((entry) => entry.rule)).not.toContain('meta/viewport-missing');
+  });
+
+  test('validateMetaTags supports severity overrides', async () => {
+    const diagnostics = await validateMetaTags(
+      {
+        title: 'Long enough title',
+        charset: 'utf-8',
+        name: {},
+        httpEquiv: {},
+        lang: null,
+        itemprop: {},
+      },
+      { severityOverrides: { 'meta/description-missing': 'error' } },
+    );
+
+    expect(diagnostics).toEqual([
+      { severity: 'error', rule: 'meta/description-missing', message: 'Meta description is missing' },
+      {
+        severity: 'warning',
+        rule: 'meta/viewport-missing',
+        message: 'Viewport meta tag is missing (required for mobile)',
+      },
+    ]);
+  });
+
+  test('direct helper option types keep runtime specific to JSON-LD', () => {
+    const jsonLdOptions: ValidateJsonLdOptions = { runtime: { jsonldAdobe: { enabled: false } } };
+    const dataOptions: ValidateDataOptions = { disableRules: ['meta/viewport-missing'] };
+
+    expect(jsonLdOptions.runtime?.jsonldAdobe?.enabled).toBe(false);
+    expect(dataOptions.disableRules).toEqual(['meta/viewport-missing']);
+  });
+
+  test('validateJsonLd accepts JSON-LD-specific runtime options shape', async () => {
+    const diagnostics = await validateJsonLd([{ '@type': 'Article' }], {
+      runtime: { jsonldAdobe: { enabled: false } },
+    });
+
+    expect(diagnostics).toEqual([
+      {
+        severity: 'error',
+        rule: 'jsonld/missing-context',
+        message: 'JSON-LD object is missing @context',
+        path: '$[0].@context',
+      },
+    ]);
+  });
+
+  test('validateOpenGraph does not emit page-level section-missing diagnostics', async () => {
+    const diagnostics = await validateOpenGraph({});
+
+    expect(diagnostics.map((entry) => entry.rule)).not.toContain('opengraph/section-missing');
+    expect(diagnostics.map((entry) => entry.rule)).toContain('opengraph/title-missing');
   });
 });
 

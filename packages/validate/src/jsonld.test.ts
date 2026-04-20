@@ -52,7 +52,7 @@ describe('JsonLdValidator', () => {
         { '@context': 'https://schema.org', name: 'Missing type' },
         { '@context': 'https://schema.org', '@type': 'Product', name: 'Product without price' },
       ],
-      { enabled: true },
+      { runtime: { jsonldAdobe: { enabled: true } } },
     );
 
     expect(result).toEqual([
@@ -118,7 +118,7 @@ describe('JsonLdValidator', () => {
     validateSpy.mockRejectedValue(new Error('boom'));
 
     const result = await validateJsonLd([{ '@context': 'https://schema.org', '@type': 'Article', name: 'Hello' }], {
-      enabled: true,
+      runtime: { jsonldAdobe: { enabled: true } },
     });
 
     expect(result).toEqual([

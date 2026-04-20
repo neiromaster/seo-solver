@@ -12,6 +12,7 @@ The package already includes its JSON-LD runtime dependency. You only need to op
 
 ## What this package gives you
 
+- direct helper functions for validating data you already have, like `validateJsonLd()` and `validateOpenGraph()`
 - a simple `validatePage()` API for validating extracted page data
 - a package-owned `listRules()` catalog
 - strict `parseSeverityOverrides()` handling
@@ -20,18 +21,75 @@ The package already includes its JSON-LD runtime dependency. You only need to op
 ## Simple API
 
 ```ts
-import { listRules, parseSeverityOverrides, validatePage } from '@seo-solver/validate';
+import { parseSeverityOverrides, validateJsonLd, validateMetaTags } from '@seo-solver/validate';
 
-const overrides = parseSeverityOverrides(['meta/description-missing=error']);
-const report = await validatePage(page, {
-  severityOverrides: overrides,
-});
+const diagnostics = await validateJsonLd(
+  [{ '@type': 'Article' }],
+  {
+    runtime: {
+      jsonldAdobe: {
+        enabled: true,
+      },
+    },
+  },
+);
 
-console.log(report.validations);
-console.log(listRules());
+const metaDiagnostics = await validateMetaTags(
+  {
+    title: 'Example page title',
+    charset: 'utf-8',
+    name: {},
+    httpEquiv: {},
+    lang: null,
+    itemprop: {},
+  },
+  {
+    disableRules: ['meta/viewport-missing'],
+    severityOverrides: parseSeverityOverrides(['meta/description-missing=error']),
+  },
+);
+
+console.log(diagnostics);
+console.log(metaDiagnostics);
 ```
 
-This is the right API if you already have an extracted page and want a stable validation report. At page level, validation distinguishes between targets that were not requested, targets that were requested but missing, and targets that were extracted successfully.
+Direct helpers return `Diagnostic[]` and do not require callers to build an `ExtractedPage` or an extraction envelope. Use them when your application already has SEO data from another source.
+
+Available direct helpers:
+
+- `validateCanonical(data, options?)`
+- `validateHeadings(data, options?)`
+- `validateJsonLd(data, options?)`
+- `validateMetaTags(data, options?)`
+- `validateOpenGraph(data, options?)`
+- `validateRobotsTxt(data, options?)`
+- `validateTwitterCards(data, options?)`
+
+All helpers accept rule options, and `validateJsonLd()` additionally accepts JSON-LD runtime options:
+
+```ts
+type ValidateRuleOptions = {
+  disableRules?: string[];
+  severityOverrides?: Record<string, 'error' | 'warning' | 'info'>;
+};
+
+type ValidateDataOptions = ValidateRuleOptions;
+
+type ValidateJsonLdOptions = ValidateRuleOptions & {
+  runtime?: {
+    jsonldAdobe?: {
+      enabled?: boolean;
+      cacheFile?: string | null;
+      refreshTtlMs?: number;
+      schemaUrl?: string;
+    };
+  };
+};
+```
+
+`runtime` is intentionally available only on `validateJsonLd()` options.
+
+Use `validatePage(page, options?)` if you already have an extracted page and want a stable validation report. At page level, validation distinguishes between targets that were not requested, targets that were requested but missing, and targets that were extracted successfully.
 
 ## Advanced API
 
