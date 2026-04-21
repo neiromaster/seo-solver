@@ -43,6 +43,13 @@ Those advanced subpaths are where envelopes, pipelines, validators, comparators,
 - Use the stable domain subpaths for public contracts.
 - Use the `*-advanced` subpaths only when you are intentionally working with low-level package internals.
 
+For extraction consumers, `@seo-solver/types/extract` is the stable path for the page-level `ExtractedPage` contract returned by `@seo-solver/extract` basic helpers such as `extractHtml()` and `extractPage()`. Use `@seo-solver/types/extract-advanced` only when you are working with custom extractor pipelines and need raw `ExtractionEnvelope[]` results.
+
+```ts
+import type { ExtractedPage } from '@seo-solver/types/extract';
+import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
+```
+
 ## Related docs and examples
 
 - [docs/advanced.md](docs/advanced.md) — domain and advanced subpath examples
