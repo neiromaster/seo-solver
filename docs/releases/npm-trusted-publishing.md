@@ -52,7 +52,7 @@ pnpm --filter <package> publish --access public --no-git-checks
 
 Then add the Trusted Publisher settings above for that package and rerun the release workflow. Do not add `NPM_TOKEN` to `.github/workflows/release.yml` for normal releases.
 
-The release workflow also upgrades npm before publishing because npm Trusted Publishing requires a recent npm CLI with OIDC support; the Node 22 runtime alone is not enough to guarantee that capability.
+The release workflow upgrades npm in two steps before publishing: first to `npm@10.9.8`, then to `npm@^11.5.1`. The intermediate npm 10 release avoids a known Node 22 toolcache self-upgrade failure, while npm 11.5.1 or newer provides the Trusted Publishing OIDC support required by npm.
 
 ## Package metadata requirements
 
