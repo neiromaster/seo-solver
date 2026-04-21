@@ -3,6 +3,8 @@ export const sourceConditions = ['@seo-solver/source'] as const;
 export function withSourceConditions<T extends object>(config: T): T {
   const existingConditions = ((config as { resolve?: { conditions?: string[] } }).resolve?.conditions ??
     []) as string[];
+  const existingSsrConditions = ((config as { ssr?: { resolve?: { conditions?: string[] } } }).ssr?.resolve
+    ?.conditions ?? []) as string[];
   const testConfig = (config as { test?: { exclude?: string[] } }).test ?? {};
 
   return {
@@ -14,6 +16,13 @@ export function withSourceConditions<T extends object>(config: T): T {
     resolve: {
       ...(config as { resolve?: object }).resolve,
       conditions: [...new Set([...sourceConditions, ...existingConditions])],
+    },
+    ssr: {
+      ...(config as { ssr?: object }).ssr,
+      resolve: {
+        ...((config as { ssr?: { resolve?: object } }).ssr?.resolve ?? {}),
+        conditions: [...new Set([...sourceConditions, ...existingSsrConditions])],
+      },
     },
   } as T;
 }
