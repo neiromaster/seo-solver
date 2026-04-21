@@ -24,3 +24,4 @@ export {
   extractPage,
   extractRobotsText,
 } from './pipeline.js';
+export { getTargetData, getTargetStatus, hasTargetData } from './status.js';
