@@ -1,5 +1,12 @@
 # seo-solver
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`dbf1451`](https://github.com/neiromaster/seo-solver/commit/dbf145116745b8e2c711098ad6ab3ff741862830)]:
+  - @seo-solver/extract@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes
