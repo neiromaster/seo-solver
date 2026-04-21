@@ -41,11 +41,15 @@ async function main(): Promise<void> {
   validateTsdownCoverage(publishablePackages, tsdownConfigs, errors);
 
   await validateRootTsconfigReferences(publishablePackages, errors);
+  await validatePackageBiomeConfigs(workspacePackages, errors);
   await validateBuildConfigs(publishablePackages, tsconfigBuildFiles, errors);
   await validateNoPathsInTsconfigs(tsconfigFiles.concat(tsconfigBuildFiles), errors);
 
   for (const pkg of workspacePackages) {
     validateMetadataBaseline(pkg, errors);
+    if (isPublishablePackage(pkg)) {
+      validatePublicPublishConfig(pkg, errors);
+    }
     if (pkg.dir.startsWith('packages/') && pkg.manifest.private !== true) {
       validatePackageExports(pkg, errors);
     }
@@ -54,6 +58,7 @@ async function main(): Promise<void> {
   await validateCliPublicationContract(errors);
   await validateChangesetsContract(errors);
   validatePrivateHelpers(workspacePackages, errors);
+  await validateGithubWorkflowContract(errors);
 
   if (errors.length > 0) {
     for (const error of errors) {
@@ -63,6 +68,26 @@ async function main(): Promise<void> {
   }
 
   console.log('Monorepo consistency check passed.');
+}
+
+async function validatePackageBiomeConfigs(workspacePackages: PackageInfo[], errors: string[]): Promise<void> {
+  await Promise.all(
+    workspacePackages.map(async (pkg) => {
+      const biomeConfigPath = `${pkg.dir}/biome.json`;
+      if (!(await exists(join(repoRoot, biomeConfigPath)))) {
+        errors.push(`${biomeConfigPath}: biome config is required for every workspace package.`);
+        return;
+      }
+
+      const biomeConfig = (await readJson(biomeConfigPath)) as Record<string, unknown>;
+      if (biomeConfig.root !== false) {
+        errors.push(`${biomeConfigPath}: root must be false so package config extends the repository config.`);
+      }
+      if (biomeConfig.extends !== '//') {
+        errors.push(`${biomeConfigPath}: extends must be '//' to inherit the repository Biome config.`);
+      }
+    }),
+  );
 }
 
 function validateNoTsupConfigs(tsupConfigs: string[], errors: string[]): void {
@@ -172,6 +197,16 @@ function validateMetadataBaseline(pkg: PackageInfo, errors: string[]): void {
     if (!(field in pkg.manifest)) {
       errors.push(`${pkg.path}: missing required publish metadata field '${field}'.`);
     }
+  }
+}
+
+function validatePublicPublishConfig(pkg: PackageInfo, errors: string[]): void {
+  const publishConfig = asRecord(pkg.manifest.publishConfig);
+  if (publishConfig.access !== 'public') {
+    errors.push(`${pkg.path}: publishConfig.access must be 'public' for npm Trusted Publishing.`);
+  }
+  if (publishConfig.provenance !== true) {
+    errors.push(`${pkg.path}: publishConfig.provenance must be true for npm provenance attestations.`);
   }
 }
 
@@ -295,12 +330,59 @@ async function validateCliPublicationContract(errors: string[]): Promise<void> {
 }
 
 async function validateChangesetsContract(errors: string[]): Promise<void> {
+  const rootManifest = (await readJson('package.json')) as Record<string, unknown>;
+  const scripts = asRecord(rootManifest.scripts);
   const config = (await readJson('.changeset/config.json')) as Record<string, unknown>;
+  if (scripts['version-packages'] !== 'changeset version && pnpm install --lockfile-only') {
+    errors.push(`package.json: scripts.version-packages must refresh the lockfile after changeset version.`);
+  }
+  if (scripts.release !== 'changeset publish') {
+    errors.push(`package.json: scripts.release must publish through Changesets.`);
+  }
   if (config.updateInternalDependencies !== 'patch') {
     errors.push(`.changeset/config.json: updateInternalDependencies must be 'patch'.`);
   }
   if (config.bumpVersionsWithWorkspaceProtocolOnly !== true) {
     errors.push(`.changeset/config.json: bumpVersionsWithWorkspaceProtocolOnly must be true.`);
+  }
+}
+
+async function validateGithubWorkflowContract(errors: string[]): Promise<void> {
+  const ciPath = '.github/workflows/ci.yml';
+  const releasePath = '.github/workflows/release.yml';
+
+  if (!(await exists(join(repoRoot, ciPath)))) {
+    errors.push(`${ciPath}: CI workflow is required.`);
+    return;
+  }
+  if (!(await exists(join(repoRoot, releasePath)))) {
+    errors.push(`${releasePath}: Release workflow is required for Changesets publishing.`);
+    return;
+  }
+
+  const ciWorkflow = await readText(ciPath);
+  const releaseWorkflow = await readText(releasePath);
+
+  if (!ciWorkflow.includes('pnpm/action-setup@v6')) {
+    errors.push(`${ciPath}: CI workflow must use pnpm/action-setup@v6.`);
+  }
+  if (!releaseWorkflow.includes('pnpm/action-setup@v6')) {
+    errors.push(`${releasePath}: Release workflow must use pnpm/action-setup@v6.`);
+  }
+  if (!ciWorkflow.includes('node-version: 22') || !releaseWorkflow.includes('node-version: 22')) {
+    errors.push(`GitHub workflows must use the Node 22 runtime baseline.`);
+  }
+  if (!releaseWorkflow.includes('id-token: write')) {
+    errors.push(`${releasePath}: npm Trusted Publishing requires id-token: write.`);
+  }
+  if (releaseWorkflow.includes('NPM_TOKEN')) {
+    errors.push(`${releasePath}: npm Trusted Publishing workflow must not use NPM_TOKEN.`);
+  }
+  if (!releaseWorkflow.includes('NPM_CONFIG_PROVENANCE: true')) {
+    errors.push(`${releasePath}: release workflow must enable NPM_CONFIG_PROVENANCE.`);
+  }
+  if (!releaseWorkflow.includes('changesets/action@v1')) {
+    errors.push(`${releasePath}: release workflow must use changesets/action@v1.`);
   }
 }
 
@@ -416,11 +498,15 @@ function toPackageName(specifier: string): string {
   return specifier.split('/')[0] ?? specifier;
 }
 
-function asRecord(value: unknown): Record<string, string> {
+function asRecord(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return {};
   }
-  return value as Record<string, string>;
+  return value as Record<string, unknown>;
+}
+
+function isPublishablePackage(pkg: PackageInfo): boolean {
+  return !privatePackageDirs.has(pkg.dir) && pkg.manifest.private !== true;
 }
 
 function isString(value: unknown): value is string {

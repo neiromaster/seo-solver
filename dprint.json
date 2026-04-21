@@ -16,9 +16,10 @@
     "ignoreCommentDirective": "pretty-yaml-ignore"
   },
   "excludes": [
-    "**/node_modules"
+    "**/node_modules",
+    "pnpm-lock.yaml"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm"
+    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm"
   ]
 }

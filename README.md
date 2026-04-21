@@ -26,6 +26,8 @@ pnpm test
 pnpm build
 ```
 
+Release automation uses Changesets with npm Trusted Publishing. See [npm Trusted Publishing release setup](docs/releases/npm-trusted-publishing.md) before configuring or publishing packages.
+
 ## Install the CLI
 
 The published CLI is packaged as a self-contained artifact. The optional Playwright backend remains separate on purpose.

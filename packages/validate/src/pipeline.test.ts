@@ -112,7 +112,7 @@ describe('validatePage', () => {
         meta: null,
       },
       errors: [],
-    } as ExtractedPage;
+    };
 
     const report = await validatePage(page);
     expect(report.validations).toEqual([

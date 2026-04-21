@@ -9,7 +9,7 @@ export function withSourceConditions<T extends object>(config: T): T {
     ...config,
     test: {
       ...testConfig,
-      exclude: [...new Set([...(testConfig.exclude ?? []), '**/.typecheck/**'])],
+      exclude: [...new Set([...(testConfig.exclude ?? []), '**/node_modules/**', '**/dist/**', '**/.typecheck/**'])],
     },
     resolve: {
       ...(config as { resolve?: object }).resolve,

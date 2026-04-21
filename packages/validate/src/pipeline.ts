@@ -24,6 +24,8 @@ import { resolveValidators } from './validators/registry.js';
 import { RobotsTxtValidator } from './validators/robots-txt.js';
 import { TwitterCardValidator } from './validators/twitter.js';
 
+type ExtractedPageInput = ExtractedPage | (Omit<ExtractedPage, 'targetStatus'> & { targetStatus?: undefined });
+
 export function createValidationPipeline(config: ValidationPipelineConfig = {}): ValidationPipeline {
   const configuredValidators = resolveValidators(config, config.validators);
 
@@ -114,7 +116,7 @@ export async function validateAll(envelopes: ExtractionEnvelope[]): Promise<Vali
 }
 
 export async function validatePage(
-  input: ExtractedPage,
+  input: ExtractedPageInput,
   options: Pick<ValidationPipelineConfig, 'validators' | 'disableRules' | 'severityOverrides' | 'runtime'> = {},
 ) {
   const ruleFilter = createRuleFilter({
@@ -234,7 +236,7 @@ function toEnvelope<T>(type: string, data: T): ExtractionEnvelope<T> {
   };
 }
 
-function toEnvelopes(page: ExtractedPage): ExtractionEnvelope[] {
+function toEnvelopes(page: ExtractedPageInput): ExtractionEnvelope[] {
   const envelopes: ExtractionEnvelope[] = [];
 
   for (const entry of [
@@ -254,7 +256,7 @@ function toEnvelopes(page: ExtractedPage): ExtractionEnvelope[] {
 }
 
 function toPageEnvelope<K extends TargetKey>(
-  page: ExtractedPage,
+  page: ExtractedPageInput,
   target: K,
 ): ExtractionEnvelope<ExtractedDataByTarget[K]> | null {
   const targetStatus = resolveTargetStatus(page);
@@ -286,7 +288,7 @@ function getAllowedValidatorTypes(validators: ValidationPipelineConfig['validato
   );
 }
 
-function resolveTargetStatus(page: ExtractedPage) {
+function resolveTargetStatus(page: ExtractedPageInput) {
   if (page.targetStatus) {
     return page.targetStatus;
   }
