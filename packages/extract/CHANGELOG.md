@@ -1,5 +1,11 @@
 # @seo-solver/extract
 
+## 0.2.0
+
+### Minor Changes
+
+- [#4](https://github.com/neiromaster/seo-solver/pull/4) [`dbf1451`](https://github.com/neiromaster/seo-solver/commit/dbf145116745b8e2c711098ad6ab3ff741862830) Thanks [@neiromaster](https://github.com/neiromaster)! - Add target access helpers for reading `ExtractedPage` data and status in third-party projects.
+
 ## 0.1.0
 
 ### Minor Changes
