@@ -34,10 +34,25 @@ Trusted Publishing requires the npm package to already exist. The first publicat
 - Provider: GitHub Actions
 - Organization: `neiromaster`
 - Repository: `seo-solver`
-- Workflow filename: `.github/workflows/release.yml`
+- Workflow filename: `release.yml`
 - Environment: leave empty
 
 Each package can have only one Trusted Publisher, so all packages point to the same workflow file.
+
+Use the workflow filename only. npm expects `release.yml`, not the repository path `.github/workflows/release.yml`.
+
+If a release run fails with `E404 Not Found - PUT https://registry.npmjs.org/<package>`, first check whether the package exists on npm and whether that exact package has the Trusted Publisher settings above. npm can report missing publish permission as a misleading 404. If the package already exists, fix the Trusted Publisher configuration and rerun the release workflow.
+
+If the package itself does not exist yet, bootstrap it once with an npm account or temporary token that has publish rights, for example:
+
+```bash
+pnpm --filter <package> build
+pnpm --filter <package> publish --access public --no-git-checks
+```
+
+Then add the Trusted Publisher settings above for that package and rerun the release workflow. Do not add `NPM_TOKEN` to `.github/workflows/release.yml` for normal releases.
+
+The release workflow also upgrades npm before publishing because npm Trusted Publishing requires a recent npm CLI with OIDC support; the Node 22 runtime alone is not enough to guarantee that capability.
 
 ## Package metadata requirements
 
