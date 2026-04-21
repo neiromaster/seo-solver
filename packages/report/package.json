@@ -1,7 +1,7 @@
 {
   "name": "@seo-solver/report",
   "description": "SEO report formatting and reporting toolkit",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
