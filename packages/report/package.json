@@ -1,0 +1,43 @@
+{
+  "name": "@seo-solver/report",
+  "description": "SEO report formatting and reporting toolkit",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "@seo-solver/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc -b tsconfig.test.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@seo-solver/types": "workspace:^",
+    "ansis": "^4.2.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "packages/report"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

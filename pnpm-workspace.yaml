@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  dprint: true
+  esbuild: true
+  lefthook: true

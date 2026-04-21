@@ -1,0 +1,49 @@
+{
+  "name": "@seo-solver/extract",
+  "description": "Structured SEO data extraction pipeline for SEO Solver",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "@seo-solver/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./advanced": {
+      "@seo-solver/source": "./src/advanced.ts",
+      "types": "./dist/advanced.d.ts",
+      "import": "./dist/advanced.js",
+      "default": "./dist/advanced.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown && pnpm exec tsc -b tsconfig.build.json --force",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc -b tsconfig.test.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@seo-solver/types": "workspace:^",
+    "cheerio": "^1.1.2"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "packages/extract"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

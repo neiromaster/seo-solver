@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "customConditions": [],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "references": [
+    {
+      "path": "../types/tsconfig.build.json"
+    }
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "test/**/*.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-support/**/*.ts",
+    "vitest.config.ts"
+  ]
+}

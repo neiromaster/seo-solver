@@ -1,0 +1,64 @@
+{
+  "name": "seo-solver",
+  "version": "0.1.0",
+  "description": "SEO audit and comparison CLI tool",
+  "type": "module",
+  "bin": {
+    "seo-solver": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx --conditions=@seo-solver/source src/index.ts",
+    "start": "tsx --conditions=@seo-solver/source src/index.ts",
+    "build": "tsdown",
+    "prepack": "pnpm run build",
+    "typecheck": "tsc -b tsconfig.test.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "pnpm run build && node scripts/strip-bundled-deps.mjs",
+    "postpublish": "node scripts/restore-package-json.mjs"
+  },
+  "dependencies": {
+    "@adobe/structured-data-validator": "^1.7.0",
+    "@seo-solver/compare": "workspace:^",
+    "@seo-solver/extract": "workspace:^",
+    "@seo-solver/fetch": "workspace:^",
+    "@seo-solver/report": "workspace:^",
+    "@seo-solver/types": "workspace:^",
+    "@seo-solver/validate": "workspace:^",
+    "ansis": "^4.2.0",
+    "cheerio": "^1.1.2",
+    "cmd-ts": "^0.15.0"
+  },
+  "peerDependencies": {
+    "@seo-solver/fetch-playwright": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@seo-solver/fetch-playwright": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@seo-solver/fetch-playwright": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "author": "Maxim (neiromaster) Gavrilenko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neiromaster/seo-solver.git",
+    "directory": "apps/seo-solver"
+  },
+  "bugs": {
+    "url": "https://github.com/neiromaster/seo-solver/issues"
+  },
+  "homepage": "https://github.com/neiromaster/seo-solver#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

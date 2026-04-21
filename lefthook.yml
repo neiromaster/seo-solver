@@ -2,9 +2,15 @@ pre-commit:
   commands:
     check:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,css}"
-      run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      run: pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
     format:
       glob: "*.{yml,yaml}"
-      run: bunx dprint fmt --staged {staged_files}
+      run: pnpm exec dprint fmt --staged {staged_files}
       stage_fixed: true
+    consistency:
+      glob: "**/*.{ts,tsx,js,json,yml,yaml}"
+      run: pnpm run consistency:check
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: pnpm exec tsc -p tsconfig.test.json --noEmit && pnpm exec tsc -p scripts/tsconfig.json --noEmit

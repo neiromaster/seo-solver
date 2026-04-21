@@ -1,0 +1,6 @@
+﻿# comment
+User-agent: *
+Disallow: /admin # no crawl
+Crawl-delay: abc
+
+Sitemap: https://example.com/sitemap.xml

@@ -1,72 +1,178 @@
 # seo-solver
 
-CLI tool for comparing and validating SEO metadata from web pages.
+`seo-solver` is a pnpm workspace that builds a publishable CLI and a set of smaller packages around fetching, extraction, comparison, validation, reporting, and shared contracts for SEO metadata analysis.
 
-## Features
+If you only care about using the CLI, jump to the install and usage sections below. If you want to use the building blocks separately, each publishable package under `packages/` now has its own README with both a simple API and the more advanced package-level API used by the application.
 
-- Compare JSON-LD between two URLs
-- Compare OpenGraph tags between two URLs with `--og`
-- Validate JSON-LD on a single URL
-- Open diffs in a VS Code-like editor with `diff --editor <command>`
-- Open extracted JSON-LD or OpenGraph data in a VS Code-like editor with `validate --editor <command>`
-- Fail fast if the requested editor command is not available in `PATH`
-- Fetch via Playwright (default) or curl with `--curl`
+## What is in this repository?
 
-## Installation
+- [`apps/seo-solver`](apps/seo-solver/README.md) — the publishable CLI package
+- [`packages/fetch`](packages/fetch/README.md) — normalized fetching and backend registry
+- [`packages/fetch-playwright`](packages/fetch-playwright/README.md) — optional Playwright-backed fetch backend
+- [`packages/extract`](packages/extract/README.md) — page-level extraction and target catalog
+- [`packages/compare`](packages/compare/README.md) — page-to-page SEO comparison
+- [`packages/validate`](packages/validate/README.md) — validation, rule catalog, and severity overrides
+- [`packages/report`](packages/report/README.md) — formatting and status helpers
+- [`packages/types`](packages/types/README.md) — shared type contracts and advanced type subpaths
+
+## Development
+
+The workspace expects **Node 22**.
 
 ```bash
-bun install -g seo-solver
+pnpm install
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-## Usage
+Release automation uses Changesets with npm Trusted Publishing. See [npm Trusted Publishing release setup](docs/releases/npm-trusted-publishing.md) before configuring or publishing packages.
 
-The CLI uses subcommands:
+## Install the CLI
+
+The published CLI is packaged as a self-contained artifact. The optional Playwright backend remains separate on purpose.
 
 ```bash
-seo-solver diff <url1> <url2> [flags]
+pnpm add -g seo-solver
+```
+
+If you want browser-backed fetching, install the optional Playwright backend and browser binaries too:
+
+```bash
+pnpm add -g @seo-solver/fetch-playwright playwright
+pnpm exec playwright install
+```
+
+## CLI overview
+
+The CLI exposes four commands:
+
+```bash
+seo-solver compare <url-a> <url-b> [flags]
 seo-solver validate <url> [flags]
+seo-solver extract <url> [flags]
+seo-solver list-rules [flags]
 ```
 
-## Examples
+The default fetcher is `native`. When you pass `--fetcher playwright`, the CLI will use the optional Playwright backend instead.
+
+## Common examples
 
 ```bash
-# Compare JSON-LD and open the diff in Cursor
-seo-solver diff https://example.com https://example.com/new --editor cursor
+# Compare two pages using the default target set
+seo-solver compare https://example.com https://example.com/new
 
-# Compare OpenGraph and open the diff in VS Code
-seo-solver diff https://example.com https://example.com/new --og --editor code
+# Compare only selected targets
+seo-solver compare https://example.com https://example.com/new --targets opengraph,meta
 
-# Validate a page's JSON-LD
-seo-solver validate https://example.com
+# Validate one page with pure JSON-LD validation (the default)
+seo-solver validate https://example.com --jsonld-runtime off
 
-# Open extracted metadata in Surf, then continue validation
-seo-solver validate https://example.com --editor surf
+# Validate one page with browser-backed fetching
+seo-solver validate https://example.com --fetcher playwright
 
-# Open extracted OpenGraph in Cursor
-seo-solver validate https://example.com --og --editor cursor
+# Extract only selected targets as JSON
+seo-solver extract https://example.com --targets meta,opengraph --format json
+
+# Print the current validation rule catalog as JSON
+seo-solver list-rules --format json
 ```
 
-## Options
+## Final CLI vocabulary
 
-### `diff`
+### Shared fetch flags
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--curl` | `-c` | Use curl for SSR HTML fetching |
-| `--og` | `-o` | Compare OpenGraph instead of JSON-LD |
-| `--editor <command>` | `-e` | Open diff in editor |
+These flags are available on `compare`, `validate`, and `extract`.
+
+| Flag | Meaning |
+|---|---|
+| `--fetcher <native\|playwright>` | choose the fetch backend |
+| `--timeout-ms <ms>` | request timeout in milliseconds |
+| `--user-agent <string>` | override the HTTP user agent |
+| `--retry-attempts <n>` | number of retry attempts |
+| `--retry-delay-ms <ms>` | delay between retries |
+| `--retry-backoff <fixed\|exponential>` | retry backoff strategy |
+| `--respect-retry-after <true\|false>` | honor `Retry-After` headers |
+
+### `compare`
+
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | compare only selected targets such as `meta`, `opengraph`, `jsonld`, `robotsTxt` |
+| `--editor <code\|cursor\|surf\|zed>` | open two normalized extraction JSON artifacts in a supported editor diff view while keeping normal compare output behavior |
+| `--output <path>` / `-o` | write comparison output to a file |
 
 ### `validate`
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--curl` | `-c` | Use curl for SSR HTML fetching |
-| `--og` | `-o` | Read OpenGraph instead of JSON-LD |
-| `--editor <command>` | `-e` | Open extracted metadata in editor |
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | validate only selected targets |
+| `--format <terminal\|json\|markdown\|html>` / `-f` | choose output format |
+| `--min-severity <level>` | filter displayed diagnostics |
+| `--disable-rules <selector>` | disable exact rule ids or wildcard selectors like `opengraph/*` |
+| `--severity-override <rule=severity>` | override rule severity with strict selector validation |
+| `--jsonld-runtime <adobe\|off>` | opt into runtime JSON-LD validation or keep it pure |
+| `--jsonld-cache-file <path>` | optional schema cache file |
+| `--jsonld-schema-url <url>` | override the schema URL |
+| `--jsonld-schema-ttl-ms <ms>` | schema cache TTL in milliseconds |
+| `--output <path>` / `-o` | write validation output to a file |
 
-> If `--editor` is provided, the CLI first checks that the editor command exists in `PATH` and fails immediately if it does not.
->
-> `validate --og` fetches and reports OpenGraph tags, but OpenGraph validation itself is not implemented yet.
+### `extract`
+
+| Flag | Meaning |
+|---|---|
+| `--targets <list>` / `-e` | extract only selected targets |
+| `--format <json>` / `-f` | choose output format |
+| `--editor <code\|cursor\|surf\|zed>` | open the generated extraction JSON in a supported editor |
+| `--output <path>` / `-o` | write extraction output to a file |
+
+## Editor mode
+
+The CLI can optionally open generated JSON artifacts in an editor:
+
+```bash
+# Open extraction output in VS Code
+seo-solver extract https://example.com --editor code
+
+# Write extraction output to a file and open that file in Cursor
+seo-solver extract https://example.com --output extract.json --editor cursor
+
+# Keep normal compare JSON output and also open normalized diff artifacts in VS Code
+seo-solver compare https://example.com https://example.com/new --format json --editor code
+
+# Keep file output and also open normalized diff artifacts in VS Code
+seo-solver compare https://example.com https://example.com/new --format json --output compare.json --editor code
+```
+
+Editor support is registry-driven. Current built-in editor entries are:
+
+- `code` — single-file open and diff mode via `--diff`
+- `cursor` — single-file open and diff mode via `--diff`
+- `surf` — single-file open and diff mode via `--diff`
+- `zed` — single-file open and diff mode via `diff`
+
+Adding another editor is intended to stay low-friction: append a new registry entry with its command and diff arguments, then add focused tests for that adapter.
+
+### `list-rules`
+
+| Flag | Meaning |
+|---|---|
+| `--format <terminal\|json>` / `-f` | choose human-readable or JSON output |
+| `--output <path>` / `-o` | write the rule catalog to a file |
+
+## Package-level usage
+
+If you want to build on the pieces instead of only using the CLI, start here:
+
+- [packages/fetch/README.md](packages/fetch/README.md)
+- [packages/fetch-playwright/README.md](packages/fetch-playwright/README.md)
+- [packages/extract/README.md](packages/extract/README.md)
+- [packages/compare/README.md](packages/compare/README.md)
+- [packages/validate/README.md](packages/validate/README.md)
+- [packages/report/README.md](packages/report/README.md)
+- [packages/types/README.md](packages/types/README.md)
+
+Those README files explain both the simple, human-friendly API and the more advanced API used inside the application.
 
 ## License
 

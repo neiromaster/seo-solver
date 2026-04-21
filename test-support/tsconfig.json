@@ -1,0 +1,13 @@
+{
+  "extends": "../packages/typescript-config/composite.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist"
+  },
+  "include": [
+    "*.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "extends": "../typescript-config/composite.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./.typecheck"
+  },
+  "include": [
+    "examples/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "tsdown.config.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "dist",
+    ".typecheck"
+  ],
+  "references": [
+    {
+      "path": "../../test-support"
+    },
+    {
+      "path": "../types/tsconfig.test.json"
+    },
+    {
+      "path": "../extract/tsconfig.test.json"
+    }
+  ]
+}
