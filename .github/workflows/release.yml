@@ -61,7 +61,8 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm run version-packages
-          publish: pnpm publish -r
+          publish: npx changeset publish
+          createGithubReleases: true
           commit: "chore: version packages"
           title: "chore: version packages"
         env:
