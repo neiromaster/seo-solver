@@ -1,4 +1,15 @@
-export { GenericComparator } from './comparators/generic.js';
-export { HeadingsComparator } from './comparators/headings.js';
-export { diff } from './diff.js';
-export { createComparisonPipeline } from './pipeline.js';
+export { compareObjects } from './core/compare-objects.js';
+export { diff } from './core/diff.js';
+export { GenericComparator } from './seo/comparators/generic.js';
+export { HeadingsComparator } from './seo/comparators/headings.js';
+export {
+  compareAll,
+  compareCanonical,
+  compareHeadings,
+  compareJsonLd,
+  compareMetaTags,
+  compareOpenGraph,
+  comparePages,
+  compareRobotsTxt,
+  createComparisonPipeline,
+} from './seo/pipeline.js';

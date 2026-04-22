@@ -1,27 +1,7 @@
 import type { DiffEntry } from '@seo-solver/types/compare';
-import type { Comparator } from '@seo-solver/types/compare-advanced';
 import type { HeadingEntry } from '@seo-solver/types/extract';
-import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 
-export class HeadingsComparator implements Comparator {
-  readonly type = 'headings';
-
-  compare(a: ExtractionEnvelope, b: ExtractionEnvelope): DiffEntry[] {
-    const headingsA = asHeadings(a.data);
-    const headingsB = asHeadings(b.data);
-    return buildAlignment(headingsA, headingsB);
-  }
-}
-
-function asHeadings(value: unknown): HeadingEntry[] {
-  return Array.isArray(value) ? (value as HeadingEntry[]) : [];
-}
-
-function sameHeading(a: HeadingEntry, b: HeadingEntry): boolean {
-  return a.level === b.level && a.text === b.text;
-}
-
-function buildAlignment(headingsA: HeadingEntry[], headingsB: HeadingEntry[]): DiffEntry[] {
+export function diffHeadings(headingsA: HeadingEntry[], headingsB: HeadingEntry[]): DiffEntry[] {
   const costs = Array.from({ length: headingsA.length + 1 }, () => Array<number>(headingsB.length + 1).fill(0));
 
   for (let indexA = 1; indexA <= headingsA.length; indexA += 1) {
@@ -84,6 +64,10 @@ function buildAlignment(headingsA: HeadingEntry[], headingsB: HeadingEntry[]): D
   }
 
   return diffs.reverse();
+}
+
+function sameHeading(a: HeadingEntry, b: HeadingEntry): boolean {
+  return a.level === b.level && a.text === b.text;
 }
 
 function getHeading(headings: HeadingEntry[], index: number): HeadingEntry {

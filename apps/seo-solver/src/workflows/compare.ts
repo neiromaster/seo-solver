@@ -1,4 +1,4 @@
-import { comparePages } from '@seo-solver/compare';
+import { comparePages } from '@seo-solver/compare/advanced';
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ExtractedPage, TargetKey } from '@seo-solver/types/extract';
 import type { Fetcher } from '@seo-solver/types/fetch';
