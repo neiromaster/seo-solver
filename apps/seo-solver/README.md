@@ -1,129 +1,214 @@
-# seo-solver CLI
+# seo-solver
 
-`seo-solver` is the publishable CLI package in this workspace. It pulls together the fetch, extract, compare, validate, and report packages into a single command-line tool for SEO audits and page-to-page comparisons.
+CLI tool for SEO audits, page-to-page comparisons, and extracting SEO data from HTML.
+
+Use `seo-solver` to check titles, descriptions, canonical tags, Open Graph, JSON-LD, robots.txt, and other SEO signals from the terminal before a release, in CI, or while comparing production against a preview build.
+
+```bash
+seo-solver validate https://example.com
+```
+
+## Why seo-solver?
+
+SEO regressions are easy to miss. A template change can drop a canonical tag, break Open Graph data, or change structured data without anyone noticing until after release.
+
+`seo-solver` helps answer three practical questions:
+
+- what SEO data is on this page?
+- does it pass validation?
+- what changed between one version of a page and another?
 
 ## Installation
 
-This package targets **Node 22** and is published as a self-contained CLI artifact.
+`seo-solver` targets **Node 22+** and is published as the `seo-solver` CLI package.
+
+You can use the CLI without installing it globally, or install it with the package manager you already use.
+
+### Run without installing
+
+#### pnpm
+
+```bash
+pnpm dlx seo-solver validate https://example.com
+```
+
+#### npm
+
+```bash
+npx seo-solver validate https://example.com
+```
+
+#### Yarn
+
+```bash
+yarn dlx seo-solver validate https://example.com
+```
+
+#### Bun
+
+```bash
+bunx seo-solver validate https://example.com
+```
+
+### Install globally
+
+#### pnpm
 
 ```bash
 pnpm add -g seo-solver
 ```
 
-If you want the optional Playwright backend:
+#### npm
+
+```bash
+npm install -g seo-solver
+```
+
+#### Yarn
+
+```bash
+yarn global add seo-solver
+```
+
+#### Bun
+
+```bash
+bun add --global seo-solver
+```
+
+### Optional Playwright backend
+
+If you need browser-backed fetching for JavaScript-heavy pages, install the optional Playwright backend and browser binaries with your package manager of choice:
+
+#### pnpm
 
 ```bash
 pnpm add -g @seo-solver/fetch-playwright playwright
 pnpm exec playwright install
 ```
 
-## What this package gives you
+#### npm
 
-- one CLI for extraction, validation, comparison, and rule discovery
-- a thin orchestration layer over the workspace packages
-- the final public command vocabulary used by the project
-- optional browser-backed fetching through Playwright
+```bash
+npm install -g @seo-solver/fetch-playwright playwright
+npx playwright install
+```
 
-## Simple API
+#### Yarn
 
-The main entrypoint is the installed `seo-solver` command.
+```bash
+yarn global add @seo-solver/fetch-playwright playwright
+yarn playwright install
+```
+
+#### Bun
+
+```bash
+bun add --global @seo-solver/fetch-playwright playwright
+bunx playwright install
+```
+
+## Quick start
+
+Validate a page:
 
 ```bash
 seo-solver validate https://example.com
-seo-solver compare https://example.com https://example.com/new
+```
+
+Compare production and preview:
+
+```bash
+seo-solver compare https://example.com https://preview.example.com
+```
+
+Extract normalized SEO data as JSON:
+
+```bash
 seo-solver extract https://example.com --format json
-seo-solver list-rules --format json
 ```
 
-For most users, that is the whole API: pass URLs in, get structured output back.
+Print the current validation rule catalog:
 
-## Advanced API
-
-The CLI is itself built as a package. If you are extending the application or embedding parts of it in another tool, the internal structure is split into:
-
-- `src/commands/` — thin command entrypoints
-- `src/workflows/` — orchestration over package-owned APIs
-- `src/cli-support/` — error handling, fetcher resolution, output writing, and reporter setup
-
-The executable entrypoint is just:
-
-```ts
-import { run } from 'cmd-ts';
-import { app } from './src/app.js';
-
-run(app, process.argv.slice(2));
+```bash
+seo-solver list-rules
 ```
-
-That means the package is intentionally small: the interesting behavior lives in the workspace packages it orchestrates.
 
 ## Commands
 
+| Command | Purpose |
+| --- | --- |
+| `seo-solver validate <url>` | Validate one page against SEO rules |
+| `seo-solver compare <url-a> <url-b>` | Compare SEO data between two pages |
+| `seo-solver extract <url>` | Extract normalized SEO data without validation |
+| `seo-solver list-rules` | Print the available validation rules |
+
+## Common use cases
+
+### Check a page before release
+
 ```bash
-seo-solver compare <url-a> <url-b> [flags]
-seo-solver validate <url> [flags]
-seo-solver extract <url> [flags]
-seo-solver list-rules [flags]
+seo-solver validate https://preview.example.com
 ```
 
-## Useful examples
+Use this before shipping a landing page, article, product page, or generated HTML.
+
+### Compare production and a new version
+
+```bash
+seo-solver compare https://example.com https://preview.example.com
+```
+
+Use this to spot unexpected changes in title, description, canonical, Open Graph, JSON-LD, robots.txt, and other extracted targets.
+
+### Extract SEO data for scripts or CI
+
+```bash
+seo-solver extract https://example.com --targets meta,opengraph,jsonld --format json
+```
+
+Use this when you want structured output for automation or custom checks.
+
+### Open artifacts in your editor
+
+```bash
+seo-solver extract https://example.com --editor code
+```
+
+Built-in editor presets are `code`, `cursor`, `surf`, and `zed`.
+
+## Browser-backed fetching
+
+By default, the CLI uses the native fetcher. For pages that need browser-like behavior, install the optional Playwright backend and run:
+
+```bash
+seo-solver validate https://example.com --fetcher playwright
+```
+
+## More examples
 
 ```bash
 # Compare only selected targets
-seo-solver compare https://example.com https://example.com/new --targets opengraph,meta
+seo-solver compare https://example.com https://preview.example.com --targets opengraph,meta
 
 # Validate with pure JSON-LD validation (default)
 seo-solver validate https://example.com --jsonld-runtime off
 
-# Validate with browser-backed fetching
-seo-solver validate https://example.com --fetcher playwright
+# Disable selected rules
+seo-solver validate https://example.com --disable-rules opengraph/*
 
-# Extract a focused subset of targets as JSON
-seo-solver extract https://example.com --targets meta,opengraph --format json
+# Override rule severity
+seo-solver validate https://example.com --severity-override opengraph/description-missing=error
 
-# Open extraction output directly in VS Code
-seo-solver extract https://example.com --editor code
-
-# Keep normal compare JSON output and also open diff artifacts in VS Code
-seo-solver compare https://example.com https://example.com/new --format json --editor code
-
-# Print the full rule catalog as JSON
-seo-solver list-rules --format json
+# Keep normal compare output and also open diff artifacts in VS Code
+seo-solver compare https://example.com https://preview.example.com --format json --editor code
 ```
 
-## Key flags
+## Documentation
 
-### Shared fetch flags
-
-These flags are available on `compare`, `validate`, and `extract`:
-
-- `--fetcher <native|playwright>`
-- `--timeout-ms <ms>`
-- `--user-agent <string>`
-- `--retry-attempts <n>`
-- `--retry-delay-ms <ms>`
-- `--retry-backoff <fixed|exponential>`
-- `--respect-retry-after <true|false>`
-
-### Comparison and extraction
-
-- `--targets <list>` / `-e` selects a subset of package-owned targets such as `meta`, `opengraph`, `jsonld`, or `robotsTxt`
-- `--editor <code|cursor|surf|zed>` opens generated artifacts in a supported editor
-
-For `compare`, `--editor` is independent from normal reporting. That means `--format` and `--output` still control the standard compare report, while editor mode separately opens two normalized JSON artifacts for visual diff.
-
-Current built-in editor entries are `code`, `cursor`, `surf`, and `zed`. Support is registry-driven, so adding another editor should stay localized to one adapter entry plus tests.
-
-### Validation-specific
-
-- `--disable-rules <selector>` supports exact ids and wildcard selectors like `opengraph/*`
-- `--severity-override <rule=severity>` is strict and will fail on unknown selectors
-- `--jsonld-runtime <adobe|off>` controls optional runtime JSON-LD validation
-- `--jsonld-cache-file`, `--jsonld-schema-url`, `--jsonld-schema-ttl-ms` configure the optional runtime path
-
-## Related package docs
-
-This package is mostly orchestration. For the real domain APIs, see:
-
+- [CLI reference](./docs/cli-reference.md)
+- [CLI internals](../../docs/architecture/cli-internals.md)
+- [Monorepo conventions](../../docs/architecture/monorepo-conventions.md)
 - [packages/fetch](../../packages/fetch/README.md)
 - [packages/fetch-playwright](../../packages/fetch-playwright/README.md)
 - [packages/extract](../../packages/extract/README.md)
@@ -132,9 +217,6 @@ This package is mostly orchestration. For the real domain APIs, see:
 - [packages/report](../../packages/report/README.md)
 - [packages/types](../../packages/types/README.md)
 
-## Package notes
+## License
 
-- The package is published as `seo-solver`.
-- The published tarball is intentionally self-contained and ships a single runtime entry at `dist/index.js`.
-- The optional Playwright backend is declared as a peer dependency, not a hard dependency.
-- The published package ships the built CLI from `dist/index.js`.
+MIT
