@@ -1,7 +1,7 @@
 import type { DiffEntry } from '@seo-solver/types/compare';
 import type { Comparator } from '@seo-solver/types/compare-advanced';
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
-import { diff } from '../diff.js';
+import { diff } from '../../core/diff.js';
 
 export type GenericComparatorOptions = {
   ignoreArrayOrder?: boolean | undefined;

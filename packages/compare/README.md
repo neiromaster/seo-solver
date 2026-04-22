@@ -1,6 +1,6 @@
 # @seo-solver/compare
 
-`@seo-solver/compare` compares two extracted pages and returns a structured comparison report. It is the package you reach for when the question is “what changed between these two pages?”
+`@seo-solver/compare` compares two arbitrary values and returns structured diffs. Use it when the question is “what changed between these two objects?” and reach for the advanced entrypoint when you need the SEO-specific page comparison pipeline.
 
 ## Installation
 
@@ -10,31 +10,32 @@ pnpm add @seo-solver/compare
 
 ## What this package gives you
 
-- a simple `comparePages()` API for page-to-page comparisons
-- structured comparison reports with fetch metadata and per-target diffs
-- support for target selection and ignore rules
-- an advanced comparator and diff surface when you need lower-level control
+- a generic `compareObjects()` API for comparing arbitrary values
+- a low-level `diff()` helper when you want raw diff entries directly
+- an advanced SEO comparison surface for extracted pages, comparators, and pipelines
 
-## Simple API
+## Base API
 
 ```ts
-import { comparePages } from '@seo-solver/compare';
+import { compareObjects } from '@seo-solver/compare';
 
-const report = comparePages(leftPage, rightPage, {
-  targets: ['meta', 'opengraph'],
-});
+const result = compareObjects(
+  { title: 'Before', meta: { description: 'Old description' } },
+  { title: 'After', meta: { description: 'New description' } },
+);
 
-console.log(report.comparisons);
+console.log(result.diffs);
 ```
 
-This is the API to use when you already have two extracted pages and want a finished comparison report back.
+Use the root package when you want generic object comparison without pulling in the SEO page-comparison surface.
 
 ## Advanced API
 
-The application and package internals use the advanced surface when they need comparator-level control or direct diff helpers.
+Use the advanced surface when you need the SEO page-comparison pipeline, comparator-level control, or direct diff helpers.
 
 ```ts
 import {
+  comparePages,
   createComparisonPipeline,
   diff,
   GenericComparator,
@@ -42,9 +43,10 @@ import {
 } from '@seo-solver/compare/advanced';
 
 const pipeline = createComparisonPipeline({ ignoreArrayOrder: true });
+const report = comparePages(leftPage, rightPage);
 ```
 
-Use `@seo-solver/compare/advanced` when you are intentionally building around comparators and pipeline internals. For most consumers, `comparePages()` is the right place to start.
+Use `@seo-solver/compare/advanced` when you are intentionally building around extracted-page comparison, comparators, and pipeline internals.
 
 ## Related docs and examples
 

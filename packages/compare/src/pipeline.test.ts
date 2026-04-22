@@ -11,7 +11,7 @@ import {
   comparePages,
   compareRobotsTxt,
   createComparisonPipeline,
-} from './pipeline.js';
+} from './seo/pipeline.js';
 
 describe('createComparisonPipeline', () => {
   test('compares matching types in order and preserves identical results', () => {

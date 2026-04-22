@@ -1,8 +1,8 @@
-import { comparePages } from '@seo-solver/compare';
-import type { ExtractedPage } from '@seo-solver/types/extract';
+import { compareObjects } from '@seo-solver/compare';
 
-declare const leftPage: ExtractedPage;
-declare const rightPage: ExtractedPage;
+const result = compareObjects(
+  { title: 'Old title', meta: { description: 'Before' } },
+  { title: 'New title', meta: { description: 'After' } },
+);
 
-const report = comparePages(leftPage, rightPage);
-console.log(report);
+console.log(result.diffs);
