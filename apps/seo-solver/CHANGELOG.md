@@ -1,5 +1,12 @@
 # seo-solver
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`a493a35`](https://github.com/neiromaster/seo-solver/commit/a493a35f52e64dbeb49f761d1c714abd34154b02)]:
+  - @seo-solver/fetch-playwright@0.1.0
+
 ## 0.1.4
 
 ### Patch Changes

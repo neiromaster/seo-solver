@@ -1,5 +1,11 @@
 # @seo-solver/fetch-playwright
 
+## 0.1.0
+
+### Minor Changes
+
+- [#12](https://github.com/neiromaster/seo-solver/pull/12) [`a493a35`](https://github.com/neiromaster/seo-solver/commit/a493a35f52e64dbeb49f761d1c714abd34154b02) Thanks [@neiromaster](https://github.com/neiromaster)! - Refactor the Playwright fetch package around clearer root and internal boundaries. The package now aligns its public story around simple fetch helpers while keeping retry/runtime mechanics and structural layout easier to reason about alongside the refactored core fetch package.
+
 ## 0.0.2
 
 ### Patch Changes
