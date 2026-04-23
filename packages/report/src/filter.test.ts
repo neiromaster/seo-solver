@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { validationReportFixture } from '../test/fixtures/validation-report.js';
-import { filterDiagnosticsBySeverity } from './filter.js';
+import { filterDiagnosticsBySeverity } from './core/filter.js';
 
 describe('filterDiagnosticsBySeverity', () => {
   const diagnostics = validationReportFixture.validations.flatMap((validation) => validation.diagnostics);

@@ -1,6 +1,6 @@
 import type { ComparisonReport } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
-import { summarizeComparison } from '../../summary.js';
+import { summarizeComparison } from '../../core/summary.js';
 
 export function formatJsonComparison(report: ComparisonReport, config: ReporterConfig): string {
   const summary = summarizeComparison(report);

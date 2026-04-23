@@ -12,7 +12,7 @@ pnpm add @seo-solver/report
 
 - simple top-level helpers like `formatValidationReport()` and `formatComparisonReport()`
 - status helpers like `hasFailed()` and `hasDiffs()`
-- reusable reporter construction for apps and CLIs
+- reusable reporter construction for apps and CLIs through an explicit advanced entrypoint
 - terminal, json, markdown, and html output support
 
 ## Simple API
@@ -29,21 +29,21 @@ const validationOutput = formatValidationReport(validationReport, { format: 'jso
 const comparisonOutput = formatComparisonReport(comparisonReport, { format: 'markdown' });
 ```
 
-If you just want formatted output or final status checks, the root API is enough.
+If you just want formatted output or final status checks, the root API is enough. It intentionally does not expose reporter construction or shared formatting internals.
 
 ## Advanced API
 
-The application uses `createReporter()` when it wants to resolve formatting config once and reuse it across commands.
+The application uses `@seo-solver/report/advanced` when it wants to resolve formatting config once and reuse it across commands.
 
 ```ts
-import { createReporter, filterDiagnosticsBySeverity, groupDiagnostics } from '@seo-solver/report';
+import { createReporter, filterDiagnosticsBySeverity, groupDiagnostics } from '@seo-solver/report/advanced';
 
 const reporter = createReporter({ format: 'json', jsonPretty: true });
 
 console.log(reporter.formatValidationReport(validationReport));
 ```
 
-Use the reusable reporter form when you want one configured formatter for many calls rather than one-off formatting helpers.
+Use the advanced entrypoint when you want one configured formatter for many calls rather than one-off formatting helpers.
 
 ## Related docs and examples
 
