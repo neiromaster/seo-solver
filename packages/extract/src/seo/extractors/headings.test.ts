@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { extractHeadings } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { extractHeadings } from '../../index.js';
+import { readFixture } from '../../test-support/fixtures.js';
 
 describe('HeadingsExtractor', () => {
   test('extracts headings in document order', () => {

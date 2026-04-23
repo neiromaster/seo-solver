@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'vitest';
-import { ExtractionError } from './errors.js';
-import { JsonLdExtractor } from './extractors/jsonld.js';
-import { extractJsonLd, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { htmlToMinimalFetchResult } from '../../api/html-input.js';
+import { ExtractionError } from '../../errors.js';
+import { extractJsonLd } from '../../index.js';
+import { readFixture } from '../../test-support/fixtures.js';
+import { JsonLdExtractor } from './jsonld.js';
 
 describe('JsonLdExtractor', () => {
   test('extracts valid blocks', () => {

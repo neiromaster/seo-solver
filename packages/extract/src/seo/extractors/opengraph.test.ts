@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { OpenGraphExtractor } from './extractors/opengraph.js';
-import { extractOpenGraph, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { htmlToMinimalFetchResult } from '../../api/html-input.js';
+import { extractOpenGraph } from '../../index.js';
+import { readFixture } from '../../test-support/fixtures.js';
+import { OpenGraphExtractor } from './opengraph.js';
 
 describe('OpenGraphExtractor', () => {
   test('extracts opengraph and namespace tags', () => {

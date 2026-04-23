@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { CanonicalExtractor } from './extractors/canonical.js';
-import { extractCanonical, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { htmlToMinimalFetchResult } from '../../api/html-input.js';
+import { extractCanonical } from '../../index.js';
+import { readFixture } from '../../test-support/fixtures.js';
+import { CanonicalExtractor } from './canonical.js';
 
 describe('CanonicalExtractor', () => {
   test('extracts canonical and hreflang links', () => {
