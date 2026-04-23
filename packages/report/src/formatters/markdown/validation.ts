@@ -1,7 +1,7 @@
 import type { ReporterConfig } from '@seo-solver/types/report';
 import type { ValidationReport } from '@seo-solver/types/validate';
-import { filterDiagnosticsBySeverity } from '../../filter.js';
-import { groupDiagnostics, summarizeValidation } from '../../summary.js';
+import { filterDiagnosticsBySeverity } from '../../core/filter.js';
+import { groupDiagnostics, summarizeValidation } from '../../core/summary.js';
 import {
   escapeMarkdownTableCell,
   formatSeverityIcon,

@@ -1,4 +1,4 @@
-import { createReporter } from '@seo-solver/report';
+import { createReporter } from '@seo-solver/report/advanced';
 import type { Reporter, ReporterConfig } from '@seo-solver/types/report';
 import { resolveReportFormat, resolveSeverity, resolveVerbosityLevel } from '../types.js';
 
