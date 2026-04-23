@@ -17,11 +17,14 @@ export type {
   TargetCatalogEntry,
   TargetKey,
 } from '@seo-solver/types/extract';
-export { listTargets } from './catalog.js';
-export { ExtractionError } from './errors.js';
+export { extractHtml, extractPage, extractRobotsText } from './api/extract-page.js';
 export {
-  extractHtml,
-  extractPage,
-  extractRobotsText,
-} from './pipeline.js';
+  extractCanonical,
+  extractHeadings,
+  extractJsonLd,
+  extractMetaTags,
+  extractOpenGraph,
+} from './api/extract-targets.js';
+export { listTargets } from './core/catalog.js';
+export { ExtractionError } from './errors.js';
 export { getTargetData, getTargetStatus, hasTargetData } from './status.js';

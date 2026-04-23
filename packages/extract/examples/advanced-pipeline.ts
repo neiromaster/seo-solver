@@ -1,5 +1,5 @@
 import { listTargets } from '@seo-solver/extract';
-import { createExtractorPipeline } from '@seo-solver/extract/advanced';
+import { createExtractorPipeline, MetaTagsExtractor } from '@seo-solver/extract/advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
 
 const input: FetchResult = {
@@ -15,5 +15,7 @@ const input: FetchResult = {
 };
 
 const pipeline = createExtractorPipeline({ targets: listTargets().map((entry) => entry.key) });
+const customOnly = createExtractorPipeline({ targets: [new MetaTagsExtractor()] });
 
 console.log(pipeline.extract(input));
+console.log(customOnly.extract(input));

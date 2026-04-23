@@ -11,9 +11,9 @@ pnpm add @seo-solver/extract
 ## What this package gives you
 
 - page-level extraction results with a stable `{ source, data, errors }` wrapper and target-driven sparse `data`
+- small helpers for extracting specific SEO targets like meta tags, Open Graph, JSON-LD, headings, and canonical links
 - small helpers for reading target data and status from `ExtractedPage`
 - a package-owned `listTargets()` catalog
-- simple helpers for HTML pages and robots.txt
 - an advanced pipeline surface for custom extractors and low-level extraction work
 
 ## Simple API
@@ -27,6 +27,11 @@ The basic API returns the stable `ExtractedPage` contract from `@seo-solver/type
 | Extract from an HTML string | `extractHtml` from `@seo-solver/extract` | `ExtractedPage` |
 | Extract from a `FetchResult` | `extractPage` from `@seo-solver/extract` | `ExtractedPage` |
 | Extract from a robots.txt body | `extractRobotsText` from `@seo-solver/extract` | `ExtractedPage` |
+| Extract only meta tags | `extractMetaTags` from `@seo-solver/extract` | `MetaTagsData \| null` |
+| Extract only Open Graph tags | `extractOpenGraph` from `@seo-solver/extract` | `OpenGraphData \| null` |
+| Extract only JSON-LD blocks | `extractJsonLd` from `@seo-solver/extract` | `JsonLdData \| null` |
+| Extract only headings | `extractHeadings` from `@seo-solver/extract` | `HeadingsData \| null` |
+| Extract only canonical links | `extractCanonical` from `@seo-solver/extract` | `CanonicalData \| null` |
 | Inspect supported targets | `listTargets` from `@seo-solver/extract` | `TargetCatalogEntry[]` |
 | Read selected target data safely | `getTargetData`, `getTargetStatus`, `hasTargetData` from `@seo-solver/extract` | Typed target data, status, or boolean |
 | Type the result in your app | `ExtractedPage` from `@seo-solver/types/extract` | Stable page-level contract |
@@ -52,6 +57,19 @@ console.log(listTargets().map((target) => target.key));
 
 If you already have a canonical fetch result from `@seo-solver/fetch`, use `extractPage()`.
 
+If you specifically want to extract one SEO target directly, the root API also exposes focused helpers:
+
+```ts
+import { extractCanonical, extractHeadings, extractMetaTags, extractOpenGraph } from '@seo-solver/extract';
+
+const html = '<html><head><title>Hello</title><meta property="og:title" content="Hello"></head><body><h1>Hello</h1></body></html>';
+
+console.log(extractMetaTags(html));
+console.log(extractOpenGraph(html));
+console.log(extractHeadings(html));
+console.log(extractCanonical(html));
+```
+
 If you specifically want to parse a robots.txt body, there is also a dedicated helper:
 
 ```ts
@@ -64,7 +82,7 @@ console.log(robotsPage.data.robotsTxt);
 
 ## Advanced API
 
-The application uses the advanced surface when it needs direct access to pipelines or extractor classes.
+The application uses the advanced surface when it needs direct access to pipelines or extractor classes rather than simple extraction helpers.
 
 ```ts
 import { listTargets } from '@seo-solver/extract';

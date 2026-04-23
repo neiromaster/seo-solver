@@ -2,7 +2,7 @@ import type { ResourceType } from '@seo-solver/types';
 import type { CanonicalData } from '@seo-solver/types/extract';
 import type { ExtractionEnvelope, ExtractionWarning } from '@seo-solver/types/extract-advanced';
 import type { FetchResult } from '@seo-solver/types/fetch';
-import { type ParsedDocument, parseHtml } from '../parse-html.js';
+import { type ParsedDocument, parseHtml } from '../../core/parse-html.js';
 
 export class CanonicalExtractor {
   readonly type = 'canonical';

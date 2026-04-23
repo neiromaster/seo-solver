@@ -1,8 +1,9 @@
 import type { RobotsTxtData } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
-import { RobotsTxtExtractor } from './extractors/robots-txt.js';
-import { extractRobotsText, htmlToMinimalFetchResult } from './pipeline.js';
-import { readFixture } from './test-support/fixtures.js';
+import { extractRobotsText } from '../../api/extract-page.js';
+import { htmlToMinimalFetchResult } from '../../api/html-input.js';
+import { readFixture } from '../../test-support/fixtures.js';
+import { RobotsTxtExtractor } from './robots-txt.js';
 
 describe('RobotsTxtExtractor', () => {
   test('parses groups, sitemap, and crawl delay', () => {

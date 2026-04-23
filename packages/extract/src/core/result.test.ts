@@ -1,6 +1,6 @@
 import type { ExtractionEnvelope } from '@seo-solver/types/extract-advanced';
 import { describe, expect, test } from 'vitest';
-import { htmlToMinimalFetchResult } from './pipeline.js';
+import { htmlToMinimalFetchResult } from '../api/html-input.js';
 import { toExtractedPage } from './result.js';
 
 describe('toExtractedPage', () => {

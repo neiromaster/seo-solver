@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { getPackagedExportedRuntimeJsFiles, inspectPackedPackage } from '../../../../test-support/tarball.js';
@@ -11,5 +12,12 @@ describe.sequential('extract packaging contract', () => {
       'package/dist/advanced.js',
       'package/dist/index.js',
     ]);
+
+    const builtRootEntrypoint = await readFile(join(import.meta.dirname, '..', '..', 'dist', 'index.js'), 'utf8');
+    expect(builtRootEntrypoint).toContain('extractMetaTags');
+    expect(builtRootEntrypoint).toContain('extractOpenGraph');
+    expect(builtRootEntrypoint).toContain('extractJsonLd');
+    expect(builtRootEntrypoint).toContain('extractHeadings');
+    expect(builtRootEntrypoint).toContain('extractCanonical');
   }, 120000);
 });
