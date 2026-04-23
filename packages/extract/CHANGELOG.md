@@ -1,5 +1,11 @@
 # @seo-solver/extract
 
+## 0.3.0
+
+### Minor Changes
+
+- [#8](https://github.com/neiromaster/seo-solver/pull/8) [`88e76c2`](https://github.com/neiromaster/seo-solver/commit/88e76c29bc0721a4fda60e1a7a68649948a7d501) Thanks [@neiromaster](https://github.com/neiromaster)! - Refactor the extract package around a simple root SEO API and a narrower advanced engine surface. The root package now exposes focused target extractors alongside page-level helpers, while the advanced entrypoint is centered on pipeline construction, extractor classes, and low-level extraction helpers.
+
 ## 0.2.0
 
 ### Minor Changes
