@@ -1,6 +1,6 @@
 {
   "name": "seo-solver",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "SEO audit and comparison CLI tool",
   "type": "module",
   "bin": {
