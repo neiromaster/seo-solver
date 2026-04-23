@@ -9,8 +9,7 @@ export type {
   FetchResult,
   RetryOptions,
 } from '@seo-solver/types/fetch';
-export { detectResourceType } from './detect-resource-type.js';
-export { FetchError } from './errors.js';
-
-export type { PlaywrightFetcherConfig } from './playwright-fetcher.js';
-export { createFetcher, fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';
+export type { PlaywrightFetcherConfig } from './api/playwright-fetcher.js';
+export { createFetcher, fetchUrl, PlaywrightFetcher } from './api/playwright-fetcher.js';
+export { detectResourceType } from './core/detect-resource-type.js';
+export { FetchError } from './core/errors.js';
