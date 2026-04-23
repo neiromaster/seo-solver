@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
-import { createTestServer, type TestServer } from '../../../test-support/test-server.js';
+import { createTestServer, type TestServer } from '../../../../test-support/test-server.js';
 import { fetchUrl, PlaywrightFetcher } from './playwright-fetcher.js';
 
 describe('PlaywrightFetcher', () => {

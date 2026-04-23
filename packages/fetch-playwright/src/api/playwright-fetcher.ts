@@ -1,10 +1,10 @@
 import type { Fetcher, FetcherConfig, FetchOptions, FetchResult } from '@seo-solver/types/fetch';
 import type { Browser, BrowserContext, BrowserType, Page, Response, Route } from 'playwright';
-import { DEFAULT_BLOCK_RESOURCE_TYPES } from './defaults.js';
-import { FetchError } from './errors.js';
-import { mergeOptions, type ResolvedFetchOptions } from './merge-options.js';
-import { pageToFetchResult } from './page-to-fetch-result.js';
-import { withRetry } from './retry.js';
+import { DEFAULT_BLOCK_RESOURCE_TYPES } from '../core/defaults.js';
+import { FetchError } from '../core/errors.js';
+import { mergeOptions, type ResolvedFetchOptions } from '../core/merge-options.js';
+import { pageToFetchResult } from '../core/page-to-fetch-result.js';
+import { withRetry } from '../core/retry.js';
 
 export type PlaywrightFetcherConfig = FetcherConfig & {
   blockResourceTypes?: string[];
