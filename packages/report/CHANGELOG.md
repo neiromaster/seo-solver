@@ -1,5 +1,11 @@
 # @seo-solver/report
 
+## 0.2.0
+
+### Minor Changes
+
+- [#14](https://github.com/neiromaster/seo-solver/pull/14) [`3dddf92`](https://github.com/neiromaster/seo-solver/commit/3dddf9250fb93dc9512e1c65e2a0870a46feb8aa) Thanks [@neiromaster](https://github.com/neiromaster)! - Clarify the report package layers by splitting the simple root API from the advanced reporter-composition entrypoint.
+
 ## 0.1.0
 
 ### Minor Changes
