@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { getPackagedExportedRuntimeJsFiles, inspectPackedPackage } from '../../../../test-support/tarball.js';
@@ -11,5 +12,11 @@ describe.sequential('fetch packaging contract', () => {
       'package/dist/advanced.js',
       'package/dist/index.js',
     ]);
+
+    const builtAdvancedEntrypoint = await readFile(
+      join(import.meta.dirname, '..', '..', 'dist', 'advanced.js'),
+      'utf8',
+    );
+    expect(builtAdvancedEntrypoint).toContain('registerNativeBackend');
   }, 120000);
 });

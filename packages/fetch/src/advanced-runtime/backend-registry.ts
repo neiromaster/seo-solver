@@ -1,5 +1,5 @@
 import type { Fetcher } from '@seo-solver/types/fetch';
-import { FetchError } from './errors.js';
+import { FetchError } from '../core/errors.js';
 
 export type BackendModule = {
   createFetcher(config?: unknown): Fetcher;

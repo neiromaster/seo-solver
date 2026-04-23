@@ -1,7 +1,7 @@
 import type { FetcherConfig, FetchOptions, FetchResult, RetryOptions } from '@seo-solver/types/fetch';
-import { registerBackend, resolveBackend } from './backend-registry.js';
-import { createFetcher } from './native-fetcher.js';
-import { withRetry } from './retry.js';
+import { registerBackend, resolveBackend } from './advanced-runtime/backend-registry.js';
+import { createFetcher } from './api/native-fetcher.js';
+import { withRetry } from './core/retry.js';
 
 type SharedRetryResult = {
   headers?: Record<string, string>;
@@ -10,7 +10,7 @@ type SharedRetryResult = {
 
 let nativeRegistered = false;
 
-function ensureNativeRegistered(): void {
+export function registerNativeBackend(): void {
   if (nativeRegistered) {
     return;
   }
@@ -20,8 +20,6 @@ function ensureNativeRegistered(): void {
   }));
   nativeRegistered = true;
 }
-
-ensureNativeRegistered();
 
 export { registerBackend, resolveBackend };
 
