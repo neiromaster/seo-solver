@@ -1,4 +1,4 @@
-import { NativeFetcher } from '@seo-solver/fetch';
+import { createFetcher } from '@seo-solver/fetch';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { createTestServer, type TestServer } from '../../../test-support/test-server.js';
 import { PlaywrightFetcher } from './playwright-fetcher.js';
@@ -19,7 +19,7 @@ describe('fetcher compatibility', () => {
   });
 
   test('returns compatible results for static html', async () => {
-    const nativeFetcher = new NativeFetcher();
+    const nativeFetcher = createFetcher();
     const playwrightFetcher = new PlaywrightFetcher();
 
     const [nativeResult, playwrightResult] = await Promise.all([

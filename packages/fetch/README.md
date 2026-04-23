@@ -30,7 +30,7 @@ console.log(result.statusCode);
 console.log(result.resourceType);
 ```
 
-The returned object is the same canonical fetch shape used by the rest of the `seo-solver` packages.
+The returned object is the same canonical fetch shape used by the rest of the `seo-solver` packages. If you want to reuse a fetcher instance, use `createFetcher()` rather than instantiating an implementation class directly.
 
 ## Advanced API
 
@@ -41,10 +41,13 @@ import { createFetcher } from '@seo-solver/fetch';
 import {
   createSharedRetryExecutor,
   registerBackend,
+  registerNativeBackend,
   resolveBackend,
 } from '@seo-solver/fetch/advanced';
 
-registerBackend('native', async () => ({
+registerNativeBackend();
+
+registerBackend('custom', async () => ({
   createFetcher(config) {
     return createFetcher(config);
   },
@@ -54,7 +57,7 @@ const backend = await resolveBackend('native');
 const fetcher = backend.createFetcher();
 ```
 
-Reach for `@seo-solver/fetch/advanced` when you are wiring backends, retries, or orchestration. For normal application code, the root API is almost always enough.
+Reach for `@seo-solver/fetch/advanced` when you are wiring backends, retries, or orchestration. Backend registration is explicit: importing the module does not register `native` by itself.
 
 ## Error model
 

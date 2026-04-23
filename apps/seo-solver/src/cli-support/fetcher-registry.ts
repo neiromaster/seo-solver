@@ -1,5 +1,5 @@
 import { FetchError } from '@seo-solver/fetch';
-import { registerBackend, resolveBackend } from '@seo-solver/fetch/advanced';
+import { registerBackend, registerNativeBackend, resolveBackend } from '@seo-solver/fetch/advanced';
 import type { Fetcher, FetcherConfig } from '@seo-solver/types/fetch';
 import type { FetcherFlags } from '../flags/fetcher.js';
 
@@ -64,6 +64,8 @@ function ensureOptionalBackendsRegistered(): void {
   if (backendsRegistered) {
     return;
   }
+
+  registerNativeBackend();
 
   registerBackend('playwright', async () => {
     const mod = (await import('@seo-solver/fetch-playwright')) as {
