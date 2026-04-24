@@ -13,7 +13,7 @@ The package already includes its JSON-LD runtime dependency. You only need to op
 ## What this package gives you
 
 - direct helper functions for validating data you already have, like `validateJsonLd()` and `validateOpenGraph()`
-- a simple `validatePage()` API for validating extracted page data
+- a simple built-in `validatePage()` API for validating extracted page data
 - a package-owned `listRules()` catalog
 - strict `parseSeverityOverrides()` handling
 - an advanced validator/pipeline surface for custom orchestration and runtime config
@@ -21,7 +21,10 @@ The package already includes its JSON-LD runtime dependency. You only need to op
 ## Simple API
 
 ```ts
-import { parseSeverityOverrides, validateJsonLd, validateMetaTags } from '@seo-solver/validate';
+import type { ExtractedPage } from '@seo-solver/types/extract';
+import { parseSeverityOverrides, validateJsonLd, validateMetaTags, validatePage } from '@seo-solver/validate';
+
+const page = {} as ExtractedPage;
 
 const diagnostics = await validateJsonLd(
   [{ '@type': 'Article' }],
@@ -49,8 +52,14 @@ const metaDiagnostics = await validateMetaTags(
   },
 );
 
+const pageReport = await validatePage(page, {
+  disableRules: ['meta/viewport-missing'],
+  severityOverrides: parseSeverityOverrides(['meta/description-missing=error']),
+});
+
 console.log(diagnostics);
 console.log(metaDiagnostics);
+console.log(pageReport);
 ```
 
 Direct helpers return `Diagnostic[]` and do not require callers to build an `ExtractedPage` or an extraction envelope. Use them when your application already has SEO data from another source.
@@ -89,14 +98,14 @@ type ValidateJsonLdOptions = ValidateRuleOptions & {
 
 `runtime` is intentionally available only on `validateJsonLd()` options.
 
-Use `validatePage(page, options?)` if you already have an extracted page and want a stable validation report. At page level, validation distinguishes between targets that were not requested, targets that were requested but missing, and targets that were extracted successfully.
+Use `validatePage(page, options?)` if you already have an extracted page and want a stable built-in validation report without pipeline-level customization. At page level, validation distinguishes between targets that were not requested, targets that were requested but missing, and targets that were extracted successfully.
 
 ## Advanced API
 
-The application uses the advanced surface when it needs validator-level control or explicit runtime JSON-LD configuration.
+The application uses the advanced surface when it needs validator-level control, explicit page-validation orchestration, or runtime JSON-LD configuration.
 
 ```ts
-import { createValidationPipeline, listRules } from '@seo-solver/validate/advanced';
+import { createValidationPipeline, listRules, validatePageAdvanced } from '@seo-solver/validate/advanced';
 
 const pipeline = createValidationPipeline({
   runtime: {
@@ -106,10 +115,20 @@ const pipeline = createValidationPipeline({
   },
 });
 
+const report = await validatePageAdvanced(page, {
+  validators: ['meta', 'jsonld'],
+  runtime: {
+    jsonldAdobe: {
+      enabled: true,
+    },
+  },
+});
+
 console.log(listRules());
+console.log(report);
 ```
 
-Use `@seo-solver/validate/advanced` when you need validator classes, low-level pipeline control, or runtime-specific wiring. For most consumers, `validatePage()` should be the default choice.
+Use `@seo-solver/validate/advanced` when you need validator classes, low-level pipeline control, advanced page-validation control, or runtime-specific wiring. For most consumers, the root `validatePage()` should stay the default choice.
 
 ## Rule selectors and overrides
 

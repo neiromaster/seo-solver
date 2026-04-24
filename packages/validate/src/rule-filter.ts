@@ -1,5 +1,5 @@
 import type { Diagnostic, Severity } from '@seo-solver/types/validate';
-import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './rule-catalog.js';
+import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './basic-core/rule-selector-data.js';
 
 export type RuleFilterConfig = {
   disableRules: string[];

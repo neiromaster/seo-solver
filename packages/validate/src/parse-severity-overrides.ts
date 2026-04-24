@@ -1,6 +1,6 @@
 import type { Severity } from '@seo-solver/types/validate';
+import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './basic-core/rule-selector-data.js';
 import { ValidationError } from './errors.js';
-import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './rule-catalog.js';
 
 const SEVERITIES: readonly Severity[] = ['error', 'warning', 'info'];
 

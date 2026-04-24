@@ -1,7 +1,7 @@
 import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/extract/advanced';
 import type { ExtractedPage } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
-import { createValidationPipeline } from './advanced.js';
+import { type AdvancedValidatePageOptions, createValidationPipeline, validatePageAdvanced } from './advanced.js';
 import { type ValidatePageOptions, validatePage } from './api/validate-page.js';
 import {
   type ValidateDataOptions,
@@ -13,6 +13,12 @@ import {
 import { validateAll } from './pipeline/create-validation-pipeline.js';
 
 describe('validatePage', () => {
+  test('basic validatePage option type excludes validator selection', () => {
+    const options: ValidatePageOptions = { disableRules: ['meta/viewport-missing'] };
+
+    expect(options.disableRules).toEqual(['meta/viewport-missing']);
+  });
+
   test('treats sparse extracted data as omitted targets rather than empty envelopes', async () => {
     const page: ExtractedPage = {
       source: {
@@ -282,6 +288,36 @@ describe('direct validation helpers', () => {
 
     expect(diagnostics.map((entry) => entry.rule)).not.toContain('opengraph/section-missing');
     expect(diagnostics.map((entry) => entry.rule)).toContain('opengraph/title-missing');
+  });
+});
+
+describe('validatePageAdvanced', () => {
+  test('keeps validator-level selection on the advanced page API', async () => {
+    const options: AdvancedValidatePageOptions = { validators: ['meta'] };
+    const page: ExtractedPage = {
+      source: {
+        requestUrl: 'https://example.com',
+        url: 'https://example.com',
+        statusCode: 200,
+        resourceType: 'html',
+        redirects: [],
+        timing: 0,
+        attempts: 1,
+        fetchedAt: '2026-04-24T00:00:00.000Z',
+      },
+      data: {
+        meta: { title: null, charset: null, name: {}, httpEquiv: {}, lang: null, itemprop: {} },
+        headings: [],
+      },
+      targetStatus: {
+        meta: 'present',
+        headings: 'present',
+      },
+      errors: [],
+    };
+
+    const report = await validatePageAdvanced(page, options);
+    expect(report.validations.map((entry) => entry.type)).toEqual(['meta']);
   });
 });
 

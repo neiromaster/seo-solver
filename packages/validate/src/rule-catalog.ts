@@ -1,5 +1,5 @@
 import type { Severity } from '@seo-solver/types/validate';
-import { listPresenceRules } from './presence-rules.js';
+import { listPresenceRules } from './basic-core/presence-rule-data.js';
 import { STATIC_RULE_CATALOGS } from './rule-catalog-data.js';
 
 export type RuleCatalogEntry = {
@@ -80,9 +80,6 @@ const RULE_CATALOG: RuleCatalogEntry[] = VALIDATOR_ORDER.flatMap((validatorId) =
       defaultEnabled: true,
     }));
 });
-
-export const KNOWN_RULE_IDS = new Set(RULE_CATALOG.map((entry) => entry.id));
-export const KNOWN_PREFIXES = new Set(RULE_CATALOG.map((entry) => entry.id.split('/')[0]));
 
 export function listRules(): RuleCatalogEntry[] {
   return RULE_CATALOG;
