@@ -2,15 +2,15 @@ import { createExtractorPipeline, htmlToMinimalFetchResult } from '@seo-solver/e
 import type { ExtractedPage } from '@seo-solver/types/extract';
 import { describe, expect, test } from 'vitest';
 import { createValidationPipeline } from './advanced.js';
+import { type ValidatePageOptions, validatePage } from './api/validate-page.js';
 import {
   type ValidateDataOptions,
   type ValidateJsonLdOptions,
-  validateAll,
   validateJsonLd,
   validateMetaTags,
   validateOpenGraph,
-  validatePage,
-} from './pipeline.js';
+} from './api/validate-targets.js';
+import { validateAll } from './pipeline/create-validation-pipeline.js';
 
 describe('validatePage', () => {
   test('treats sparse extracted data as omitted targets rather than empty envelopes', async () => {

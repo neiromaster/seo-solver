@@ -1,13 +1,10 @@
 import type { Diagnostic, Severity } from '@seo-solver/types/validate';
-import { listRules } from './rule-catalog.js';
+import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './rule-catalog.js';
 
 export type RuleFilterConfig = {
   disableRules: string[];
   severityOverrides: Record<string, Severity>;
 };
-
-const KNOWN_RULE_IDS = new Set(listRules().map((entry) => entry.id));
-const KNOWN_PREFIXES = new Set(listRules().map((entry) => entry.id.split('/')[0]));
 
 export function createRuleFilter(config: RuleFilterConfig) {
   return {

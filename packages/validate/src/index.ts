@@ -14,8 +14,8 @@ export type {
   Severity,
   ValidationResult,
 } from '@seo-solver/types/validate';
-export { ValidationError } from './errors.js';
-export { parseSeverityOverrides } from './parse-severity-overrides.js';
+export { isKnownRuleSelector, listRules, parseSeverityOverrides } from './api/rule-tools.js';
+export { type ValidatePageOptions, validatePage } from './api/validate-page.js';
 export {
   type ValidateDataOptions,
   type ValidateJsonLdOptions,
@@ -25,9 +25,7 @@ export {
   validateJsonLd,
   validateMetaTags,
   validateOpenGraph,
-  validatePage,
   validateRobotsTxt,
   validateTwitterCards,
-} from './pipeline.js';
-export { listRules } from './rule-catalog.js';
-export { isKnownRuleSelector } from './rule-filter.js';
+} from './api/validate-targets.js';
+export { ValidationError } from './errors.js';

@@ -11,7 +11,7 @@ import {
   TwitterCardValidator,
   VKValidator,
 } from './advanced.js';
-import { validateHeadings, validateOpenGraph } from './pipeline.js';
+import { validateHeadings, validateOpenGraph } from './api/validate-targets.js';
 
 describe('validators', () => {
   test('validates meta tags', async () => {

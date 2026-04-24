@@ -1,4 +1,4 @@
-export { createValidationPipeline } from './pipeline.js';
+export { createValidationPipeline } from './pipeline/create-validation-pipeline.js';
 export { listRules } from './rule-catalog.js';
 export { AppLinksValidator } from './validators/applinks.js';
 export { CanonicalValidator } from './validators/canonical.js';

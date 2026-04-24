@@ -30,8 +30,8 @@ export async function runValidate(
   const { page } = await runExtract(fetcher, url, options);
 
   return await validatePage(page, {
-    disableRules: options.disableRules,
-    severityOverrides: options.severityOverrides,
-    runtime: options.runtime,
+    ...(options.disableRules === undefined ? {} : { disableRules: options.disableRules }),
+    ...(options.severityOverrides === undefined ? {} : { severityOverrides: options.severityOverrides }),
+    ...(options.runtime === undefined ? {} : { runtime: options.runtime }),
   });
 }
