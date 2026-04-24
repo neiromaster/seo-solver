@@ -22,7 +22,7 @@ vi.mock('node:fs/promises', () => ({
 }));
 
 import { createValidationPipeline } from './advanced.js';
-import { validateJsonLd } from './pipeline.js';
+import { validateJsonLd } from './api/validate-targets.js';
 
 describe('JsonLdValidator', () => {
   beforeEach(() => {

@@ -3,6 +3,7 @@
   "description": "SEO validation pipeline and rule engine",
   "version": "0.1.0",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [

@@ -70,6 +70,12 @@ export function createRuleCatalog<T>(
   rule: string;
   severity: Severity;
   validator: string;
+  description: string;
 }> {
-  return rules.map((rule) => ({ rule: rule.id, severity: rule.severity, validator }));
+  return rules.map((rule) => ({
+    rule: rule.id,
+    severity: rule.severity,
+    validator,
+    description: rule.message,
+  }));
 }

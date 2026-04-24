@@ -14,4 +14,4 @@ const pipeline = createValidationPipeline({
 console.log(listRules());
 ```
 
-Use the advanced surface for validator classes and explicit runtime JSON-LD configuration. Root `validatePage()` remains pure by default.
+Use the advanced surface for validator classes, explicit page-validation orchestration, and runtime JSON-LD configuration. Root `validatePage()` remains the simpler built-in page validator.

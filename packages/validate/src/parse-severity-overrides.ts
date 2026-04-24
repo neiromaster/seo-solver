@@ -1,10 +1,8 @@
 import type { Severity } from '@seo-solver/types/validate';
+import { KNOWN_PREFIXES, KNOWN_RULE_IDS } from './basic-core/rule-selector-data.js';
 import { ValidationError } from './errors.js';
-import { listRules } from './rule-catalog.js';
 
 const SEVERITIES: readonly Severity[] = ['error', 'warning', 'info'];
-const KNOWN_RULE_IDS = new Set(listRules().map((entry) => entry.id));
-const KNOWN_PREFIXES = new Set(listRules().map((entry) => entry.id.split('/')[0]));
 
 export function parseSeverityOverrides(raw: string[]): Record<string, Severity> {
   const result: Record<string, Severity> = {};

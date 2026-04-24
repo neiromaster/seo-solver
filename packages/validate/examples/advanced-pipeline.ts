@@ -1,5 +1,5 @@
 import type { ExtractedPage } from '@seo-solver/types/extract';
-import { createValidationPipeline } from '@seo-solver/validate/advanced';
+import { createValidationPipeline, validatePageAdvanced } from '@seo-solver/validate/advanced';
 
 declare const page: ExtractedPage;
 
@@ -17,4 +17,15 @@ console.log(
     ...(page.data.jsonld ? [{ type: 'jsonld', source: page.source.url, data: page.data.jsonld }] : []),
     ...(page.data.meta ? [{ type: 'meta', source: page.source.url, data: page.data.meta }] : []),
   ]),
+);
+
+console.log(
+  await validatePageAdvanced(page, {
+    validators: ['meta', 'jsonld'],
+    runtime: {
+      jsonldAdobe: {
+        enabled: true,
+      },
+    },
+  }),
 );

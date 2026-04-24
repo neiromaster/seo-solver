@@ -1,4 +1,5 @@
-export { createValidationPipeline } from './pipeline.js';
+export { createValidationPipeline } from './pipeline/create-validation-pipeline.js';
+export { type AdvancedValidatePageOptions, validatePageAdvanced } from './pipeline/validate-page-advanced.js';
 export { listRules } from './rule-catalog.js';
 export { AppLinksValidator } from './validators/applinks.js';
 export { CanonicalValidator } from './validators/canonical.js';
