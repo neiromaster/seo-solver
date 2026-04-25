@@ -1,5 +1,11 @@
 # @seo-solver/compare
 
+## 0.2.1
+
+### Patch Changes
+
+- [#18](https://github.com/neiromaster/seo-solver/pull/18) [`a1e8c17`](https://github.com/neiromaster/seo-solver/commit/a1e8c171cf6b5e4e95ddcca92369ea2ecf510779) Thanks [@neiromaster](https://github.com/neiromaster)! - Add headings comparison formatting to all report formatters (HTML, Markdown, Terminal, JSON).
+
 ## 0.2.0
 
 ### Minor Changes
