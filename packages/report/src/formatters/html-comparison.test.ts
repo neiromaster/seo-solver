@@ -51,4 +51,14 @@ describe('html comparison formatter', () => {
     expect(output).not.toContain('<link rel=');
     expect(output).not.toContain('<script src=');
   });
+
+  test('renders headings changes as whole heading lines', () => {
+    const output = formatComparisonReport(comparisonReportFixture, { format: 'html' });
+
+    expect(output).toContain('<td rowspan="2"><code>[1]</code></td>');
+    expect(output).toContain('<td class="cell-before"><code>h2: &quot;Enterprise&quot;</code></td>');
+    expect(output).toContain('<td class="cell-after"><code>h3: &quot;Enterprise | Pro&quot;</code></td>');
+    expect(output).toContain('<td class="cell-after"><code>h3: &quot;FAQ&quot;</code></td>');
+    expect(output).not.toContain('&quot;{&quot;level&quot;:3,&quot;text&quot;:&quot;FAQ&quot;}&quot;');
+  });
 });

@@ -1,4 +1,4 @@
-import type { ComparisonReport } from '@seo-solver/types/compare';
+import type { ComparisonReport, ComparisonResult } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../core/summary.js';
 import {
@@ -9,6 +9,7 @@ import {
   renderSectionHeading,
 } from '../../utils/text.js';
 import { formatFullValue } from '../../utils/truncate.js';
+import { formatHeadingEntry, isHeadingEntry, isHeadingsComparison } from '../comparison/headings.js';
 import { createTerminalColors, type TerminalColors } from './colors.js';
 
 type ResolvedTerminalConfig = Required<Pick<ReporterConfig, 'color' | 'verbosity'>>;
@@ -41,6 +42,14 @@ function formatRawValue(value: unknown): string {
   return formatFullValue(value);
 }
 
+function formatComparisonValue(comparison: ComparisonResult, value: unknown): string {
+  if (isHeadingsComparison(comparison) && isHeadingEntry(value)) {
+    return formatHeadingEntry(value);
+  }
+
+  return formatRawValue(value);
+}
+
 function formatEntryPath(kind: 'added' | 'removed' | 'changed', path: string): string {
   if (path !== '(entire type)') {
     return path;
@@ -57,11 +66,11 @@ function formatEntryPath(kind: 'added' | 'removed' | 'changed', path: string): s
   return path;
 }
 
-function pushValueLines(lines: string[], colors: TerminalColors, kind: 'added' | 'removed', value: unknown): void {
+function pushValueLines(lines: string[], colors: TerminalColors, kind: 'added' | 'removed', value: string): void {
   const prefix = kind === 'removed' ? '−' : '+';
   const color = kind === 'removed' ? colors.removed : colors.added;
 
-  for (const valueLine of formatRawValue(value).split(/\r?\n/)) {
+  for (const valueLine of value.split(/\r?\n/)) {
     lines.push(`    ${color(`${prefix} ${valueLine}`)}`);
   }
 }
@@ -103,14 +112,14 @@ export function formatTerminalComparison(report: ComparisonReport, config: Resol
       lines.push(`  ${icon} ${path}`);
 
       if (diff.kind === 'changed') {
-        pushValueLines(lines, colors, 'removed', diff.before);
-        pushValueLines(lines, colors, 'added', diff.after);
+        pushValueLines(lines, colors, 'removed', formatComparisonValue(comparison, diff.before));
+        pushValueLines(lines, colors, 'added', formatComparisonValue(comparison, diff.after));
       } else if (diff.kind === 'added') {
         if (diff.path !== '') {
-          pushValueLines(lines, colors, 'added', diff.after);
+          pushValueLines(lines, colors, 'added', formatComparisonValue(comparison, diff.after));
         }
       } else if (diff.path !== '') {
-        pushValueLines(lines, colors, 'removed', diff.before);
+        pushValueLines(lines, colors, 'removed', formatComparisonValue(comparison, diff.before));
       }
 
       lines.push('');

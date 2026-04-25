@@ -147,7 +147,7 @@ tr.diff-after td {
   <span><strong>A:</strong> https://staging.example.com · 200 OK (234ms)</span>
   <span><strong>B:</strong> https://example.com · 200 OK (187ms)</span>
 </div>
-      <div class="summary"><span class="badge changed">2 changed</span><span class="badge added">2 added</span><span class="badge removed">1 removed</span><span class="badge">1 identical</span></div>
+      <div class="summary"><span class="badge changed">3 changed</span><span class="badge added">2 added</span><span class="badge removed">1 removed</span><span class="badge">1 identical</span></div>
     </header>
     <section>
       <h2>OpenGraph <span class="muted">3 diffs</span></h2>
@@ -185,16 +185,24 @@ tr.diff-after td {
       <details><summary>Identical</summary><p class="muted">No differences found.</p></details>
     </section>
 <section>
-      <h2>Headings <span class="muted">1 diff</span></h2>
+      <h2>Headings <span class="muted">2 diffs</span></h2>
       <table>
   <thead>
     <tr><th>Change</th><th>Path</th><th>Value</th></tr>
   </thead>
   <tbody>
 <tr class="diff-start">
+  <td rowspan="2"><span class="kind-badge changed">Changed</span></td>
+  <td rowspan="2"><code>[1]</code></td>
+  <td class="cell-before"><code>h2: &quot;Enterprise&quot;</code></td>
+</tr>
+<tr class="diff-after">
+  <td class="cell-after"><code>h3: &quot;Enterprise | Pro&quot;</code></td>
+</tr>
+<tr class="diff-start">
   <td><span class="kind-badge added">Added</span></td>
   <td><code>[2]</code></td>
-  <td class="cell-after"><code>&quot;h3 \&quot;Enterprise | Pro\&quot;&quot;</code></td>
+  <td class="cell-after"><code>h3: &quot;FAQ&quot;</code></td>
 </tr>
   </tbody>
 </table>

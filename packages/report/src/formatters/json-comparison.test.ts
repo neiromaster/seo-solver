@@ -19,10 +19,10 @@ describe('json comparison formatter', () => {
     expect(parsed.comparisons).toHaveLength(4);
     expect(parsed.summary).toEqual({
       added: 2,
-      changed: 2,
+      changed: 3,
       identical: 1,
       removed: 1,
-      total: 5,
+      total: 6,
     });
   });
 });

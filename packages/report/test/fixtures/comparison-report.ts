@@ -35,7 +35,22 @@ export const comparisonReportFixture: ComparisonReport = {
     {
       diffs: [
         {
-          after: 'h3 "Enterprise | Pro"',
+          after: {
+            level: 3,
+            text: 'Enterprise | Pro',
+          },
+          before: {
+            level: 2,
+            text: 'Enterprise',
+          },
+          kind: 'changed',
+          path: '[1]',
+        },
+        {
+          after: {
+            level: 3,
+            text: 'FAQ',
+          },
           kind: 'added',
           path: '[2]',
         },

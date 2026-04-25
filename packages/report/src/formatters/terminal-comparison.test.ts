@@ -8,7 +8,7 @@ describe('terminal comparison formatter', () => {
 
     expect(output).toContain('✓ Identical');
     expect(output).toContain('(entire type not present in B)');
-    expect(output).toContain('2 changed · 2 added · 1 removed');
+    expect(output).toContain('3 changed · 2 added · 1 removed');
     expect(output).toContain('~ changed  + added  - removed');
   });
 
@@ -24,5 +24,15 @@ describe('terminal comparison formatter', () => {
     expect(verboseOutput).toContain(
       '+ Updated line with <final> and a much longer description to exercise truncation in normal mode',
     );
+  });
+
+  test('renders headings changes as whole heading lines', () => {
+    const output = formatComparisonReport(comparisonReportFixture, { color: false, format: 'terminal' });
+
+    expect(output).toContain('~ [1]');
+    expect(output).toContain('− h2: "Enterprise"');
+    expect(output).toContain('+ h3: "Enterprise | Pro"');
+    expect(output).toContain('+ h3: "FAQ"');
+    expect(output).not.toContain('{"level":3,"text":"FAQ"}');
   });
 });

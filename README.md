@@ -65,6 +65,9 @@ seo-solver compare https://example.com https://example.com/new
 # Compare only selected targets
 seo-solver compare https://example.com https://example.com/new --targets opengraph,meta
 
+# Compare headings with human-readable heading diffs
+seo-solver compare https://example.com https://example.com/new --targets headings
+
 # Validate one page with pure JSON-LD validation (the default)
 seo-solver validate https://example.com --jsonld-runtime off
 
@@ -101,6 +104,8 @@ These flags are available on `compare`, `validate`, and `extract`.
 | `--targets <list>` / `-e` | compare only selected targets such as `meta`, `opengraph`, `jsonld`, `robotsTxt` |
 | `--editor <code\|cursor\|surf\|zed>` | open two normalized extraction JSON artifacts in a supported editor diff view while keeping normal compare output behavior |
 | `--output <path>` / `-o` | write comparison output to a file |
+
+For human-readable compare formats, headings are rendered as heading lines like `h2: "Pricing"`; changed headings are shown as one diff entry with explicit before/after lines rather than raw heading objects.
 
 ### `validate`
 

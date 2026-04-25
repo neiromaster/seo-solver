@@ -46,4 +46,17 @@ describe('markdown comparison formatter', () => {
 
     expect(output).toContain('Enterprise | Pro');
   });
+
+  test('renders headings diffs as fenced diff blocks', () => {
+    const output = formatComparisonReport(comparisonReportFixture, { format: 'markdown' });
+
+    expect(output).toContain('- **~ Changed** `[1]`');
+    expect(output).toContain('  ```diff');
+    expect(output).toContain('  - h2: "Enterprise"');
+    expect(output).toContain('  + h3: "Enterprise | Pro"');
+    expect(output).toContain('- **+ Added** `[2]`');
+    expect(output).toContain('  + h3: "FAQ"');
+    expect(output).not.toContain('- **+** `h3: "FAQ"`');
+    expect(output).not.toContain('`{"level":3,"text":"FAQ"}`');
+  });
 });

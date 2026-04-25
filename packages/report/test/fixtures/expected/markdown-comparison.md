@@ -7,7 +7,7 @@
 
 ## Summary
 
-2 changed · 2 added · 1 removed · 1 identical
+3 changed · 2 added · 1 removed · 1 identical
 
 ## OpenGraph
 
@@ -26,8 +26,17 @@
 
 ## Headings
 
+- **~ Changed** `[1]`
+
+  ```diff
+  - h2: "Enterprise"
+  + h3: "Enterprise | Pro"
+  ```
 - **+ Added** `[2]`
-  - **+** `"h3 \"Enterprise | Pro\""`
+
+  ```diff
+  + h3: "FAQ"
+  ```
 
 ## JSON-LD
 
