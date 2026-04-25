@@ -17,10 +17,10 @@ describe('summary helpers', () => {
   test('summarizeComparison counts diff kinds and identical types', () => {
     expect(summarizeComparison(comparisonReportFixture)).toEqual({
       added: 2,
-      changed: 2,
+      changed: 3,
       identical: 1,
       removed: 1,
-      total: 5,
+      total: 6,
     });
   });
 

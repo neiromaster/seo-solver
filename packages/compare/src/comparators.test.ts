@@ -52,24 +52,55 @@ describe('HeadingsComparator', () => {
     expect(result).toEqual([{ kind: 'added', path: '[2]', after: { level: 3, text: 'Enterprise' } }]);
   });
 
-  test('treats text changes as changed fields', () => {
+  test('treats text changes as changed headings', () => {
     const comparator = new HeadingsComparator();
     const result = comparator.compare(
       { type: 'headings', source: '', data: [{ level: 1, text: 'Old' }] },
       { type: 'headings', source: '', data: [{ level: 1, text: 'New' }] },
     );
 
-    expect(result).toEqual([{ kind: 'changed', path: '[0].text', before: 'Old', after: 'New' }]);
+    expect(result).toEqual([
+      {
+        kind: 'changed',
+        path: '[0]',
+        before: { level: 1, text: 'Old' },
+        after: { level: 1, text: 'New' },
+      },
+    ]);
   });
 
-  test('treats level changes as changed fields', () => {
+  test('treats level changes as changed headings', () => {
     const comparator = new HeadingsComparator();
     const result = comparator.compare(
       { type: 'headings', source: '', data: [{ level: 2, text: 'Pricing' }] },
       { type: 'headings', source: '', data: [{ level: 3, text: 'Pricing' }] },
     );
 
-    expect(result).toEqual([{ kind: 'changed', path: '[0].level', before: 2, after: 3 }]);
+    expect(result).toEqual([
+      {
+        kind: 'changed',
+        path: '[0]',
+        before: { level: 2, text: 'Pricing' },
+        after: { level: 3, text: 'Pricing' },
+      },
+    ]);
+  });
+
+  test('treats level and text changes as one changed heading', () => {
+    const comparator = new HeadingsComparator();
+    const result = comparator.compare(
+      { type: 'headings', source: '', data: [{ level: 2, text: 'Old Pricing' }] },
+      { type: 'headings', source: '', data: [{ level: 3, text: 'New Pricing' }] },
+    );
+
+    expect(result).toEqual([
+      {
+        kind: 'changed',
+        path: '[0]',
+        before: { level: 2, text: 'Old Pricing' },
+        after: { level: 3, text: 'New Pricing' },
+      },
+    ]);
   });
 
   test('handles multiple insertions without noisy changes', () => {

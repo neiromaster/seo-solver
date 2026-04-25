@@ -37,13 +37,7 @@ export function diffHeadings(headingsA: HeadingEntry[], headingsB: HeadingEntry[
       getCost(costs, indexA, indexB) === getCost(costs, indexA - 1, indexB - 1) + updateCost(headingA, headingB)
     ) {
       if (!sameHeading(headingA, headingB)) {
-        if (headingA.level !== headingB.level) {
-          diffs.push({ kind: 'changed', path: `[${indexA - 1}].level`, before: headingA.level, after: headingB.level });
-        }
-
-        if (headingA.text !== headingB.text) {
-          diffs.push({ kind: 'changed', path: `[${indexA - 1}].text`, before: headingA.text, after: headingB.text });
-        }
+        diffs.push({ kind: 'changed', path: `[${indexA - 1}]`, before: headingA, after: headingB });
       }
 
       indexA -= 1;

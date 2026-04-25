@@ -19,12 +19,16 @@ Comparing:
   ✓ Identical
 
 ── Headings ────────────────────────────────────────────
+  ~ [1]
+    − h2: "Enterprise"
+    + h3: "Enterprise | Pro"
+
   + [2]
-    + h3 "Enterprise | Pro"
+    + h3: "FAQ"
 
 ── JSON-LD ─────────────────────────────────────────────
   - (entire type not present in B)
 
 ── Summary ─────────────────────────────────────────────
-  2 changed · 2 added · 1 removed
+  3 changed · 2 added · 1 removed
   ~ changed  + added  - removed

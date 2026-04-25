@@ -1,19 +1,28 @@
-import type { ComparisonReport, DiffEntry } from '@seo-solver/types/compare';
+import type { ComparisonReport, ComparisonResult, DiffEntry } from '@seo-solver/types/compare';
 import type { ReporterConfig } from '@seo-solver/types/report';
 import { summarizeComparison } from '../../core/summary.js';
 import { escapeHtml, formatDiffLabel, formatDiffPath, formatStatus, formatTypeLabel } from '../../utils/text.js';
 import { formatFullValue } from '../../utils/truncate.js';
+import { formatHeadingEntry, isHeadingEntry, isHeadingsComparison } from '../comparison/headings.js';
 import { renderHtml } from './template.js';
 
-function renderComparisonRows(diffs: DiffEntry[]): string {
-  const rows = diffs.map((diff) => {
+function formatComparisonValue(comparison: ComparisonResult, value: unknown): string {
+  if (isHeadingsComparison(comparison) && isHeadingEntry(value)) {
+    return formatHeadingEntry(value);
+  }
+
+  return formatFullValue(value);
+}
+
+function renderComparisonRows(comparison: ComparisonResult): string {
+  const rows = comparison.diffs.map((diff: DiffEntry) => {
     const label = escapeHtml(formatDiffLabel(diff.kind));
     const path = diff.path === '' ? '(entire type)' : formatDiffPath(diff);
     const badge = `<span class="kind-badge ${diff.kind}">${label}</span>`;
 
     if (diff.kind === 'changed') {
-      const beforeVal = escapeHtml(formatFullValue(diff.before));
-      const afterVal = escapeHtml(formatFullValue(diff.after));
+      const beforeVal = escapeHtml(formatComparisonValue(comparison, diff.before));
+      const afterVal = escapeHtml(formatComparisonValue(comparison, diff.after));
       return `<tr class="diff-start">
   <td rowspan="2">${badge}</td>
   <td rowspan="2"><code>${escapeHtml(path)}</code></td>
@@ -25,7 +34,7 @@ function renderComparisonRows(diffs: DiffEntry[]): string {
     }
 
     if (diff.kind === 'added') {
-      const afterVal = escapeHtml(formatFullValue(diff.after));
+      const afterVal = escapeHtml(formatComparisonValue(comparison, diff.after));
       return `<tr class="diff-start">
   <td>${badge}</td>
   <td><code>${escapeHtml(path)}</code></td>
@@ -34,7 +43,7 @@ function renderComparisonRows(diffs: DiffEntry[]): string {
     }
 
     // removed
-    const beforeVal = escapeHtml(formatFullValue(diff.before));
+    const beforeVal = escapeHtml(formatComparisonValue(comparison, diff.before));
     return `<tr class="diff-start">
   <td>${badge}</td>
   <td><code>${escapeHtml(path)}</code></td>
@@ -64,7 +73,7 @@ export function formatHtmlComparison(report: ComparisonReport, _config: Reporter
     }
 
     return {
-      body: renderComparisonRows(comparison.diffs),
+      body: renderComparisonRows(comparison),
       status: `${comparison.diffs.length} diff${comparison.diffs.length === 1 ? '' : 's'}`,
       title: formatTypeLabel(comparison.type),
     };

@@ -31,6 +31,8 @@ const comparisonOutput = formatComparisonReport(comparisonReport, { format: 'mar
 
 If you just want formatted output or final status checks, the root API is enough. It intentionally does not expose reporter construction or shared formatting internals.
 
+Human-readable comparison formats keep SEO-specific targets readable. For example, headings render as heading lines like `h2: "Pricing"`, and a changed heading renders as one changed entry with explicit before/after lines instead of raw object JSON.
+
 ## Advanced API
 
 The application uses `@seo-solver/report/advanced` when it wants to resolve formatting config once and reuse it across commands.
