@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@seo-solver/types": "workspace:^",
-    "ansis": "^4.2.0"
+    "ansis": "^4.3.0"
   },
   "license": "MIT",
   "repository": {
